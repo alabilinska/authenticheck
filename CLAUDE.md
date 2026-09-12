@@ -10,37 +10,6 @@ Authenticheck — a rule-based authenticity checker for second-hand Balenciaga b
 `shape-notes.md` (discovery trail). Brand knowledge is data, not code: rules and
 checklist questions belong in config files consumed by a generic engine.
 
-## Commands
-
-- `npm run dev` — dev server on Cloudflare workerd; secrets from `.dev.vars` (Node scripts read `.env`)
-- `npm run build` — SSR build via `@astrojs/cloudflare`; run before `npx wrangler deploy`
-- `npx astro sync` — generates `.astro/` types; required once after a fresh clone or `npm run lint` fails with ~20 unresolved-type errors (CI runs it explicitly)
-- `npm run lint` / `lint:fix` — ESLint (strictTypeChecked + Prettier as a lint rule: formatting errors fail lint)
-- `npx supabase start` — local Supabase (Docker); Studio at http://localhost:54323
-- No test runner is configured yet. The PRD requires an end-to-end test of the main
-  verification path — pick and wire a runner before writing tests.
-
-Pre-commit (husky + lint-staged): `eslint --fix` on `*.{ts,tsx,astro}`, `prettier --write` on `*.{json,css,md}`.
-CI (`.github/workflows/ci.yml`) runs lint + build on push/PR to `main`, Node 22 (`.nvmrc` 22.14; local Node 24 also works).
-
-## Architecture
-
-Astro 6 with `output: "server"` — every page is SSR; API routes export `const prerender = false`.
-React 19 only for interactive islands; Astro components for layout/static content.
-Tailwind 4 + shadcn/ui (`src/components/ui/`, "new-york"); merge classes with `cn()` from `@/lib/utils`.
-
-**Auth is optional at runtime.** `SUPABASE_URL` / `SUPABASE_KEY` are declared `optional: true`
-in `astro.config.mjs` (`astro:env/server`). `createClient()` in `src/lib/supabase.ts` returns
-`null` when they are missing, and `src/lib/config-status.ts` turns that into a "not configured"
-banner. Consequences: every API route and page must handle a `null` client; build and CI pass
-without secrets; misconfiguration surfaces only at runtime.
-
-Request flow: `src/middleware.ts` resolves the Supabase user on every request into
-`context.locals.user` (typed in `src/env.d.ts`) and redirects unauthenticated requests whose
-path starts with an entry in `PROTECTED_ROUTES` to `/auth/signin`. Add every new
-authenticated route there. Auth endpoints: `src/pages/api/auth/{signin,signup,signout}.ts`
-(form POST → redirect with `?error=`); pages under `src/pages/auth/`.
-
 ## Conventions
 
 - API routes: uppercase `GET`/`POST` exports; validate input with `z` from `astro/zod`
@@ -56,6 +25,37 @@ authenticated route there. Auth endpoints: `src/pages/api/auth/{signin,signup,si
 - React: no Next.js directives (`"use client"` etc.).
 - `package.json` and `wrangler.jsonc` still carry the starter name `10x-astro-starter`;
   the wrangler `name` becomes the Worker name on Cloudflare — rename to `authenticheck` before first deploy.
+
+## Architecture
+
+Astro 6 with `output: "server"` — every page and API route is rendered on demand; do not add `prerender = true` to an API route.
+React 19 only for interactive islands; Astro components for layout/static content.
+Tailwind 4 + shadcn/ui (`src/components/ui/`, "new-york"); merge classes with `cn()` from `@/lib/utils`.
+
+**Auth is optional at runtime.** `SUPABASE_URL` / `SUPABASE_KEY` are declared `optional: true`
+in `astro.config.mjs` (`astro:env/server`). `createClient()` in `src/lib/supabase.ts` returns
+`null` when they are missing, and `src/lib/config-status.ts` turns that into a "not configured"
+banner. Consequences: every API route and page must handle a `null` client; build and CI pass
+without secrets; misconfiguration surfaces only at runtime.
+
+Request flow: `src/middleware.ts` resolves the Supabase user on every request into
+`context.locals.user` (typed in `src/env.d.ts`) and redirects unauthenticated requests whose
+path starts with an entry in `PROTECTED_ROUTES` to `/auth/signin`. Add every new
+authenticated route there. Auth endpoints: `src/pages/api/auth/{signin,signup,signout}.ts`
+(form POST → redirect with `?error=`); pages under `src/pages/auth/`.
+
+## Commands
+
+- `npm run dev` — dev server on Cloudflare workerd; secrets from `.dev.vars` (Node scripts read `.env`)
+- `npm run build` — SSR build via `@astrojs/cloudflare`; run before `npx wrangler deploy`
+- `npx astro sync` — generates `.astro/` types; required once after a fresh clone or `npm run lint` fails with ~20 unresolved-type errors (CI runs it explicitly)
+- `npm run lint` / `lint:fix` — ESLint (strictTypeChecked + Prettier as a lint rule: formatting errors fail lint)
+- `npx supabase start` — local Supabase (Docker); Studio at http://localhost:54323
+- No test runner is configured yet. The PRD requires an end-to-end test of the main
+  verification path — pick and wire a runner before writing tests.
+
+Pre-commit (husky + lint-staged): `eslint --fix` on `*.{ts,tsx,astro}`, `prettier --write` on `*.{json,css,md}`.
+CI (`.github/workflows/ci.yml`) runs lint + build on push/PR to `main`, Node 22 (`.nvmrc` 22.14; local Node 24 also works).
 
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
