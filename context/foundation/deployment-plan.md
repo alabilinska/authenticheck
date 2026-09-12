@@ -73,11 +73,11 @@ Agent-safe: config/doc edits, `npm run build`, `wrangler deploy --dry-run`, `wra
 
 ### Phase 5 — Docs and contracts (agent)
 
-- [ ] `README.md` Deployment: Worker `authenticheck`; preview `npm run build && npx wrangler versions upload`; manual prod `npx wrangler deploy` (emergencies only — Workers Builds owns `main`); `wrangler secret put SUPABASE_URL|SUPABASE_KEY`; rollback + tail commands. README "CI" section: `master` → `main`.
-- [ ] `CLAUDE.md` Commands: add `npx wrangler versions upload` (agent-safe preview), `deploy` (human), `tail --status error`, `deployments status`, `rollback`; note the compat-date ceiling (2026-05-14 with the pinned workerd) and that `dist/server/wrangler.json` is what deploys. Drop the "rename before first deploy" bullet once renamed.
-- [ ] `context/foundation/infrastructure.md` Getting Started: step 1 (compat date = 2026-05-14, not today), step 3 (KV id is not written back — declare it explicitly). Register the three findings in the risk register.
+- [x] (WP-5a, `c7efc2e`) `README.md` Deployment: Worker `authenticheck`; preview `npm run build && npx wrangler versions upload`; manual prod `npx wrangler deploy` (emergencies only — Workers Builds owns `main`); `wrangler secret put SUPABASE_URL|SUPABASE_KEY`; rollback + tail commands. README "CI" section: `master` → `main`.
+- [x] (WP-5a, `c7efc2e`; +5 lines net, starter-name bullet removed) `CLAUDE.md` Commands: add `npx wrangler versions upload` (agent-safe preview), `deploy` (human), `tail --status error`, `deployments status`, `rollback`; note the compat-date ceiling (2026-05-14 with the pinned workerd) and that `dist/server/wrangler.json` is what deploys. Drop the "rename before first deploy" bullet once renamed.
+- [x] (WP-5a, `c7efc2e`) `context/foundation/infrastructure.md` Getting Started: step 1 (compat date = 2026-05-14, not today), step 3 (KV id is not written back — declare it explicitly). Register the three findings in the risk register.
 - [ ] Tick this plan's checkboxes (`context/foundation/deployment-plan.md`) with outcomes from the WP reports.
-- [ ] Commit `docs: deployment flow for Cloudflare Workers` — this push is the Phase 4 trigger.
+- [x] Commit `docs: deployment flow for Cloudflare Workers` → `c7efc2e` (local; its push by the human is the Phase 4 trigger). Note: `npx prettier --check CLAUDE.md` fails on lines inside the 10x-cli block only — pre-existing, block is tool-managed, not touched.
 
 ## Edge cases
 
