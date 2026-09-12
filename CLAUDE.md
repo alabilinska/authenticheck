@@ -23,8 +23,6 @@ checklist questions belong in config files consumed by a generic engine.
 - Create on first need: `src/types.ts` (shared entities/DTOs), `src/lib/services/` (extracted
   business logic), `src/components/hooks/` (React hooks). None exist yet.
 - React: no Next.js directives (`"use client"` etc.).
-- `package.json` and `wrangler.jsonc` still carry the starter name `10x-astro-starter`;
-  the wrangler `name` becomes the Worker name on Cloudflare — rename to `authenticheck` before first deploy.
 
 ## Architecture
 
@@ -47,12 +45,19 @@ authenticated route there. Auth endpoints: `src/pages/api/auth/{signin,signup,si
 ## Commands
 
 - `npm run dev` — dev server on Cloudflare workerd; secrets from `.dev.vars` (Node scripts read `.env`)
-- `npm run build` — SSR build via `@astrojs/cloudflare`; run before `npx wrangler deploy`
+- `npm run build` — SSR build via `@astrojs/cloudflare`; run before any `wrangler` command
 - `npx astro sync` — generates `.astro/` types; required once after a fresh clone or `npm run lint` fails with ~20 unresolved-type errors (CI runs it explicitly)
 - `npm run lint` / `lint:fix` — ESLint (strictTypeChecked + Prettier as a lint rule: formatting errors fail lint)
 - `npx supabase start` — local Supabase (Docker); Studio at http://localhost:54323
 - No test runner is configured yet. The PRD requires an end-to-end test of the main
   verification path — pick and wire a runner before writing tests.
+
+Wrangler (Worker `authenticheck`). Production deploys come from Workers Builds on `main`; CI never deploys.
+
+- Agent-safe: `npm run build && npx wrangler versions upload --message "…" --preview-alias <name>`, `npx wrangler deploy --dry-run`, `npx wrangler deployments status`, `npx wrangler tail --format pretty --status error`
+- Human-only: `npx wrangler deploy`, `npx wrangler rollback`, `npx wrangler secret put`, `wrangler login`, plan upgrades
+- `dist/server/wrangler.json` is what deploys, not `wrangler.jsonc` — build first.
+- `compatibility_date` ceiling is `2026-05-14` (pinned workerd); raise only with an adapter/wrangler upgrade.
 
 Pre-commit (husky + lint-staged): `eslint --fix` on `*.{ts,tsx,astro}`, `prettier --write` on `*.{json,css,md}`.
 CI (`.github/workflows/ci.yml`) runs lint + build on push/PR to `main`, Node 22 (`.nvmrc` 22.14; local Node 24 also works).

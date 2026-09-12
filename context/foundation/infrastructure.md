@@ -20,14 +20,14 @@ Cloudflare is the only candidate that passes all five agent-friendly criteria �
 
 Research checked 2026-09-12. Interview constraints: persistent connections unknown (PRD suggests none), cost ≈ DX, existing familiarity with Vercel/Netlify, single region (Poland), external providers fine (Supabase stays). No hard filter dropped a platform; every candidate runs Astro 6 SSR, but only Cloudflare has its adapter already in the repo.
 
-| Platform | CLI-first | Managed/Serverless | Agent-readable docs | Stable deploy API | MCP / Integration | Total |
-|---|---|---|---|---|---|---|
-| Cloudflare Workers | Pass | Pass | Pass | Pass | Pass | 5 Pass |
-| Vercel | Pass | Pass | Pass | Pass | Partial (MCP beta) | 4 Pass, 1 Partial |
-| Netlify | Partial | Pass | Pass | Pass | Pass | 4 Pass, 1 Partial |
-| Render | Partial | Pass | Pass | Pass | Pass | 4 Pass, 1 Partial |
-| Railway | Partial | Pass | Pass | Partial | Pass | 3 Pass, 2 Partial |
-| Fly.io | Pass | Partial | Partial | Partial | Partial (MCP experimental) | 1 Pass, 4 Partial |
+| Platform           | CLI-first | Managed/Serverless | Agent-readable docs | Stable deploy API | MCP / Integration          | Total             |
+| ------------------ | --------- | ------------------ | ------------------- | ----------------- | -------------------------- | ----------------- |
+| Cloudflare Workers | Pass      | Pass               | Pass                | Pass              | Pass                       | 5 Pass            |
+| Vercel             | Pass      | Pass               | Pass                | Pass              | Partial (MCP beta)         | 4 Pass, 1 Partial |
+| Netlify            | Partial   | Pass               | Pass                | Pass              | Pass                       | 4 Pass, 1 Partial |
+| Render             | Partial   | Pass               | Pass                | Pass              | Pass                       | 4 Pass, 1 Partial |
+| Railway            | Partial   | Pass               | Pass                | Partial           | Pass                       | 3 Pass, 2 Partial |
+| Fly.io             | Pass      | Partial            | Partial             | Partial           | Partial (MCP experimental) | 1 Pass, 4 Partial |
 
 **Cloudflare Workers** — `wrangler deploy / rollback / tail / secret / versions` cover the whole loop; docs as `llms.txt` and per-page `.md`; five official MCP servers (API, docs, bindings, observability, builds) with no beta labels. Free plan: 100k requests/day, static-asset requests unlimited, but only 10 ms CPU per request; Paid $5/month: 10M requests, 30 s CPU, no overage at this scale. Pages is not deprecated but Cloudflare's own landing page now says "start new projects with Workers", and `@astrojs/cloudflare` 13.0 removed Pages support. `astro dev`, `astro preview` and prerendering already run on workerd through `@cloudflare/vite-plugin` — `wrangler dev` is not needed. Gotchas: the adapter auto-enables `SESSION` (KV) and `IMAGES` bindings; `wrangler rollback` refuses when bindings changed between versions; compute is global unless `placement.region` is set; Workers Logs on Free keep 3 days / 200k events.
 
@@ -91,33 +91,37 @@ The team took Cloudflare because the starter already had it. The first deploy fa
 
 ## Risk Register
 
-| Risk | Source | Likelihood | Impact | Mitigation |
-|---|---|---|---|---|
-| Free-plan 10 ms CPU ceiling → intermittent `1102` on SSR + auth in production only | Devil's advocate / Pre-mortem | M | H | Upgrade to Workers Paid ($5/mo) before the first real user; verify with `wrangler tail --status error` after deploy |
-| First deploy fails or prompts on auto-provisioned `SESSION` KV / `IMAGES` bindings | Devil's advocate / Pre-mortem | H | M | Set `imageService: "compile"` in the adapter options (no Images product needed); let `wrangler deploy` create the KV namespace once, then commit the resulting `kv_namespaces` id; CI token gets KV edit permission |
-| Rollback refused after a binding/secret change | Devil's advocate / Pre-mortem | M | M | Make binding changes in a dedicated deploy with nothing else; if rollback is refused, redeploy the previous commit |
-| Global placement, Supabase in EU → auth round trips from far PoPs | Unknown unknowns | M | M | `"placement": { "region": "aws:eu-central-1" }` in `wrangler.jsonc`; Supabase project in `eu-central-1` |
-| Double deploy: Workers Builds + GitHub Actions both deploying | Pre-mortem / Unknown unknowns | M | M | Exactly one deployer: Workers Builds owns production; CI stays lint + build (as today). Never add `wrangler deploy` to CI while the git integration is on |
-| `compatibility_date` 2026-05-08 vs. current defaults (`process` v2) | Unknown unknowns | L | L | Raise `compatibility_date` to today in the deploy change and re-test `/auth/signin` locally (`astro dev` honours it) |
-| Stale contract: `tech-stack.md` `deployment_target: cloudflare-pages` | Devil's advocate | H | M | Correct to Workers in a follow-up commit; note that the starter registry card itself still lists `cloudflare-pages` |
-| `wrangler.jsonc` `name` = `10x-astro-starter` becomes the Worker name | Unknown unknowns | H | L | Rename to `authenticheck` before first deploy (also `package.json` name) |
-| No prior familiarity under a four-day deadline | Devil's advocate | H | M | Deploy the untouched starter first (one evening), before any domain code; keep `wrangler` docs open via `developers.cloudflare.com/workers/llms.txt` |
-| Runner-up trap: `@astrojs/vercel` `latest` needs Astro 7; Vercel's Astro page shows v9 imports | Cross-check (Vercel) | — | — | Not applicable on Cloudflare; if ever switching, pin `@astrojs/vercel@^10` |
-| Runner-up trap: Vercel default region `iad1`, Hobby non-commercial, 1-hour logs | Cross-check (Vercel) | — | — | Not applicable on Cloudflare; recorded for auditability |
+| Risk                                                                                           | Source                        | Likelihood | Impact | Mitigation                                                                                                                                                                                                                        |
+| ---------------------------------------------------------------------------------------------- | ----------------------------- | ---------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Free-plan 10 ms CPU ceiling → intermittent `1102` on SSR + auth in production only             | Devil's advocate / Pre-mortem | M          | H      | Upgrade to Workers Paid ($5/mo) before the first real user; verify with `wrangler tail --status error` after deploy                                                                                                               |
+| First deploy fails or prompts on auto-provisioned `SESSION` KV / `IMAGES` bindings             | Devil's advocate / Pre-mortem | H          | M      | Set `imageService: "compile"` in the adapter options (no Images product needed); let `wrangler deploy` create the KV namespace once, then commit the resulting `kv_namespaces` id; CI token gets KV edit permission               |
+| Rollback refused after a binding/secret change                                                 | Devil's advocate / Pre-mortem | M          | M      | Make binding changes in a dedicated deploy with nothing else; if rollback is refused, redeploy the previous commit                                                                                                                |
+| Global placement, Supabase in EU → auth round trips from far PoPs                              | Unknown unknowns              | M          | M      | `"placement": { "region": "aws:eu-central-1" }` in `wrangler.jsonc`; Supabase project in `eu-central-1`                                                                                                                           |
+| Double deploy: Workers Builds + GitHub Actions both deploying                                  | Pre-mortem / Unknown unknowns | M          | M      | Exactly one deployer: Workers Builds owns production; CI stays lint + build (as today). Never add `wrangler deploy` to CI while the git integration is on                                                                         |
+| `compatibility_date` 2026-05-08 vs. current defaults (`process` v2)                            | Unknown unknowns              | L          | L      | Set `compatibility_date` to `2026-05-14` (the pinned workerd's ceiling) with explicit `nodejs_compat`; raise it only with an `@astrojs/cloudflare`/`wrangler` upgrade and re-test `/auth/signin` locally (`astro dev` honours it) |
+| Stale contract: `tech-stack.md` `deployment_target: cloudflare-pages`                          | Devil's advocate              | H          | M      | Correct to Workers in a follow-up commit; note that the starter registry card itself still lists `cloudflare-pages`                                                                                                               |
+| `wrangler.jsonc` `name` = `10x-astro-starter` becomes the Worker name                          | Unknown unknowns              | H          | L      | Rename to `authenticheck` before first deploy (also `package.json` name)                                                                                                                                                          |
+| No prior familiarity under a four-day deadline                                                 | Devil's advocate              | H          | M      | Deploy the untouched starter first (one evening), before any domain code; keep `wrangler` docs open via `developers.cloudflare.com/workers/llms.txt`                                                                              |
+| `compatibility_date` capped at `2026-05-14` by the pinned workerd (1.20260507.1)               | Deploy planning (2026-09-12)  | L          | L      | Keep `nodejs_compat` explicit; bump `@astrojs/cloudflare`, `wrangler` and the date together (14.x needs Astro 7)                                                                                                                  |
+| Auto-provisioned `SESSION` KV id is never written back, so the namespace is invisible in git   | Deploy planning (2026-09-12)  | M          | M      | Declare `SESSION` explicitly in `wrangler.jsonc` after `npx wrangler kv namespace create SESSION`                                                                                                                                 |
+| Stale `dist/` deployed: `wrangler` reads `dist/server/wrangler.json`, not `wrangler.jsonc`     | Deploy planning (2026-09-12)  | M          | M      | Always `npm run build` before any `wrangler` command; Workers Builds builds before every deploy                                                                                                                                   |
+| Runner-up trap: `@astrojs/vercel` `latest` needs Astro 7; Vercel's Astro page shows v9 imports | Cross-check (Vercel)          | —          | —      | Not applicable on Cloudflare; if ever switching, pin `@astrojs/vercel@^10`                                                                                                                                                        |
+| Runner-up trap: Vercel default region `iad1`, Hobby non-commercial, 1-hour logs                | Cross-check (Vercel)          | —          | —      | Not applicable on Cloudflare; recorded for auditability                                                                                                                                                                           |
 
 ## Getting Started
 
 Validated against the pinned versions in the repo (Astro 6.3.1, `@astrojs/cloudflare` 13.5.0, `wrangler` 4.90.0; `astro dev` already runs on workerd, CI does not deploy, `wrangler` not yet authenticated) on 2026-09-12. No adapter swap is needed.
 
-1. **Fix `wrangler.jsonc` before anything touches Cloudflare**: `"name": "authenticheck"`; add `"placement": { "region": "aws:eu-central-1" }`; raise `"compatibility_date"` to `"2026-09-12"` (keep `"compatibility_flags": ["nodejs_compat"]`). In `astro.config.mjs` pass `cloudflare({ imageService: "compile" })` to avoid the Images binding. Re-run `npm run build` and `npm run dev` — both still run on workerd locally.
+1. **Fix `wrangler.jsonc` before anything touches Cloudflare**: `"name": "authenticheck"`; add `"placement": { "region": "aws:eu-central-1" }`; set `"compatibility_date"` to `"2026-05-14"`, the ceiling of the pinned workerd (keep `"compatibility_flags": ["nodejs_compat"]`). In `astro.config.mjs` pass `cloudflare({ imageService: "compile" })` to avoid the Images binding. Re-run `npm run build` and `npm run dev` — both still run on workerd locally.
 2. **Authenticate and set secrets**: `npx wrangler login` (browser once), then `npx wrangler secret put SUPABASE_URL` and `npx wrangler secret put SUPABASE_KEY` (values from the Supabase project in `eu-central-1`). Locally, the same two keys go in `.dev.vars` (gitignored).
-3. **First deploy as a preview**: `npm run build && npx wrangler versions upload` → open the printed preview URL, check `/auth/signin` renders without the "Supabase not configured" banner and `/dashboard` redirects when signed out. If `wrangler` asks to create the `SESSION` KV namespace, accept once and commit the id it writes to `wrangler.jsonc`.
+3. **First deploy as a preview**: `npm run build && npx wrangler versions upload` → open the printed preview URL, check `/auth/signin` renders without the "Supabase not configured" banner and `/dashboard` redirects when signed out. Before that, create the `SESSION` KV namespace explicitly with `npx wrangler kv namespace create SESSION` and paste its id into `wrangler.jsonc` — auto-provisioned ids are not written back.
 4. **Promote to production**: `npx wrangler deploy` (or `npx wrangler versions deploy` to promote the uploaded version). Verify with `npx wrangler deployments status` and `npx wrangler tail --status error` while clicking through sign-up → sign-in → dashboard. Decide on Workers Paid ($5) now rather than after the first `1102`.
 5. **Wire git and correct the contracts**: enable Workers Builds for `alabilinska/authenticheck` (production on `main`, previews on branches); keep `.github/workflows/ci.yml` as lint + build only. Then update `context/foundation/tech-stack.md` (`deployment_target` → Workers), `README.md` Deployment section, and `CLAUDE.md` Commands (`wrangler` flow, `.dev.vars`).
 
 ## Out of Scope
 
 The following were not evaluated in this research:
+
 - Docker image configuration
 - CI/CD pipeline setup
 - Production-scale architecture (multi-region, HA, DR)

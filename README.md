@@ -150,25 +150,43 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 
 ## Deployment
 
-This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
+This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/) (static assets) as the Worker `authenticheck`, placed in `aws:eu-central-1` next to Supabase.
 
-1. Build the project:
+Always run `npm run build` before any `wrangler` command: what deploys is the adapter-generated `dist/server/wrangler.json` (found via `.wrangler/deploy/config.json`), not `wrangler.jsonc` directly, so a stale `dist/` means a stale deploy.
 
-```bash
-npm run build
-```
+**Production** auto-deploys from `main` via Cloudflare Workers Builds (git integration). GitHub Actions never deploys.
 
-2. Deploy with Wrangler:
+**Preview** (routes no traffic, prints a preview URL):
 
 ```bash
-npx wrangler deploy
+npm run build && npx wrangler versions upload --message "<what changed>" --preview-alias <name>
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
+**Emergency manual deploy** (human only, when Workers Builds is unavailable):
+
+```bash
+npm run build && npx wrangler deploy
+```
+
+**Secrets**: `npx wrangler secret put SUPABASE_URL` and `npx wrangler secret put SUPABASE_KEY` for production; local dev reads `.dev.vars` (gitignored). Until they are set, the site runs with the "Supabase nie jest skonfigurowany" banner and auth disabled.
+
+**Status, logs, rollback**:
+
+```bash
+npx wrangler deployments status
+npx wrangler tail --format pretty --status error
+npx wrangler rollback [version-id] -m "<reason>"
+```
+
+Rollback does not roll back bound resources (KV, secrets) and is refused if a bound KV namespace was deleted. The `SESSION` KV namespace is declared explicitly in `wrangler.jsonc` (created with `npx wrangler kv namespace create SESSION`).
+
+On the Workers Free plan each request gets 10 ms CPU; error `1102` in production means upgrade to Workers Paid ($5/month).
+
+`compatibility_date` is pinned at `2026-05-14`, the newest date the pinned workerd accepts — raise it only together with an `@astrojs/cloudflare`/`wrangler` upgrade, and keep the explicit `nodejs_compat` flag.
 
 ## CI
 
-GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+GitHub Actions runs lint + build on every push and PR to `main` — it never deploys (production deploys come from Workers Builds). Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
 
 ## License
 
