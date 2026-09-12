@@ -14,6 +14,7 @@ checklist questions belong in config files consumed by a generic engine.
 
 - `npm run dev` — dev server on Cloudflare workerd; secrets from `.dev.vars` (Node scripts read `.env`)
 - `npm run build` — SSR build via `@astrojs/cloudflare`; run before `npx wrangler deploy`
+- `npx astro sync` — generates `.astro/` types; required once after a fresh clone or `npm run lint` fails with ~20 unresolved-type errors (CI runs it explicitly)
 - `npm run lint` / `lint:fix` — ESLint (strictTypeChecked + Prettier as a lint rule: formatting errors fail lint)
 - `npx supabase start` — local Supabase (Docker); Studio at http://localhost:54323
 - No test runner is configured yet. The PRD requires an end-to-end test of the main
@@ -42,8 +43,11 @@ authenticated route there. Auth endpoints: `src/pages/api/auth/{signin,signup,si
 
 ## Conventions
 
-- API routes: uppercase `GET`/`POST` exports; validate input with `z` from `astro:schema`
-  (bundled with Astro — the current auth routes still cast `formData` values and are the exception, not the pattern).
+- API routes: uppercase `GET`/`POST` exports; validate input with `z` from `astro/zod`
+  (bundled with Astro; `astro:schema` is deprecated and fails the `no-deprecated` lint rule — the current auth routes still cast `formData` values and are the exception, not the pattern).
+- API routes return errors as `{ error: { code, message, context? } }` with the matching HTTP status.
+  `code` is a stable SCREAMING_SNAKE identifier (`UNAUTHENTICATED`, `INVALID_INPUT`, …); validation details
+  go inside `context`, never as a sibling `issues` field. Never `{ error: string }`.
 - Supabase: migrations in `supabase/migrations/` as `YYYYMMDDHHmmss_short_description.sql`
   (directory not created yet); every new table gets RLS with per-operation, per-role policies —
   the PRD's "each user sees only their own verifications" depends on it.
