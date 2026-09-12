@@ -50,9 +50,9 @@ Agent-safe: config/doc edits, `npm run build`, `wrangler deploy --dry-run`, `wra
 
 ### Phase 1 — Auth + KV namespace (human gate: login)
 
-- [ ] **Human**: `npx wrangler login` → `npx wrangler whoami` shows account + id. Claim subdomain if the dashboard shows none.
-- [ ] `npx wrangler kv namespace create SESSION` → paste the printed `{ "binding": "SESSION", "id": "…" }` into `wrangler.jsonc` `kv_namespaces`. Rebuild; confirm the id appears in `dist/server/wrangler.json`. Commit.
-- [ ] Secrets: **skipped by decision** (no Supabase yet). `.dev.vars` stays absent.
+- [x] **Human**: `npx wrangler login` → `npx wrangler whoami` shows account + id. Claim subdomain if the dashboard shows none. — Done 2026-09-12: OAuth token, one account (`2860a061…3c22`); first attempt timed out (120 s, consent not clicked), second succeeded. Subdomain created by visiting Workers & Pages → `alicja-a-bilinska` (prod URL will be `https://authenticheck.alicja-a-bilinska.workers.dev`).
+- [x] (WP-1, `a823c3c`) namespace `SESSION` id `0cecf801113c4130bd9464c925cb487e` created (none existed before; `--update-config` declined, id written by hand). `npx wrangler kv namespace create SESSION` → paste the printed `{ "binding": "SESSION", "id": "…" }` into `wrangler.jsonc` `kv_namespaces`. Rebuild; confirm the id appears in `dist/server/wrangler.json`. Commit.
+- [x] Secrets: **skipped by decision** (no Supabase yet). `.dev.vars` stays absent.
 
 ### Phase 2 — Preview upload + verification (agent)
 
