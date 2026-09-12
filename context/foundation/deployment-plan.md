@@ -56,7 +56,7 @@ Agent-safe: config/doc edits, `npm run build`, `wrangler deploy --dry-run`, `wra
 
 ### Phase 2 — Preview upload + verification (agent)
 
-- [ ] `npm run build && npx wrangler versions upload --message "first upload" --tag v0.0.1 --preview-alias first` → expect `Worker Version ID` + `Version Preview URL` (`https://<id8>-authenticheck.<sub>.workers.dev`) and alias URL. If wrangler reports the Worker does not exist yet, fall back to `npx wrangler deploy --message "first deploy"` (goes live in not-configured mode — acceptable) and continue with Phase 3 checks.
+- [x] (WP-2, blocked by design) upload OK — version `a14ead66-fac2-4664-9488-03aaddc909e7` (tag v0.0.1, bindings SESSION KV + ASSETS), but wrangler printed **no preview URL**; all workers.dev hostnames fail the TLS handshake (`sslv3 alert handshake failure`) because the Worker has no deployment yet and so no workers.dev route/certificate. `deployments status`: "The Worker authenticheck has no deployments." → first production deploy (H3) comes before any preview. Spec: `npm run build && npx wrangler versions upload --message "first upload" --tag v0.0.1 --preview-alias first` → expect `Worker Version ID` + `Version Preview URL` (`https://<id8>-authenticheck.<sub>.workers.dev`) and alias URL. If wrangler reports the Worker does not exist yet, fall back to `npx wrangler deploy --message "first deploy"` (goes live in not-configured mode — acceptable) and continue with Phase 3 checks.
 - [ ] Verify against the preview URL (see Verification). `npx wrangler versions list` shows v0.0.1.
 
 ### Phase 3 — Production + rollback rehearsal (human gate: promote)
