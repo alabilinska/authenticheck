@@ -2,7 +2,7 @@
 project: Authenticheck
 platform: Cloudflare Workers (static assets)
 written: 2026-09-12
-status: in progress
+status: done — first deploy live 2026-09-13; Supabase secrets and Paid plan deferred by decision
 inputs: context/foundation/tech-stack.md, context/foundation/infrastructure.md
 ---
 
@@ -69,8 +69,8 @@ Agent-safe: config/doc edits, `npm run build`, `wrangler deploy --dry-run`, `wra
 
 ### Phase 4 — Workers Builds (human, dashboard)
 
-- [ ] Workers & Pages → `authenticheck` → Settings → Builds → Connect → install the "Cloudflare Workers & Pages" GitHub App with access to `authenticheck` only → production branch `main`. Build command `npm run build`; deploy command `npx wrangler deploy` (default); non-production branches `npx wrangler versions upload` (enable "builds for non-production branches" for PR previews). Root `/`. No build variables (build passes without `SUPABASE_*`; `.nvmrc` pins Node 22.14). Dashboard Worker name must equal `wrangler.jsonc` `name`.
-- [ ] Trigger by pushing the Phase 5 docs commit → Deployments tab shows the build; `npx wrangler deployments list` shows a new deployment with GitHub metadata; production curls pass. From now on production changes only via merge to `main`.
+- [x] (Human, 2026-09-13 00:13) Repo connected with the settings below; connecting alone did not deploy anything. Workers & Pages → `authenticheck` → Settings → Builds → Connect → install the "Cloudflare Workers & Pages" GitHub App with access to `authenticheck` only → production branch `main`. Build command `npm run build`; deploy command `npx wrangler deploy` (default); non-production branches `npx wrangler versions upload` (enable "builds for non-production branches" for PR previews). Root `/`. No build variables (build passes without `SUPABASE_*`; `.nvmrc` pins Node 22.14). Dashboard Worker name must equal `wrangler.jsonc` `name`.
+- [x] (WP-4v, finished by orchestrator after the subagent stalled on its own poll) Push `626b351..a5fe519` at ~22:15 UTC → new deployment 22:15:49 UTC, version `4480c21e-82e1-43e2-981e-42c5d1477984` at 100 %, no message (Builds does not pass `--message`), compat 2026-05-14 + nodejs_compat. 7/7 prod checks (`/` 200, `/auth/signin` 200 in 0.10 s, `/dashboard` 302 → `/auth/signin`, 404, banner, CSS 200); GitHub Actions on `a5fe519` green; `ci.yml` has 0 `wrangler` mentions. Wrangler's OAuth token cannot read the Builds API — build logs only in the dashboard. Order changed vs. plan: the push went **before** connecting, because `origin/main` still had the old Worker name. Trigger by pushing the Phase 5 docs commit → Deployments tab shows the build; `npx wrangler deployments list` shows a new deployment with GitHub metadata; production curls pass. From now on production changes only via merge to `main`.
 
 ### Phase 5 — Docs and contracts (agent)
 
