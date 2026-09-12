@@ -57,6 +57,8 @@ Same familiarity advantage and the strongest MCP story, but on Free functions ru
 
 ## Anti-Bias Cross-Check: Cloudflare Workers
 
+> **Historical analysis (2026-09-12, before the first deploy).** Findings 2 (Pages target) and 3 (auto-provisioned bindings) were resolved during the deploy — see the risk register and `context/deployment/deploy-plan.md`.
+
 (Run twice in this session: first on Cloudflare as top scorer, then on Vercel after the developer switched, then the developer reversed to Cloudflare. Vercel's findings are kept in the risk register under source "Cross-check (Vercel)" so the runner-up stays auditable.)
 
 ### Devil's Advocate — Weaknesses
@@ -99,7 +101,7 @@ The team took Cloudflare because the starter already had it. The first deploy fa
 | Global placement, Supabase in EU → auth round trips from far PoPs                              | Unknown unknowns              | M          | M      | `"placement": { "region": "aws:eu-central-1" }` in `wrangler.jsonc`; Supabase project in `eu-central-1`                                                                                                                           |
 | Double deploy: Workers Builds + GitHub Actions both deploying                                  | Pre-mortem / Unknown unknowns | M          | M      | Exactly one deployer: Workers Builds owns production; CI stays lint + build (as today). Never add `wrangler deploy` to CI while the git integration is on                                                                         |
 | `compatibility_date` 2026-05-08 vs. current defaults (`process` v2)                            | Unknown unknowns              | L          | L      | Set `compatibility_date` to `2026-05-14` (the pinned workerd's ceiling) with explicit `nodejs_compat`; raise it only with an `@astrojs/cloudflare`/`wrangler` upgrade and re-test `/auth/signin` locally (`astro dev` honours it) |
-| Stale contract: `tech-stack.md` `deployment_target: cloudflare-pages`                          | Devil's advocate              | H          | M      | Correct to Workers in a follow-up commit; note that the starter registry card itself still lists `cloudflare-pages`                                                                                                               |
+| Stale contract: `tech-stack.md` `deployment_target: cloudflare-pages`                          | Devil's advocate              | H          | M      | Correct to Workers in a follow-up commit; note that the starter registry card itself still lists `cloudflare-pages` **Resolved 2026-09-12** (`1069a4d`).                                                                          |
 | `wrangler.jsonc` `name` = `10x-astro-starter` becomes the Worker name                          | Unknown unknowns              | H          | L      | Rename to `authenticheck` before first deploy (also `package.json` name)                                                                                                                                                          |
 | No prior familiarity under a four-day deadline                                                 | Devil's advocate              | H          | M      | Deploy the untouched starter first (one evening), before any domain code; keep `wrangler` docs open via `developers.cloudflare.com/workers/llms.txt`                                                                              |
 | `compatibility_date` capped at `2026-05-14` by the pinned workerd (1.20260507.1)               | Deploy planning (2026-09-12)  | L          | L      | Keep `nodejs_compat` explicit; bump `@astrojs/cloudflare`, `wrangler` and the date together (14.x needs Astro 7)                                                                                                                  |
@@ -109,6 +111,8 @@ The team took Cloudflare because the starter already had it. The first deploy fa
 | Runner-up trap: Vercel default region `iad1`, Hobby non-commercial, 1-hour logs                | Cross-check (Vercel)          | —          | —      | Not applicable on Cloudflare; recorded for auditability                                                                                                                                                                           |
 
 ## Getting Started
+
+> **Historical — pre-deploy instructions (2026-09-12).** The first production deploy happened on 2026-09-13: the Worker is live at <https://authenticheck.alicja-a-bilinska.workers.dev> and production now deploys from `main` via Workers Builds; `wrangler` is authenticated. For the current process use `context/deployment/deploy-plan.md` and the README "Deployment" section. The steps below record how the first deploy was prepared; do not repeat them.
 
 Validated against the pinned versions in the repo (Astro 6.3.1, `@astrojs/cloudflare` 13.5.0, `wrangler` 4.90.0; `astro dev` already runs on workerd, CI does not deploy, `wrangler` not yet authenticated) on 2026-09-12. No adapter swap is needed.
 
