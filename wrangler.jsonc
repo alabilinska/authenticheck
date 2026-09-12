@@ -4,6 +4,8 @@
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-05-14",
   "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": true,
   "placement": {
     "region": "aws:eu-central-1",
   },
