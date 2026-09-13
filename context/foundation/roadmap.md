@@ -49,7 +49,7 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 | S-05 | save-and-list-verifications | user can save a verification and later open it from their own list, where each listing shows its risk label; no other user can see it | F-01, S-04 | US-01, FR-009 | proposed |
 | S-06 | edit-saved-verification | user can re-open a saved verification, change any answer (e.g. "can't see" → "yes" after the seller sends photos) and see the report recalculated | S-05 | FR-011 | proposed |
 | S-07 | delete-verification | user can delete a saved verification from their list | S-05 | FR-010 | proposed |
-| S-08 | password-reset | user can reset a forgotten password by email and sign in with the new one | F-01 | FR-001 | ready |
+| S-08 | password-reset | user can reset a forgotten password by email and sign in with the new one; after sign-up, the page tells the user whether the account is ready to use or waits for email confirmation | F-01 | FR-001 | ready |
 
 ## Streams
 
@@ -181,14 +181,14 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ### S-08: Password reset
 
-- **Outcome:** user can reset a forgotten password by email and sign in with the new one.
+- **Outcome:** user can reset a forgotten password by email and sign in with the new one; after sign-up, the page tells the user whether the account is ready to use or waits for email confirmation.
 - **Change ID:** password-reset
 - **PRD refs:** FR-001
 - **Prerequisites:** F-01
 - **Parallel with:** S-01, S-02, S-03, S-04, S-05, S-06, S-07
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Independent of the verification flow, so it can go to a separate agent run in parallel; sign-up and sign-in already exist, only reset is missing.
+- **Risk:** Independent of the verification flow, so it can go to a separate agent run in parallel; sign-up and sign-in already exist, only reset is missing. Also fixes the post-sign-up page: it currently picks its message by build mode, so production always says "check your inbox" even when email confirmation is off and no email is sent.
 - **Status:** ready
 
 ## Backlog Handoff
@@ -203,7 +203,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-05 | save-and-list-verifications | Save a verification and list it with its risk label | no | Waits for S-04 |
 | S-06 | edit-saved-verification | Re-open a saved verification, edit answers, recalculate | no | Waits for S-05 |
 | S-07 | delete-verification | Delete a saved verification | no | Waits for S-05 |
-| S-08 | password-reset | Password reset by email | yes | Run `/10x-plan password-reset` — independent of the verification flow |
+| S-08 | password-reset | Password reset and accurate sign-up confirmation | yes | Run `/10x-plan password-reset` — independent of the verification flow |
 
 This table is the clean handoff to Jira/Linear or any MCP-backed backlog.
 
