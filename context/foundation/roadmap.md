@@ -49,7 +49,7 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 | S-05 | save-and-list-verifications | user can save a verification and later open it from their own list, where each listing shows its risk label; no other user can see it | F-01, S-04 | US-01, FR-009 | proposed |
 | S-06 | edit-saved-verification | user can re-open a saved verification, change any answer (e.g. "can't see" → "yes" after the seller sends photos) and see the report recalculated | S-05 | FR-011 | proposed |
 | S-07 | delete-verification | user can delete a saved verification from their list | S-05 | FR-010 | proposed |
-| S-08 | password-reset | Password reset by email | yes | Run `/10x-plan password-reset` — independent of the verification flow |
+| S-08 | password-reset | user can reset a forgotten password by email and sign in with the new one | F-01 | FR-001 | ready |
 
 ## Streams
 
@@ -203,7 +203,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-05 | save-and-list-verifications | Save a verification and list it with its risk label | no | Waits for S-04 |
 | S-06 | edit-saved-verification | Re-open a saved verification, edit answers, recalculate | no | Waits for S-05 |
 | S-07 | delete-verification | Delete a saved verification | no | Waits for S-05 |
-| S-08 | password-reset | Password reset by email | no | Waits for F-01 |
+| S-08 | password-reset | Password reset by email | yes | Run `/10x-plan password-reset` — independent of the verification flow |
 
 This table is the clean handoff to Jira/Linear or any MCP-backed backlog.
 
