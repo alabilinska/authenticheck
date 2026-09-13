@@ -41,7 +41,7 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
-| F-01 | connect-auth-database-project | (foundation) the auth-and-database project declared in `tech-stack.md` exists and is connected locally and in production; the existing sign-up, sign-in and sign-out flow works end to end | — | Access Control, FR-001 | ready |
+| F-01 | connect-auth-database-project | (foundation) the auth-and-database project declared in `tech-stack.md` exists and is connected locally and in production; the existing sign-up, sign-in and sign-out flow works end to end | — | Access Control, FR-001 | done |
 | S-01 | tag-validation-first-result | user can start a verification (line, declared year, listing link, price) and, after entering the tag's two lines, immediately see which rules pass or fail — each with its message and confidence level — and the resulting risk level; a missing tag photo becomes a seller question and raises the risk one step | F-01, the developer's rule knowledge file (rules with sources, authentic and faulty examples) committed to the repository | US-01, FR-002, FR-003, FR-004 | proposed |
 | S-02 | authenticity-card-check | user can enter the authenticity-card numbers and see match, mismatch or no card against the tag; a mismatch is a hard signal (it alone sets high risk), a match adds little weight, and a missing card or card photo stays neutral and becomes a seller question | S-01 | FR-005, FR-004 | proposed |
 | S-03 | visual-checklist | user can answer the three hard-signal visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, and "can't see" stays neutral and becomes a seller question | S-01, reference photos for the three checks committed to the repository | FR-006, FR-004 | proposed |
@@ -49,7 +49,7 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 | S-05 | save-and-list-verifications | user can save a verification and later open it from their own list, where each listing shows its risk label; no other user can see it | F-01, S-04 | US-01, FR-009 | proposed |
 | S-06 | edit-saved-verification | user can re-open a saved verification, change any answer (e.g. "can't see" → "yes" after the seller sends photos) and see the report recalculated | S-05 | FR-011 | proposed |
 | S-07 | delete-verification | user can delete a saved verification from their list | S-05 | FR-010 | proposed |
-| S-08 | password-reset | user can reset a forgotten password by email and sign in with the new one | F-01 | FR-001 | proposed |
+| S-08 | password-reset | Password reset by email | yes | Run `/10x-plan password-reset` — independent of the verification flow |
 
 ## Streams
 
@@ -88,7 +88,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** The sign-in code already exists but has never run against a real project; wiring it first lets S-01 sit behind sign-in from the start instead of retrofitting access control. Watch the free plan's per-request CPU limit once every request checks the session (see `infrastructure.md`).
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -189,13 +189,13 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Independent of the verification flow, so it can go to a separate agent run in parallel; sign-up and sign-in already exist, only reset is missing.
-- **Status:** proposed
+- **Status:** ready
 
 ## Backlog Handoff
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
 | --- | --- | --- | --- | --- |
-| F-01 | connect-auth-database-project | Connect the auth-and-database project locally and in production | yes | Run `/10x-plan connect-auth-database-project` — unlocks the north star S-01 |
+| F-01 | connect-auth-database-project | Connect the auth-and-database project locally and in production | done | Done 2026-09-13 outside the change workflow — see `## Done` |
 | S-01 | tag-validation-first-result | First verification: validate the tag and show a risk level | no | Waits for F-01 and the rule knowledge file in the repo |
 | S-02 | authenticity-card-check | Check the authenticity card against the tag | no | Waits for S-01 |
 | S-03 | visual-checklist | Visual checklist: three checks with hints and reference photos | no | Waits for S-01 and the photos in the repo |
@@ -231,4 +231,4 @@ This table is the clean handoff to Jira/Linear or any MCP-backed backlog.
 
 ## Done
 
-(Empty on first generation. `/10x-archive` appends entries here.)
+- **F-01: (foundation) the auth-and-database project exists and is connected locally and in production; sign-up, sign-in and sign-out work end to end** — Done 2026-09-13, marked by hand at the developer's request: executed outside the change workflow (no change folder, nothing to archive). Evidence: `context/deployment/deploy-plan.md` (project in eu-central-1, secrets via `wrangler secret bulk`, version `7f2e9e37`, sign-in verified in production by the developer). Lesson: —
