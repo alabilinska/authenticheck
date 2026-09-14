@@ -1,8 +1,34 @@
-# 10x Astro Starter
+# Authenticheck
 
-![](./public/template.png)
+A rule-based authenticity checker for second-hand Balenciaga bags. Before buying on Vinted, Depop or Vestiaire,
+the buyer transcribes what the listing's photos show — the numbers on the leather tag, its season letter, the hardware
+and a few visual traits — and gets a purchase-risk report with the signals behind it and ready-to-send questions for
+the seller. There is no image recognition and no paid per-item service: the brand's authentication knowledge is encoded
+as checkable rules.
 
-A modern, opinionated starter template for building fast, accessible web applications.
+v1 covers one variant: Balenciaga **Classic City medium with classic hardware**. Any other variant is reported as
+unsupported, never judged.
+
+## What it does
+
+- **Tag check** — style number, batch number and season letter, the first number on the back of the tab, brand line,
+  925 stamp and MADE IN ITALY size. The season letter decodes to a year that the other features must agree with.
+- **Visual checklist** — top-seam thread, Lampo zipper and bales twist, each with a hint and a reference photo;
+  era-dependent traits are checked against the decoded year.
+- **Risk report** — low / medium / high, or unsupported / input error / year unresolved, with the hard and soft
+  signals that set it. A failed hard signal always means high risk.
+- **Seller questions** — every missing piece of evidence becomes a copy-ready question.
+- **My verifications** — save, open, edit (the report is recalculated) and delete verifications. Each user sees only
+  their own: Supabase Auth plus row-level security.
+
+## How it is built
+
+- **Rules as data** — `src/data/balenciaga-classic-city/knowledge.json`, derived from the rules document
+  `balenciaga-city-tag-rules.md` and evaluated by a pure engine in `src/lib/services/tag-validation/`.
+- **Foundation documents** — `context/foundation/`: `prd.md` (requirements), `roadmap.md`, `tech-stack.md` and
+  `test-plan.md` (the risk-based test strategy).
+- **Tests** — Vitest unit tests next to the code (rule engine, a guard that keeps the knowledge file in line with the
+  rules document, input errors, list/report consistency) and Playwright end-to-end tests in `e2e/`.
 
 ## Tech Stack
 
@@ -23,8 +49,8 @@ A modern, opinionated starter template for building fast, accessible web applica
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
+git clone https://github.com/alabilinska/authenticheck.git
+cd authenticheck
 ```
 
 2. Install dependencies:
