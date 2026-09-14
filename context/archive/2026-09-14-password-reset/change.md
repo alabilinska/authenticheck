@@ -1,10 +1,10 @@
 ---
 change_id: password-reset
 title: Password reset by email and an honest post-sign-up message
-status: implemented
+status: archived
 created: 2026-09-14
 updated: 2026-09-14
-archived_at: null
+archived_at: 2026-09-14T10:06:35Z
 ---
 
 ## Notes

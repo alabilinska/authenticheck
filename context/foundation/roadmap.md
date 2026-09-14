@@ -48,7 +48,7 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 | S-05 | save-and-list-verifications | user can save a verification and later open it from their own list, where each listing shows its risk label; no other user can see it | F-01, S-04 | US-01, FR-009 | proposed |
 | S-06 | edit-saved-verification | user can re-open a saved verification, change any answer (e.g. "can't see" → "yes" after the seller sends photos) and see the report recalculated | S-05 | FR-011 | proposed |
 | S-07 | delete-verification | user can delete a saved verification from their list | S-05 | FR-010 | proposed |
-| S-08 | password-reset | user can reset a forgotten password by email and sign in with the new one; after sign-up, the page tells the user whether the account is ready to use or waits for email confirmation | F-01 | FR-001 | in-progress |
+| S-08 | password-reset | user can reset a forgotten password by email and sign in with the new one; after sign-up, the page tells the user whether the account is ready to use or waits for email confirmation | F-01 | FR-001 | done |
 
 ## Streams
 
@@ -172,7 +172,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Independent of the verification flow, so it can go to a separate agent run in parallel; sign-up and sign-in already exist, only reset is missing. Also fixes the post-sign-up page: it currently picks its message by build mode, so production always says "check your inbox" even when email confirmation is off and no email is sent.
-- **Status:** in-progress
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -218,3 +218,4 @@ This table is the clean handoff to Jira/Linear or any MCP-backed backlog.
 
 - **F-01: (foundation) the auth-and-database project exists and is connected locally and in production; sign-up, sign-in and sign-out work end to end** — Done 2026-09-13, marked by hand at the developer's request: executed outside the change workflow (no change folder, nothing to archive). Evidence: `context/deployment/deploy-plan.md` (project in eu-central-1, secrets via `wrangler secret bulk`, version `7f2e9e37`, sign-in verified in production by the developer). Lesson: —
 - **S-01: user can start a verification (declared year, listing link, price; line fixed to Classic City medium) and, after entering what the tag shows — plate numbers and season letter, the first number on the back of the tab, hardware type, brand-line style, 925 stamp and MADE IN ITALY size — immediately see which rules pass or fail, each with its message and confidence level, and the result: a risk level, or unsupported for a variant outside v1; an unresolved year and input errors are shown without a verdict, and a missing tag photo becomes a seller question and raises the risk one step.** — Archived 2026-09-14 → `context/archive/2026-09-14-tag-validation-first-result/`. Lesson: —.
+- **S-08: user can reset a forgotten password by email and sign in with the new one; after sign-up, the page tells the user whether the account is ready to use or waits for email confirmation.** — Archived 2026-09-14 → `context/archive/2026-09-14-password-reset/`. Lesson: —.
