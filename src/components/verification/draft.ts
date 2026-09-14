@@ -97,6 +97,9 @@ export function validateStep(step: number, d: WizardDraft): FieldErrors {
         }
         if (d.letterMode === null) e.letterMode = REQUIRED;
         else if (d.letterMode === "letter" && !d.seasonLetter.trim()) e.seasonLetter = "Wpisz literę sezonu.";
+        else if (d.letterMode === "letter" && !/^[A-Za-z]$/.test(d.seasonLetter.trim())) {
+          e.seasonLetter = "Wpisz jedną literę (A–Z).";
+        }
       }
       break;
     case 3:

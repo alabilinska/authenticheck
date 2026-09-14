@@ -24,7 +24,9 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 export function StepHeading({ title, children }: { title: string; children?: ReactNode }) {
   return (
     <div>
-      <h2 className="text-lg font-semibold text-white">{title}</h2>
+      <h2 tabIndex={-1} data-focus-heading className="text-lg font-semibold text-white focus:outline-none">
+        {title}
+      </h2>
       {children && <p className="mt-1 text-sm text-blue-100/70">{children}</p>}
     </div>
   );

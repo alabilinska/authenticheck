@@ -1,4 +1,5 @@
 import type { InputError, TagObservation } from "@/types";
+import { Button } from "@/components/ui/button";
 import type { StepProps } from "./draft";
 import { ChoiceGroup, StepHeading, TagSketch, TextField, UnknownToggle, type Option } from "./fields";
 
@@ -70,13 +71,14 @@ export function PlateStep({ draft, errors, update, inputError, onConfirm }: Plat
             error={errors.styleNumber ?? inputError?.message}
           >
             {inputError?.needsConfirmation && (
-              <button
+              <Button
                 type="button"
                 onClick={onConfirm}
-                className="mt-2 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm transition-colors hover:bg-white/20"
+                variant="outline"
+                className="mt-2 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm text-white transition-colors hover:bg-white/20"
               >
                 Potwierdzam odczyt
-              </button>
+              </Button>
             )}
           </TextField>
           <TextField

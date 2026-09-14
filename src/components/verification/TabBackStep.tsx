@@ -21,7 +21,7 @@ export function TabBackStep({ draft, errors, update }: StepProps) {
       <TextField
         id="tabBackFirstNumber"
         label="Pierwszy numer na odwrocie metki"
-        hint="Możesz przepisać całą linię — liczy się pierwsza grupa cyfr."
+        hint="Możesz przepisać całą linię — liczy się pierwsze sześć cyfr."
         placeholder="np. 115748 3444"
         value={draft.tabBackFirstNumber}
         disabled={draft.tabBackUnknown}

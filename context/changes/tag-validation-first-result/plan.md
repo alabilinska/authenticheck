@@ -252,6 +252,18 @@ Evaluation is a synchronous in-memory function over a few dozen rules; the PRD's
 - Lesson applied: `context/foundation/lessons.md` — pin the contract before the agent writes it
 - Form pattern: `src/components/auth/SignInForm.tsx`; route protection: `src/middleware.ts:4`
 
+## Implementation Notes
+
+Deviations accepted during implementation and the implementation review (2026-09-14, `reviews/impl-review.md`):
+
+- `ResultCard` reads `defaultKnowledge` besides `evaluateTag` and the types: Polish rule `title`s (new required field in the knowledge schema), `scope.unsupportedMessage` (new field) and `noLetterPeriod`. Passed and abstained rules show the title and confidence, not the failure message.
+- `S-06` and `S-13` carry a second message for the opposite observation (`messageByValue`), also recorded in the rules document under §3.4.
+- The style number has no "nie widać" option — the pinned contract has no unknown value for it; the plate step asks for it only when the listing has a tag photo.
+- Price is collected on the start card but not evaluated.
+- Seller questions are shown before the passed/abstained lists.
+- `M-05` prefixes are `N°`, `Nº`, `No`; a prefix followed by a letter does not count, and `.`/`:`/`#` after it are stripped.
+- Review fixes: within-tolerance rules fire soft when no year reading survives; the tab back reads the first six digits (spaces allowed) and abstains below six; the season letter must be one letter A–Z; confirming the style number validates the plate step; focus moves to the step heading, the result heading or the style-number field; every rule on the risk path is fired, passed or abstained ("Nie sprawdzono — brak danych albo nie dotyczy").
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.

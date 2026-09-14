@@ -123,10 +123,20 @@ function normalizeLetter(raw: string): string | null {
   return raw.trim().toUpperCase();
 }
 
-function stripPrefix(value: string, prefixes: string[]): string {
+/** The text after a leading "N°"-style prefix and its separators, or null when there is no prefix. */
+function afterPrefix(value: string, prefixes: string[]): string | null {
   const trimmed = value.trim();
-  const prefix = prefixes.find((p) => trimmed.toUpperCase().startsWith(p.toUpperCase()));
-  return prefix === undefined ? trimmed : trimmed.slice(prefix.length).trim();
+  for (const prefix of prefixes) {
+    if (!trimmed.toUpperCase().startsWith(prefix.toUpperCase())) continue;
+    const rest = trimmed.slice(prefix.length);
+    if (/^\p{L}/u.test(rest)) continue; // "Nope" is a word, not a prefix
+    return rest.replace(/^[\s.:#]+/, "");
+  }
+  return null;
+}
+
+function stripPrefix(value: string, prefixes: string[]): string {
+  return afterPrefix(value, prefixes) ?? value.trim();
 }
 
 function featureValue(obs: TagObservation, rule: PeriodRule): string {
@@ -151,27 +161,31 @@ function periodMessage(rule: PeriodRule, value: string): string {
 function evaluateLetter(ctx: Context, obs: TagObservation): YearStatus {
   const { knowledge } = ctx;
   const featureRules = rulesOfKind(knowledge, "periodFeature");
-  const abstainFeatures = (): void => {
-    for (const rule of featureRules) ctx.abstained.push(rule.id);
+  const forbidden = ruleOfKind(knowledge, "letterForbidden");
+  const known = ruleOfKind(knowledge, "letterKnown");
+  const illegible = ruleOfKind(knowledge, "letterIllegible");
+  const branch = ruleOfKind(knowledge, "letterBranch");
+  // Every rule ends up fired, passed or abstained; rules with nothing to check abstain.
+  const abstain = (...rules: RuleDef[]): void => {
+    for (const rule of rules) ctx.abstained.push(rule.id);
   };
 
   if (obs.seasonLetter.trim() === "unknown") {
-    signal(ctx, ruleOfKind(knowledge, "letterIllegible"), "soft");
+    signal(ctx, illegible, "soft");
     ask(ctx, "letterIllegible");
-    abstainFeatures();
+    abstain(known, forbidden, branch, ...featureRules);
     return { status: "unknown" };
   }
   if (obs.seasonLetter.trim() === "none") {
-    abstainFeatures();
+    abstain(known, forbidden, illegible, branch, ...featureRules);
     return { status: "no-letter" };
   }
+  ctx.passed.push(illegible.id);
 
   const letter = obs.seasonLetter.trim().toUpperCase();
-  const forbidden = ruleOfKind(knowledge, "letterForbidden");
-  const known = ruleOfKind(knowledge, "letterKnown");
   if (forbidden.letters.includes(letter)) {
     signal(ctx, forbidden, "hard");
-    abstainFeatures();
+    abstain(known, branch, ...featureRules);
     return { status: "unknown" };
   }
   ctx.passed.push(forbidden.id);
@@ -182,11 +196,10 @@ function evaluateLetter(ctx: Context, obs: TagObservation): YearStatus {
       : undefined;
   if (readings === undefined) {
     signal(ctx, known, "hard");
-    abstainFeatures();
+    abstain(branch, ...featureRules);
     return { status: "unknown" };
   }
   ctx.passed.push(known.id);
-  const branch = ruleOfKind(knowledge, "letterBranch");
 
   const observed = featureRules.filter((rule) => {
     if (featureValue(obs, rule) === "unknown") {
@@ -215,7 +228,7 @@ function evaluateLetter(ctx: Context, obs: TagObservation): YearStatus {
       ctx.passed.push(branch.id);
       const decider = observed.find((rule) => readings.some((r) => r !== chosen && gap(rule, r) > 0));
       resolvedBy = decider?.id ?? null;
-    }
+    } else abstain(branch);
     return { status: "resolved", reading: toYearReading(chosen), resolvedBy };
   }
 
@@ -225,15 +238,17 @@ function evaluateLetter(ctx: Context, obs: TagObservation): YearStatus {
     return { status: "ambiguous", readings: pool.map(toYearReading) };
   }
 
-  // No reading survives: every rule that excluded at least one reading fires.
+  // No reading survives: every rule that excluded at least one reading fires hard; a rule that fits no
+  // reading exactly but stays within its tolerance fires soft, as it would on its own (X15).
   const years = readings.map((r) => String(r.year)).join(" lub ");
   for (const rule of observed) {
-    const excludes = readings.some((r) => gap(rule, r) > rule.toleranceYears);
-    if (excludes) signal(ctx, rule, "hard", { rok: years }, periodMessage(rule, featureValue(obs, rule)));
+    const message = periodMessage(rule, featureValue(obs, rule));
+    if (readings.some((r) => gap(rule, r) > rule.toleranceYears)) signal(ctx, rule, "hard", { rok: years }, message);
+    else if (readings.every((r) => gap(rule, r) > 0)) signal(ctx, rule, "soft", { rok: years }, message);
     else ctx.passed.push(rule.id);
   }
+  abstain(branch);
   if (readings.length === 1) return { status: "resolved", reading: toYearReading(readings[0]), resolvedBy: null };
-  ctx.abstained.push(branch.id);
   return { status: "ambiguous", readings: readings.map(toYearReading) };
 }
 
@@ -278,8 +293,11 @@ function checkDeclaredYear(ctx: Context, declared: number | null, year: YearStat
     if (declared > claimRule.afterYear) signal(ctx, claimRule, "hard");
     else ctx.passed.push(claimRule.id);
     if (declared < presentedRule.beforeYear) ctx.passed.push(presentedRule.id);
+    else ctx.abstained.push(presentedRule.id);
     return;
   }
+  // S-09 and S-10 concern tags without a letter only.
+  ctx.abstained.push(claimRule.id, presentedRule.id);
   if (year.status !== "resolved" || declared === null) {
     ctx.abstained.push(declaredRule.id);
     return;
@@ -314,7 +332,7 @@ export function evaluateTag(obs: TagObservation, knowledge: Knowledge = defaultK
   // Row 1 — style number (M-05, M-01, M-02).
   const style = obs.styleNumber.trim();
   const batchLike = ruleOfKind(knowledge, "styleNumberLooksLikeBatch");
-  const hasPrefix = batchLike.prefixes.some((p) => style.toUpperCase().startsWith(p.toUpperCase()));
+  const hasPrefix = afterPrefix(style, batchLike.prefixes) !== null;
   if (hasPrefix || new RegExp(`^\\d{${String(batchLike.batchDigits)}}$`).test(style)) {
     return inputError(ctx, batchLike, "styleNumber", false);
   }
@@ -346,7 +364,8 @@ export function evaluateTag(obs: TagObservation, knowledge: Knowledge = defaultK
   // M-03 — plate number equals the first number on the back of the tab.
   const match = ruleOfKind(knowledge, "plateMatchesTab");
   const tabRaw = obs.tabBackFirstNumber.trim();
-  const tab = tabRaw === "unknown" ? null : (/\d+/.exec(tabRaw)?.[0] ?? null);
+  // The first six digits, single spaces allowed between them ("115 748 3444"); fewer than six → abstain.
+  const tab = tabRaw === "unknown" ? null : (/\d(?:\s?\d){5}/.exec(tabRaw)?.[0].replace(/\s/g, "") ?? null);
   if (tab === null) {
     ctx.abstained.push(match.id);
     ask(ctx, "tabBack");

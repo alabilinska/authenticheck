@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import { defaultKnowledge } from "@/lib/services/tag-validation/evaluate";
 import type { RuleId, RuleSignal, TagEvaluation, YearReading, YearStatus } from "@/types";
 import { cn } from "@/lib/utils";
@@ -122,7 +123,9 @@ export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart }: Res
   return (
     <div className="space-y-4 text-white">
       <div className={cn("rounded-2xl border p-5 backdrop-blur-xl", toneClasses[head.tone])}>
-        <h2 className="text-xl font-bold">{head.title}</h2>
+        <h2 tabIndex={-1} data-focus-heading className="text-xl font-bold focus:outline-none">
+          {head.title}
+        </h2>
         {head.description && <p className="mt-2 text-sm opacity-90">{head.description}</p>}
         {year && <p className="mt-2 text-sm font-medium">{year}</p>}
         <p className="mt-3 truncate text-xs opacity-70">
@@ -164,7 +167,7 @@ export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart }: Res
         </Section>
       )}
       {abstained.length > 0 && (
-        <Section title="Nie sprawdzono — brak danych">
+        <Section title="Nie sprawdzono — brak danych albo nie dotyczy">
           {abstained.map((id) => (
             <RuleItem key={id} id={id} />
           ))}
@@ -172,20 +175,21 @@ export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart }: Res
       )}
 
       <div className="flex flex-wrap gap-3">
-        <button
+        <Button
           type="button"
           onClick={onEdit}
-          className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
+          variant="outline"
+          className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition-colors hover:bg-white/20"
         >
           Popraw odpowiedzi
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={onRestart}
           className="ml-auto rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-purple-500"
         >
           Nowa weryfikacja
-        </button>
+        </Button>
       </div>
     </div>
   );

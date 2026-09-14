@@ -24,6 +24,22 @@ const hard = (e: TagEvaluation): string[] => e.hardSignals.map((s) => s.ruleId);
 const soft = (e: TagEvaluation): string[] => e.softSignals.map((s) => s.ruleId);
 const questions = defaultKnowledge.sellerQuestions;
 
+interface Expected {
+  risk: "low" | "medium" | "high";
+  hard?: string[];
+  soft?: string[];
+  year: TagEvaluation["year"]["status"];
+}
+
+/** Full check of a risk-path result: outcome, level, exact fired lists and year status. */
+function expectRisk(e: TagEvaluation, { risk, hard: h = [], soft: s = [], year }: Expected): void {
+  expect(e.outcome).toBe("risk");
+  expect(e.riskLevel).toBe(risk);
+  expect(hard(e).sort()).toEqual([...h].sort());
+  expect(soft(e).sort()).toEqual([...s].sort());
+  expect(e.year.status).toBe(year);
+}
+
 describe("rules §5 — constructed valid cases", () => {
   it("V1: R + small MADE IN ITALY → S/S 2009, reading chosen by S-13", () => {
     const e = tag();
@@ -95,6 +111,8 @@ describe("rules §5 — invalid cases", () => {
 
   it("X1 (confirmed): 11574 confirmed → M-01 hard", () => {
     const e = tag({ styleNumber: "11574", styleNumberConfirmed: true });
+    // The tab back still reads 115748, so the plate/tab mismatch (M-03) fires too.
+    expectRisk(e, { risk: "high", hard: ["M-01", "M-03"], year: "resolved" });
     expect(e.outcome).toBe("risk");
     expect(e.riskLevel).toBe("high");
     expect(hard(e)).toContain("M-01");
@@ -115,12 +133,14 @@ describe("rules §5 — invalid cases", () => {
 
   it("X4: tab back differs from the plate → M-03 hard", () => {
     const e = tag({ tabBackFirstNumber: "115749" });
+    expectRisk(e, { risk: "high", hard: ["M-03"], year: "resolved" });
     expect(e.riskLevel).toBe("high");
     expect(hard(e)).toEqual(["M-03"]);
   });
 
   it("X5: classic hardware without a metal plate → M-04 hard", () => {
     const e = tag({ tagConstruction: "leather-only" });
+    expectRisk(e, { risk: "high", hard: ["M-04"], year: "resolved" });
     expect(e.riskLevel).toBe("high");
     expect(hard(e)).toEqual(["M-04"]);
   });
@@ -133,24 +153,28 @@ describe("rules §5 — invalid cases", () => {
 
   it("X7: letter X → S-02 hard", () => {
     const e = tag({ seasonLetter: "X" });
+    expectRisk(e, { risk: "high", hard: ["S-02"], year: "unknown" });
     expect(e.riskLevel).toBe("high");
     expect(hard(e)).toEqual(["S-02"]);
   });
 
   it("X8: G (F/W 2014) + underscore → S-05 hard", () => {
     const e = tag({ seasonLetter: "G", brandLine: "underscore", stamp925: "unknown", madeInItalySize: "unknown" });
+    expectRisk(e, { risk: "high", hard: ["S-05"], year: "resolved" });
     expect(e.riskLevel).toBe("high");
     expect(hard(e)).toEqual(["S-05"]);
   });
 
   it("X9: R (S/S 2009) + 925 stamp → S-06 hard", () => {
     const e = tag({ seasonLetter: "R", brandLine: "unknown", stamp925: "present", madeInItalySize: "unknown" });
+    expectRisk(e, { risk: "high", hard: ["S-06"], year: "ambiguous" });
     expect(e.riskLevel).toBe("high");
     expect(hard(e)).toEqual(["S-06"]);
   });
 
   it("X10: A (S/S 2005) + pewter → S-07 soft, one season past the cutoff", () => {
     const e = tag({ seasonLetter: "A", stamp925: "present", madeInItalySize: "unknown", hardware: "classic-pewter" });
+    expectRisk(e, { risk: "medium", soft: ["S-07"], year: "resolved" });
     expect(e.riskLevel).toBe("medium");
     expect(soft(e)).toEqual(["S-07"]);
     expect(hard(e)).toEqual([]);
@@ -158,6 +182,7 @@ describe("rules §5 — invalid cases", () => {
 
   it("X11: R (S/S 2009) + flat brass → S-07 hard, seven years past the cutoff", () => {
     const e = tag({ hardware: "classic-flat-brass" });
+    expectRisk(e, { risk: "high", hard: ["S-07"], year: "resolved" });
     expect(e.riskLevel).toBe("high");
     expect(hard(e)).toEqual(["S-07"]);
   });
@@ -170,12 +195,14 @@ describe("rules §5 — invalid cases", () => {
       stamp925: "unknown",
       madeInItalySize: "unknown",
     });
+    expectRisk(e, { risk: "high", hard: ["S-12"], year: "ambiguous" });
     expect(e.riskLevel).toBe("high");
     expect(hard(e)).toEqual(["S-12"]);
   });
 
   it("X13: Q (F/W 2009), seller claims 2019 → S-08 soft", () => {
     const e = tag({ seasonLetter: "Q", madeInItalySize: "unknown", declaredYear: 2019 });
+    expectRisk(e, { risk: "medium", soft: ["S-08"], year: "resolved" });
     expect(e.riskLevel).toBe("medium");
     expect(soft(e)).toEqual(["S-08"]);
     expect(e.sellerQuestions).toContain(questions.yearMismatch.replace("{rok}", "2009"));
@@ -189,12 +216,14 @@ describe("rules §5 — invalid cases", () => {
       stamp925: "unknown",
       madeInItalySize: "unknown",
     });
+    expectRisk(e, { risk: "high", hard: ["S-09"], soft: ["S-07"], year: "no-letter" });
     expect(e.riskLevel).toBe("high");
     expect(hard(e)).toContain("S-09");
   });
 
   it("X15: M (F/W 2011) + small MADE IN ITALY → S-13 soft, transition year", () => {
     const e = tag({ seasonLetter: "M" });
+    expectRisk(e, { risk: "medium", soft: ["S-13"], year: "resolved" });
     expect(e.riskLevel).toBe("medium");
     expect(soft(e)).toEqual(["S-13"]);
     expect(e.year).toEqual({ status: "resolved", reading: { season: "F/W", year: 2011 }, resolvedBy: null });
@@ -202,6 +231,7 @@ describe("rules §5 — invalid cases", () => {
 
   it("X16: T (S/S 2008) + large MADE IN ITALY → S-13 hard, three years early", () => {
     const e = tag({ seasonLetter: "T", madeInItalySize: "large" });
+    expectRisk(e, { risk: "high", hard: ["S-13"], year: "resolved" });
     expect(e.riskLevel).toBe("high");
     expect(hard(e)).toEqual(["S-13"]);
   });
@@ -239,6 +269,19 @@ describe("decided behaviour", () => {
     expect(e.riskLevel).toBe("low");
   });
 
+  it("tab back typed with spaces inside the number still reads 115748", () => {
+    const e = tag({ tabBackFirstNumber: "115 748 3444" });
+    expect(e.passed).toContain("M-03");
+    expect(e.riskLevel).toBe("low");
+  });
+
+  it("tab back without six digits → M-03 abstains with the tab-back question, never fires", () => {
+    const e = tag({ tabBackFirstNumber: "11574" });
+    expect(e.abstained).toContain("M-03");
+    expect(fired(e)).not.toContain("M-03");
+    expect(e.sellerQuestions).toContain(questions.tabBack);
+  });
+
   it("double letter with every resolver unknown → ambiguous, S-07 and S-08 abstain", () => {
     const e = tag({ brandLine: "unknown", stamp925: "unknown", madeInItalySize: "unknown", declaredYear: 2015 });
     expect(e.year.status).toBe("ambiguous");
@@ -249,6 +292,31 @@ describe("decided behaviour", () => {
     const e = tag({ brandLine: "unknown", stamp925: "unknown", batchNumber: "unknown" });
     expect(e.sellerQuestions.filter((q) => q === questions.tagPhoto)).toHaveLength(1);
   });
+});
+
+describe("every rule is accounted for on the risk path", () => {
+  const allIds = defaultKnowledge.rules.map((r) => r.id).sort();
+  const cases: [string, Partial<TagObservation>][] = [
+    ["V1", {}],
+    [
+      "V5 no letter",
+      { seasonLetter: "none", brandLine: "underscore", hardware: "classic-flat-brass", declaredYear: 2002 },
+    ],
+    ["no letter, claim 2012", { seasonLetter: "none", declaredYear: 2012 }],
+    ["illegible letter", { seasonLetter: "unknown" }],
+    ["X7 letter X", { seasonLetter: "X" }],
+    ["unknown letter Ä", { seasonLetter: "Ä" }],
+    ["ambiguous year", { brandLine: "unknown", stamp925: "unknown", madeInItalySize: "unknown" }],
+    ["X1 confirmed", { styleNumber: "11574", styleNumberConfirmed: true }],
+    ["no reading fits", { seasonLetter: "D", stamp925: "present", madeInItalySize: "unknown" }],
+  ];
+  for (const [name, overrides] of cases) {
+    it(`${name}: each of the 18 rules appears in exactly one list`, () => {
+      const e = tag(overrides);
+      const listed = [...fired(e), ...e.passed, ...e.abstained].sort();
+      expect(listed).toEqual(allIds);
+    });
+  }
 });
 
 describe("year resolution at the boundaries (review F2)", () => {
@@ -262,6 +330,13 @@ describe("year resolution at the boundaries (review F2)", () => {
     const e = tag({ seasonLetter: "D", stamp925: "present", madeInItalySize: "unknown" });
     expect(e.riskLevel).toBe("high");
     expect(hard(e).sort()).toEqual(["S-05", "S-06"]);
+  });
+
+  it("(b) a rule only within tolerance still fires soft: M + underscore + small MADE IN ITALY", () => {
+    const e = tag({ seasonLetter: "M", brandLine: "underscore" });
+    expect(hard(e)).toEqual(["S-05"]);
+    expect(soft(e)).toEqual(["S-13"]);
+    expect(e.passed).not.toContain("S-13");
   });
 
   it("(c) no letter + aged brass → S-07 compared with 2001–2003", () => {
@@ -279,6 +354,19 @@ describe("input normalization (review F4)", () => {
   it("N° typed in the style-number field → M-05", () => {
     const e = tag({ styleNumber: "N° 0754" });
     expect(e.inputErrors).toEqual([expect.objectContaining({ ruleId: "M-05" })]);
+  });
+
+  it("No. typed in the batch field is stripped with its dot", () => {
+    expect(tag({ batchNumber: "No. 4892" }).passed).toContain("S-11");
+  });
+
+  it("a word starting with No is not a prefix: Nope in the style field → M-01, not M-05", () => {
+    const e = tag({ styleNumber: "Nope" });
+    expect(e.inputErrors).toEqual([expect.objectContaining({ ruleId: "M-01" })]);
+  });
+
+  it("No. 0754 in the style field → M-05", () => {
+    expect(tag({ styleNumber: "No. 0754" }).inputErrors).toEqual([expect.objectContaining({ ruleId: "M-05" })]);
   });
 
   it("N° typed in the batch field is stripped", () => {

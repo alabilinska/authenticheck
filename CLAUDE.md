@@ -55,6 +55,7 @@ authenticated route there. Auth endpoints: `src/pages/api/auth/{signin,signup,si
 - `npm test` / `npm run test:watch` — Vitest unit tests (`src/**/*.test.ts`, node environment, plain config without
   Astro's Vite setup); one file: `npx vitest run src/lib/services/tag-validation/evaluate.test.ts`
 - `npm run typecheck` — `astro check`
+- The PRD's end-to-end test of the main verification path is still owed (roadmap S-04).
 
 Wrangler (Worker `authenticheck`). Production deploys come from Workers Builds on `main`; CI never deploys.
 
