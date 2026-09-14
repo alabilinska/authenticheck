@@ -1,7 +1,7 @@
 ---
 change_id: tag-validation-first-result
 title: First verification — tag details to a result
-status: implementing
+status: implemented
 created: 2026-09-14
 updated: 2026-09-14
 archived_at: null

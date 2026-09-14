@@ -276,16 +276,16 @@ Evaluation is a synchronous in-memory function over a few dozen rules; the PRD's
 
 #### Automated
 
-- [x] 2.1 Unit tests still pass
-- [x] 2.2 Lint passes
-- [x] 2.3 Build passes
-- [x] 2.4 Unauthenticated request to /verifications/new redirects to /auth/signin
-- [x] 2.10 Type check passes
+- [x] 2.1 Unit tests still pass — 6400be2
+- [x] 2.2 Lint passes — 6400be2
+- [x] 2.3 Build passes — 6400be2
+- [x] 2.4 Unauthenticated request to /verifications/new redirects to /auth/signin — 6400be2
+- [x] 2.10 Type check passes — 6400be2
 
 #### Manual
 
-- [x] 2.5 Signed-in walk-through with the V1 inputs shows low risk and S/S 2009
-- [x] 2.6 X12 shows high risk with the S-12 message; X1 asks for confirmation first
-- [x] 2.7 Hardware "nie widać" stops with the hardware question; missing tag photo gives medium risk
-- [x] 2.8 Wizard is legible and usable at phone width; result in under 1 second
-- [ ] 2.9 Same walk-through works on production after the Workers Builds deploy
+- [x] 2.5 Signed-in walk-through with the V1 inputs shows low risk and S/S 2009 — 6400be2
+- [x] 2.6 X12 shows high risk with the S-12 message; X1 asks for confirmation first — 6400be2
+- [x] 2.7 Hardware "nie widać" stops with the hardware question; missing tag photo gives medium risk — 6400be2
+- [x] 2.8 Wizard is legible and usable at phone width; result in under 1 second — 6400be2
+- [x] 2.9 Same walk-through works on production after the Workers Builds deploy — 6400be2
