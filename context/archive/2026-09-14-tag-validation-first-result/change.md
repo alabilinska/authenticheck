@@ -1,10 +1,10 @@
 ---
 change_id: tag-validation-first-result
 title: First verification — tag details to a result
-status: impl_reviewed
+status: archived
 created: 2026-09-14
 updated: 2026-09-14
-archived_at: null
+archived_at: 2026-09-14T08:30:23Z
 ---
 
 ## Notes
