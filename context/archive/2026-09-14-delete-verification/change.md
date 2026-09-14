@@ -1,10 +1,10 @@
 ---
 change_id: delete-verification
 title: Delete a saved verification
-status: implemented
+status: archived
 created: 2026-09-14
 updated: 2026-09-14
-archived_at: null
+archived_at: 2026-09-14T13:17:58Z
 ---
 
 ## Notes
