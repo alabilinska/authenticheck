@@ -225,16 +225,16 @@ No data changes. Dashboard settings are one-time and apply to local and producti
 
 #### Automated
 
-- [x] 2.1 Unit tests pass
-- [x] 2.2 Lint passes
-- [x] 2.3 Type check passes
-- [x] 2.4 Build passes
-- [x] 2.5 Unauthenticated /auth/reset-password and tokenless /api/auth/confirm redirect to the invalid-link message
+- [x] 2.1 Unit tests pass — f5ef29a
+- [x] 2.2 Lint passes — f5ef29a
+- [x] 2.3 Type check passes — f5ef29a
+- [x] 2.4 Build passes — f5ef29a
+- [x] 2.5 Unauthenticated /auth/reset-password and tokenless /api/auth/confirm redirect to the invalid-link message — f5ef29a
 
 #### Manual
 
-- [x] 2.6 Supabase dashboard settings applied
-- [x] 2.7 Local reset end to end, sign in with the new password
+- [x] 2.6 Supabase dashboard settings applied — f5ef29a
+- [x] 2.7 Local reset end to end, sign in with the new password — f5ef29a
 - [ ] 2.8 Email link opened on another device reaches the new-password form
-- [x] 2.9 Used or expired link shows the invalid-link message; old password no longer works
+- [x] 2.9 Used or expired link shows the invalid-link message; old password no longer works — f5ef29a
 - [ ] 2.10 Same walk-through works on production after the deploy
