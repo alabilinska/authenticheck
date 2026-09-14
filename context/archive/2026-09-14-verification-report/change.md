@@ -1,10 +1,10 @@
 ---
 change_id: verification-report
 title: Verification report with copyable seller questions and the end-to-end test
-status: implemented
+status: archived
 created: 2026-09-14
 updated: 2026-09-14
-archived_at: null
+archived_at: 2026-09-14T11:55:28Z
 ---
 
 ## Notes
