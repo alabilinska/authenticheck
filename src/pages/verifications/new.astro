@@ -1,0 +1,18 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import TagWizard from "@/components/verification/TagWizard";
+---
+
+<Layout title="Nowa weryfikacja — Authenticheck" lang="pl">
+  <div class="bg-cosmic min-h-screen px-4 py-8 text-white">
+    <main class="mx-auto w-full max-w-xl space-y-6">
+      <a href="/dashboard" class="text-sm text-purple-300 hover:underline">← Panel</a>
+      <h1
+        class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl"
+      >
+        Nowa weryfikacja
+      </h1>
+      <TagWizard client:load />
+    </main>
+  </div>
+</Layout>

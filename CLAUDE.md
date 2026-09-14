@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project
 
 Authenticheck — a rule-based authenticity checker for second-hand Balenciaga bags
-(v1: City / Motorcycle). Product decisions live in `context/foundation/`:
+(v1: Classic City medium with classic hardware). Product decisions live in `context/foundation/`:
 `prd.md` (FRs, business rule, non-goals), `tech-stack.md` (starter hand-off),
 `shape-notes.md` (discovery trail). Brand knowledge is data, not code: rules and
 checklist questions belong in config files consumed by a generic engine.
@@ -20,8 +20,11 @@ checklist questions belong in config files consumed by a generic engine.
 - Supabase: migrations in `supabase/migrations/` as `YYYYMMDDHHmmss_short_description.sql`
   (directory not created yet); every new table gets RLS with per-operation, per-role policies —
   the PRD's "each user sees only their own verifications" depends on it.
-- Create on first need: `src/types.ts` (shared entities/DTOs), `src/lib/services/` (extracted
-  business logic), `src/components/hooks/` (React hooks). None exist yet.
+- Shared entities/DTOs live in `src/types.ts`, extracted business logic in `src/lib/services/`;
+  create `src/components/hooks/` (React hooks) on first need.
+- Tag knowledge lives in `src/data/balenciaga-classic-city/knowledge.json` (source: `balenciaga-city-tag-rules.md` —
+  change the rules document first, then the JSON) and is evaluated by the pure engine in
+  `src/lib/services/tag-validation/`; its tests encode the rules document's test set.
 - React: no Next.js directives (`"use client"` etc.).
 
 ## Architecture
@@ -49,8 +52,9 @@ authenticated route there. Auth endpoints: `src/pages/api/auth/{signin,signup,si
 - `npx astro sync` — generates `.astro/` types; required once after a fresh clone or `npm run lint` fails with ~20 unresolved-type errors (CI runs it explicitly)
 - `npm run lint` / `lint:fix` — ESLint (strictTypeChecked + Prettier as a lint rule: formatting errors fail lint)
 - `npx supabase start` — local Supabase (Docker); Studio at http://localhost:54323
-- No test runner is configured yet. The PRD requires an end-to-end test of the main
-  verification path — pick and wire a runner before writing tests.
+- `npm test` / `npm run test:watch` — Vitest unit tests (`src/**/*.test.ts`, node environment, plain config without
+  Astro's Vite setup); one file: `npx vitest run src/lib/services/tag-validation/evaluate.test.ts`
+- `npm run typecheck` — `astro check`
 
 Wrangler (Worker `authenticheck`). Production deploys come from Workers Builds on `main`; CI never deploys.
 
@@ -60,7 +64,7 @@ Wrangler (Worker `authenticheck`). Production deploys come from Workers Builds o
 - `compatibility_date` ceiling is `2026-05-14` (pinned workerd); raise only with an adapter/wrangler upgrade.
 
 Pre-commit (husky + lint-staged): `eslint --fix` on `*.{ts,tsx,astro}`, `prettier --write` on `*.{json,css,md}`.
-CI (`.github/workflows/ci.yml`) runs lint + build on push/PR to `main`, Node 22 (`.nvmrc` 22.14; local Node 24 also works).
+CI (`.github/workflows/ci.yml`) runs lint, type check, unit tests and build on push/PR to `main`, Node 22 (`.nvmrc` 22.14; local Node 24 also works).
 
 <!-- BEGIN @przeprogramowani/10x-cli -->
 

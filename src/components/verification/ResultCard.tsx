@@ -1,0 +1,192 @@
+import type { ReactNode } from "react";
+import { defaultKnowledge } from "@/lib/services/tag-validation/evaluate";
+import type { RuleId, RuleSignal, TagEvaluation, YearReading, YearStatus } from "@/types";
+import { cn } from "@/lib/utils";
+
+const rulesById = new Map(defaultKnowledge.rules.map((rule) => [rule.id, rule]));
+const confidenceLabel = { confirmed: "potwierdzona", probable: "prawdopodobna" } as const;
+
+type Tone = "high" | "medium" | "low" | "neutral";
+
+const toneClasses: Record<Tone, string> = {
+  high: "border-red-400/40 bg-red-500/15 text-red-100",
+  medium: "border-amber-400/40 bg-amber-500/15 text-amber-100",
+  low: "border-emerald-400/40 bg-emerald-500/15 text-emerald-100",
+  neutral: "border-white/20 bg-white/10 text-white",
+};
+
+function headline(e: TagEvaluation): { title: string; tone: Tone; description?: string } {
+  switch (e.outcome) {
+    case "unsupported":
+      return {
+        title: "Nieobsługiwany wariant",
+        tone: "neutral",
+        description: e.softSignals.length === 0 ? defaultKnowledge.scope.unsupportedMessage : undefined,
+      };
+    case "scope-unknown":
+      return {
+        title: "Brak danych o okuciach",
+        tone: "neutral",
+        description:
+          "Bez okuć nie wiemy, czy to wariant, który umiemy ocenić. Zapytaj sprzedawcę i wróć do weryfikacji.",
+      };
+    case "input-error":
+      return { title: "Popraw odczyt metki", tone: "neutral" };
+    case "risk":
+      if (e.riskLevel === "high") return { title: "Wysokie ryzyko", tone: "high" };
+      if (e.riskLevel === "medium") return { title: "Średnie ryzyko", tone: "medium" };
+      return { title: "Niskie ryzyko — w sprawdzonych cechach nie ma sygnałów ostrzegawczych", tone: "low" };
+  }
+}
+
+function formatReading({ season, year }: YearReading): string {
+  return season === null ? String(year) : `${season} ${String(year)}`;
+}
+
+function yearLine(year: YearStatus): string | null {
+  switch (year.status) {
+    case "resolved":
+      return `Rok z metki: ${formatReading(year.reading)}`;
+    case "ambiguous":
+      return `Rok nierozstrzygnięty: ${year.readings.map(formatReading).join(" lub ")}`;
+    case "no-letter": {
+      const { from, to } = defaultKnowledge.noLetterPeriod;
+      return `Brak litery sezonu — metka z lat ${String(from)}–${String(to)}`;
+    }
+    case "unknown":
+      return null;
+  }
+}
+
+function Badge({ confidence }: { confidence: RuleSignal["confidence"] }) {
+  return (
+    <span
+      className={cn(
+        "shrink-0 rounded-full border px-2 py-0.5 text-[11px]",
+        confidence === "confirmed" ? "border-white/25 text-white/80" : "border-dashed border-white/25 text-white/60",
+      )}
+    >
+      {confidenceLabel[confidence]}
+    </span>
+  );
+}
+
+function Section({ title, tone, children }: { title: string; tone?: Tone; children: ReactNode }) {
+  return (
+    <section className={cn("rounded-xl border p-4", toneClasses[tone ?? "neutral"])}>
+      <h3 className="mb-3 text-sm font-semibold">{title}</h3>
+      <ul className="space-y-3">{children}</ul>
+    </section>
+  );
+}
+
+function SignalItem({ signal }: { signal: RuleSignal }) {
+  return (
+    <li className="text-sm">
+      <div className="flex items-start justify-between gap-3">
+        <span className="font-medium">
+          {signal.ruleId} · {rulesById.get(signal.ruleId)?.title}
+        </span>
+        <Badge confidence={signal.confidence} />
+      </div>
+      <p className="mt-1 opacity-90">{signal.message}</p>
+    </li>
+  );
+}
+
+function RuleItem({ id }: { id: RuleId }) {
+  const rule = rulesById.get(id);
+  return (
+    <li className="flex items-start justify-between gap-3 text-sm">
+      <span>
+        {id} · {rule?.title}
+      </span>
+      {rule && <Badge confidence={rule.confidence} />}
+    </li>
+  );
+}
+
+interface ResultCardProps {
+  evaluation: TagEvaluation;
+  listingUrl: string;
+  onEdit: () => void;
+  onRestart: () => void;
+}
+
+export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart }: ResultCardProps) {
+  const head = headline(e);
+  const year = e.outcome === "risk" ? yearLine(e.year) : null;
+  const passed = [...new Set(e.passed)];
+  const abstained = [...new Set(e.abstained)];
+
+  return (
+    <div className="space-y-4 text-white">
+      <div className={cn("rounded-2xl border p-5 backdrop-blur-xl", toneClasses[head.tone])}>
+        <h2 className="text-xl font-bold">{head.title}</h2>
+        {head.description && <p className="mt-2 text-sm opacity-90">{head.description}</p>}
+        {year && <p className="mt-2 text-sm font-medium">{year}</p>}
+        <p className="mt-3 truncate text-xs opacity-70">
+          Ogłoszenie:{" "}
+          <a href={listingUrl} target="_blank" rel="noopener noreferrer" className="underline">
+            {listingUrl}
+          </a>
+        </p>
+      </div>
+
+      {e.hardSignals.length > 0 && (
+        <Section title="Sygnały twarde" tone="high">
+          {e.hardSignals.map((s) => (
+            <SignalItem key={s.ruleId} signal={s} />
+          ))}
+        </Section>
+      )}
+      {e.softSignals.length > 0 && (
+        <Section title="Sygnały miękkie" tone="medium">
+          {e.softSignals.map((s) => (
+            <SignalItem key={s.ruleId} signal={s} />
+          ))}
+        </Section>
+      )}
+      {e.sellerQuestions.length > 0 && (
+        <Section title="Pytania do sprzedawcy">
+          {e.sellerQuestions.map((q) => (
+            <li key={q} className="text-sm">
+              {q}
+            </li>
+          ))}
+        </Section>
+      )}
+      {passed.length > 0 && (
+        <Section title="Reguły spełnione" tone="low">
+          {passed.map((id) => (
+            <RuleItem key={id} id={id} />
+          ))}
+        </Section>
+      )}
+      {abstained.length > 0 && (
+        <Section title="Nie sprawdzono — brak danych">
+          {abstained.map((id) => (
+            <RuleItem key={id} id={id} />
+          ))}
+        </Section>
+      )}
+
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={onEdit}
+          className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
+        >
+          Popraw odpowiedzi
+        </button>
+        <button
+          type="button"
+          onClick={onRestart}
+          className="ml-auto rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-purple-500"
+        >
+          Nowa weryfikacja
+        </button>
+      </div>
+    </div>
+  );
+}

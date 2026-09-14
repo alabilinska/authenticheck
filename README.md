@@ -54,6 +54,9 @@ npm run dev
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
+- `npm test` - Run the unit tests (Vitest)
+- `npm run test:watch` - Run the unit tests in watch mode
+- `npm run typecheck` - Type-check the project (`astro check`)
 - `npm run format` - Run Prettier
 
 ## Project Structure
@@ -186,7 +189,7 @@ On the Workers Free plan each request gets 10 ms CPU; error `1102` in production
 
 ## CI
 
-GitHub Actions runs lint + build on every push and PR to `main` — it never deploys (production deploys come from Workers Builds). Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+GitHub Actions runs lint, type check, unit tests and build on every push and PR to `main` — it never deploys (production deploys come from Workers Builds). Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
 
 ## License
 

@@ -97,6 +97,7 @@
   "rules": [
     {
       "id": "M-01",
+      "title": "Numer modelu ma sześć cyfr",
       "kind": "styleNumberFormat",
       "signal": "hard",
       "confidence": "confirmed",
@@ -105,6 +106,7 @@
     },
     {
       "id": "M-02",
+      "title": "Numer modelu to 115748 (Classic City medium)",
       "kind": "styleNumberSupported",
       "signal": "unsupported",
       "confidence": "confirmed",
@@ -112,6 +114,7 @@
     },
     {
       "id": "M-03",
+      "title": "Numer na płytce = pierwszy numer na odwrocie metki",
       "kind": "plateMatchesTab",
       "signal": "hard",
       "confidence": "confirmed",
@@ -119,6 +122,7 @@
     },
     {
       "id": "M-04",
+      "title": "Klasyczne okucia mają metalową płytkę na metce",
       "kind": "classicHasPlate",
       "signal": "hard",
       "confidence": "confirmed",
@@ -126,6 +130,7 @@
     },
     {
       "id": "M-05",
+      "title": "W polu numeru modelu nie ma numeru partii",
       "kind": "styleNumberLooksLikeBatch",
       "signal": "input-error",
       "confidence": "probable",
@@ -135,6 +140,7 @@
     },
     {
       "id": "S-01",
+      "title": "Litera sezonu występuje w tabeli",
       "kind": "letterKnown",
       "signal": "hard",
       "confidence": "confirmed",
@@ -142,6 +148,7 @@
     },
     {
       "id": "S-02",
+      "title": "Litera sezonu to nie X",
       "kind": "letterForbidden",
       "signal": "hard",
       "confidence": "confirmed",
@@ -150,6 +157,7 @@
     },
     {
       "id": "S-03",
+      "title": "Litera sezonu jest czytelna",
       "kind": "letterIllegible",
       "signal": "soft",
       "confidence": "probable",
@@ -157,6 +165,7 @@
     },
     {
       "id": "S-04",
+      "title": "Podwójna litera rozstrzygnięta",
       "kind": "letterBranch",
       "signal": "branch",
       "confidence": "confirmed",
@@ -164,6 +173,7 @@
     },
     {
       "id": "S-05",
+      "title": "Napis na płytce (podkreślnik / kropka) pasuje do roku",
       "kind": "periodFeature",
       "feature": "brandLine",
       "signal": "hard",
@@ -173,6 +183,7 @@
     },
     {
       "id": "S-06",
+      "title": "Stempel 925 pasuje do roku",
       "kind": "periodFeature",
       "feature": "stamp925",
       "signal": "hard",
@@ -185,6 +196,7 @@
     },
     {
       "id": "S-07",
+      "title": "Okucia pasują do roku",
       "kind": "hardwareEra",
       "signal": "hard",
       "toleranceYears": 1,
@@ -193,6 +205,7 @@
     },
     {
       "id": "S-08",
+      "title": "Rok z metki zgadza się z rokiem sprzedawcy",
       "kind": "declaredYear",
       "signal": "soft",
       "toleranceYears": 1,
@@ -201,6 +214,7 @@
     },
     {
       "id": "S-09",
+      "title": "Brak litery, a sprzedawca podaje rok po 2003",
       "kind": "noLetterClaim",
       "signal": "hard",
       "afterYear": 2003,
@@ -209,6 +223,7 @@
     },
     {
       "id": "S-10",
+      "title": "Brak litery i torebka sprzed 2003",
       "kind": "noLetterPresented",
       "signal": "pass",
       "beforeYear": 2003,
@@ -217,6 +232,7 @@
     },
     {
       "id": "S-11",
+      "title": "Numer partii ma cztery cyfry",
       "kind": "batchFormat",
       "signal": "soft",
       "pattern": "^\\d{4}$",
@@ -225,6 +241,7 @@
     },
     {
       "id": "S-12",
+      "title": "Znana kombinacja z podróbek (0754 C 115748)",
       "kind": "knownCounterfeit",
       "signal": "hard",
       "confidence": "confirmed",
@@ -233,6 +250,7 @@
     },
     {
       "id": "S-13",
+      "title": "Wielkość napisu MADE IN ITALY pasuje do roku",
       "kind": "periodFeature",
       "feature": "madeInItalySize",
       "signal": "hard",

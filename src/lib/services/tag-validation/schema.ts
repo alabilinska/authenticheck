@@ -21,6 +21,8 @@ const hardwareEra = z.object({
 
 const ruleBase = {
   id: z.string().regex(/^[MS]-\d{2}$/),
+  /** Short Polish name shown next to passed and abstained rules. */
+  title: z.string().min(1),
   confidence,
   message: z.string(),
 };

@@ -260,32 +260,32 @@ Evaluation is a synchronous in-memory function over a few dozen rules; the PRD's
 
 #### Automated
 
-- [x] 1.1 Knowledge JSON validates against the schema
-- [x] 1.2 Every rule ID from the rules document exists in the knowledge file
-- [x] 1.3 All test-set cases V1–V6 and X1–X16 plus the decided extra cases pass
-- [x] 1.4 Lint passes
-- [x] 1.5 Build passes
-- [x] 1.7 Type check passes
-- [ ] 1.8 CI run green including type check and tests
+- [x] 1.1 Knowledge JSON validates against the schema — eea6b90
+- [x] 1.2 Every rule ID from the rules document exists in the knowledge file — eea6b90
+- [x] 1.3 All test-set cases V1–V6 and X1–X16 plus the decided extra cases pass — eea6b90
+- [x] 1.4 Lint passes — eea6b90
+- [x] 1.5 Build passes — eea6b90
+- [x] 1.7 Type check passes — eea6b90
+- [x] 1.8 CI run green including type check and tests — eea6b90
 
 #### Manual
 
-- [ ] 1.6 Developer spot-checks the knowledge file against the rules document
+- [x] 1.6 Developer spot-checks the knowledge file against the rules document — eea6b90
 
 ### Phase 2: Wizard page and result
 
 #### Automated
 
-- [ ] 2.1 Unit tests still pass
-- [ ] 2.2 Lint passes
-- [ ] 2.3 Build passes
-- [ ] 2.4 Unauthenticated request to /verifications/new redirects to /auth/signin
-- [ ] 2.10 Type check passes
+- [x] 2.1 Unit tests still pass
+- [x] 2.2 Lint passes
+- [x] 2.3 Build passes
+- [x] 2.4 Unauthenticated request to /verifications/new redirects to /auth/signin
+- [x] 2.10 Type check passes
 
 #### Manual
 
-- [ ] 2.5 Signed-in walk-through with the V1 inputs shows low risk and S/S 2009
-- [ ] 2.6 X12 shows high risk with the S-12 message; X1 asks for confirmation first
-- [ ] 2.7 Hardware "nie widać" stops with the hardware question; missing tag photo gives medium risk
-- [ ] 2.8 Wizard is legible and usable at phone width; result in under 1 second
+- [x] 2.5 Signed-in walk-through with the V1 inputs shows low risk and S/S 2009
+- [x] 2.6 X12 shows high risk with the S-12 message; X1 asks for confirmation first
+- [x] 2.7 Hardware "nie widać" stops with the hardware question; missing tag photo gives medium risk
+- [x] 2.8 Wizard is legible and usable at phone width; result in under 1 second
 - [ ] 2.9 Same walk-through works on production after the Workers Builds deploy
