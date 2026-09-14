@@ -116,15 +116,15 @@ Draft ↔ command mapping, update in the service and API, wizard edit mode, edit
 
 #### Automated
 
-- [x] 1.1 Unit tests pass
-- [x] 1.2 Lint passes with exit code 0
-- [x] 1.3 Type check passes
-- [x] 1.4 Build passes
-- [x] 1.5 Unauthenticated PUT /api/verifications/<id> returns 401 UNAUTHENTICATED
+- [x] 1.1 Unit tests pass — ac62ae1
+- [x] 1.2 Lint passes with exit code 0 — ac62ae1
+- [x] 1.3 Type check passes — ac62ae1
+- [x] 1.4 Build passes — ac62ae1
+- [x] 1.5 Unauthenticated PUT /api/verifications/<id> returns 401 UNAUTHENTICATED — ac62ae1
 
 #### Manual
 
-- [x] 1.6 "Edytuj odpowiedzi" opens the wizard with the saved answers filled in
-- [x] 1.7 Changing an answer and saving shows the recalculated result and the new list label
-- [x] 1.8 Test account cannot open another account's edit page
-- [ ] 1.9 Same walk-through works on production after the deploy
+- [x] 1.6 "Edytuj odpowiedzi" opens the wizard with the saved answers filled in — ac62ae1
+- [x] 1.7 Changing an answer and saving shows the recalculated result and the new list label — ac62ae1
+- [x] 1.8 Test account cannot open another account's edit page — ac62ae1
+- [x] 1.9 Same walk-through works on production after the deploy — 708be24

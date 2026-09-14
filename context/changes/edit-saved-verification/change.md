@@ -1,7 +1,7 @@
 ---
 change_id: edit-saved-verification
 title: Edit a saved verification and see the report recalculated
-status: implementing
+status: implemented
 created: 2026-09-14
 updated: 2026-09-14
 archived_at: null
