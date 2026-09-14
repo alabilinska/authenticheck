@@ -26,6 +26,7 @@ checklist questions belong in config files consumed by a generic engine.
   change the rules document first, then the JSON) and is evaluated by the pure engine in
   `src/lib/services/tag-validation/`; its tests encode the rules document's test set.
 - React: no Next.js directives (`"use client"` etc.).
+- Tests follow `context/foundation/test-plan.md` (risk map, rollout phases, cookbook §6) — read it before writing or changing any test.
 
 ## Architecture
 
