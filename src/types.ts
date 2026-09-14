@@ -79,3 +79,29 @@ export interface TagEvaluation {
   /** Polish copy from rules §8, filled and deduplicated. */
   sellerQuestions: string[];
 }
+
+/** Body of POST /api/verifications (S-05). */
+export interface SaveVerificationCommand {
+  listingUrl: string;
+  declaredYear: number | null;
+  price: number | null;
+  observation: TagObservation;
+}
+
+/** One entry of GET /api/verifications. */
+export interface VerificationListItem {
+  id: string;
+  listingUrl: string;
+  declaredYear: number | null;
+  outcome: TagEvaluation["outcome"];
+  riskLevel: TagEvaluation["riskLevel"];
+  createdAt: string;
+}
+
+/** A saved verification with its evaluation recomputed from the stored observation. */
+export interface VerificationDto extends VerificationListItem {
+  price: number | null;
+  observation: TagObservation;
+  evaluation: TagEvaluation;
+  updatedAt: string;
+}

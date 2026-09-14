@@ -45,7 +45,7 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 | S-01 | tag-validation-first-result | user can start a verification (declared year, listing link, price; line fixed to Classic City medium) and, after entering what the tag shows — plate numbers and season letter, the first number on the back of the tab, hardware type, brand-line style, 925 stamp and MADE IN ITALY size — immediately see which rules pass or fail, each with its message and confidence level, and the result: a risk level, or unsupported for a variant outside v1; an unresolved year and input errors are shown without a verdict, and a missing tag photo becomes a seller question and raises the risk one step | F-01, the rule knowledge file (committed 2026-09-14) | US-01, FR-002, FR-003, FR-004 | done |
 | S-03 | visual-checklist | user can answer the three visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, "can't see" stays neutral and becomes a seller question, and each trait is a soft signal on its own and a hard one only when it contradicts the tag year | S-01, reference photos for the three checks committed to the repository | FR-006, FR-004 | done |
 | S-04 | verification-report | user can see one report with the result — a risk level, or unsupported — and the signals that set it: passed checks, failed hard signals shown separately, unchecked items and checks that abstained because the year is unresolved; they can copy a ready-made list of seller questions, and a low-risk report states that no warning signs were found in the checked traits | S-03 | US-01, FR-007, FR-008 | done |
-| S-05 | save-and-list-verifications | user can save a verification and later open it from their own list, where each listing shows its risk label; no other user can see it | F-01, S-04 | US-01, FR-009 | planning |
+| S-05 | save-and-list-verifications | user can save a verification and later open it from their own list, where each listing shows its risk label; no other user can see it | F-01, S-04 | US-01, FR-009 | in-progress |
 | S-06 | edit-saved-verification | user can re-open a saved verification, change any answer (e.g. "can't see" → "yes" after the seller sends photos) and see the report recalculated | S-05 | FR-011 | proposed |
 | S-07 | delete-verification | user can delete a saved verification from their list | S-05 | FR-010 | proposed |
 | S-08 | password-reset | user can reset a forgotten password by email and sign in with the new one; after sign-up, the page tells the user whether the account is ready to use or waits for email confirmation | F-01 | FR-001 | done |
@@ -136,7 +136,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** The product's first stored data; the PRD's per-user isolation must hold from the first save rather than being added later.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-06: Edit a saved verification
 

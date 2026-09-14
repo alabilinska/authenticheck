@@ -159,6 +159,10 @@ On `main` after both branches are merged: the report gets "Zapisz weryfikację",
 - Conventions: CLAUDE.md (API errors, migrations, RLS)
 - Lesson: `context/foundation/lessons.md` — pin the API contract before the first endpoint
 
+## Implementation Notes
+
+- 2026-09-14: the second session in the worktree was not started, so Phase 1 is implemented on `main` in the main session after S-04 (developer's decision); the worktree `../authenticheck-save` and its empty branch were removed. The dev server for checks runs on port 4321, not 4322.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
@@ -167,17 +171,17 @@ On `main` after both branches are merged: the report gets "Zapisz weryfikację",
 
 #### Automated
 
-- [ ] 1.1 Unit tests pass
-- [ ] 1.2 Lint passes with exit code 0
-- [ ] 1.3 Type check passes
-- [ ] 1.4 Build passes
-- [ ] 1.5 Unauthenticated GET /api/verifications returns 401 UNAUTHENTICATED
+- [x] 1.1 Unit tests pass
+- [x] 1.2 Lint passes with exit code 0
+- [x] 1.3 Type check passes
+- [x] 1.4 Build passes
+- [x] 1.5 Unauthenticated GET /api/verifications returns 401 UNAUTHENTICATED
 
 #### Manual
 
-- [ ] 1.6 Migration applied in the Supabase SQL editor, RLS enabled
-- [ ] 1.7 Signed-in POST saves a verification and returns 201 with the evaluation
-- [ ] 1.8 GET lists it; a second account sees an empty list and 404 for the first account's id
+- [x] 1.6 Migration applied in the Supabase SQL editor, RLS enabled
+- [x] 1.7 Signed-in POST saves a verification and returns 201 with the evaluation
+- [x] 1.8 GET lists it; a second account sees an empty list and 404 for the first account's id
 
 ### Phase 2: Save button, list and saved report (after S-04 merge)
 
