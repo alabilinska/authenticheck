@@ -92,7 +92,10 @@
     "tagPhoto": "Poproszę o zdjęcie metki w środku torebki — z przodu i z odwrotu, tak żeby numery były ostre.",
     "tabBack": "Poproszę o zdjęcie odwrotu skórzanej metki, z numerami i napisem MADE IN ITALY.",
     "letterIllegible": "Litera sezonu jest nieczytelna na zdjęciu — czy da się zrobić ujęcie pod światło, pod kątem?",
-    "yearMismatch": "Metka wskazuje na rok {rok}. Czy wiadomo, z którego sezonu jest ta torebka i skąd pochodzi?"
+    "yearMismatch": "Metka wskazuje na rok {rok}. Czy wiadomo, z którego sezonu jest ta torebka i skąd pochodzi?",
+    "tagStitching": "Poproszę o zbliżenie górnej krawędzi metki, tam gdzie jest przyszyta do podszewki.",
+    "zipper": "Poproszę o zdjęcie spodu suwaka, od strony, która normalnie przylega do torebki.",
+    "bales": "Poproszę o zdjęcie kółka przy mocowaniu paska, z boku."
   },
   "rules": [
     {
@@ -260,6 +263,66 @@
       "messageByValue": {
         "small": "Mały napis MADE IN ITALY występuje na metkach do 2010 roku, a litera wskazuje na {rok}."
       }
+    },
+    {
+      "id": "V-01",
+      "title": "Górny szew metki jest czarny",
+      "kind": "visualTrait",
+      "field": "thread",
+      "signal": "soft",
+      "confidence": "confirmed",
+      "question": "Czy nitka, którą przyszyta jest górna krawędź metki, jest czarna lub bardzo ciemna?",
+      "hint": "Górna krawędź metki, tam gdzie styka się z podszewką. Interesuje nas sam górny szew, nie boczne — w oryginale jest czarny niezależnie od koloru torebki i metki.",
+      "reference": {
+        "src": "/reference/visual-thread-tag.webp",
+        "alt": "Dwie oryginalne metki Balenciagi wszyte w podszewkę — zwróć uwagę na nitkę przy górnej krawędzi metki"
+      },
+      "sellerQuestion": "tagStitching",
+      "message": "Górny szew metki nie jest czarny. W oryginale ta nitka jest czarna lub bardzo ciemna, niezależnie od koloru torebki i metki."
+    },
+    {
+      "id": "V-02",
+      "title": "Zamek pasuje do roku z metki",
+      "kind": "zipperEra",
+      "signal": "hard",
+      "toleranceYears": 1,
+      "confidence": "confirmed",
+      "periods": {
+        "lampo": {
+          "label": "zamek Lampo",
+          "from": 2001,
+          "to": 2014
+        },
+        "b": {
+          "label": "zamek z literą B",
+          "from": 2015,
+          "to": null
+        }
+      },
+      "question": "Co jest wybite na spodzie suwaka?",
+      "hint": "Odwróć zamek i popatrz na spód — napis jest po niewidocznej stronie. Do ok. 2014: kursywą Lampo, litera L podkreśla resztę słowa. Od ok. 2014/2015: litera B, wykończenie matowe lub satynowe, nigdy lustrzany chrom.",
+      "reference": {
+        "src": "/reference/visual-lampo-zipper.webp",
+        "alt": "Oryginalne suwaki Lampo w torebce Balenciaga City, z logo Lampo na uchwycie"
+      },
+      "sellerQuestion": "zipper",
+      "message": "Rodzaj zamka nie pasuje do roku z metki: {zamek} występuje w latach {zakres}, a litera wskazuje na {rok}."
+    },
+    {
+      "id": "V-03",
+      "title": "Kółko przy pasku ma organiczny skręt",
+      "kind": "visualTrait",
+      "field": "bales",
+      "signal": "soft",
+      "confidence": "confirmed",
+      "question": "Czy metalowe kółko łączące pasek z torebką jest grube, zaokrąglone, z organicznym skrętem i wygładzonymi końcówkami drutu?",
+      "hint": "Kółko przy boku torebki, w miejscu mocowania paska. Na zdjęciu poglądowym po lewej oryginał, po prawej podróbka.",
+      "reference": {
+        "src": "/reference/visual-bales-ring.png",
+        "alt": "Porównanie mocowania rączki z kółkiem: oryginał po lewej, podróbka po prawej"
+      },
+      "sellerQuestion": "bales",
+      "message": "Kółko przy pasku nie ma grubego, zaokrąglonego skrętu jak w oryginale."
     }
   ]
 }

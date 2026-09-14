@@ -20,11 +20,19 @@ const hardwareEra = z.object({
 });
 
 const ruleBase = {
-  id: z.string().regex(/^[MS]-\d{2}$/),
+  id: z.string().regex(/^[MSV]-\d{2}$/),
   /** Short Polish name shown next to passed and abstained rules. */
   title: z.string().min(1),
   confidence,
   message: z.string(),
+};
+
+/** What the wizard shows for a visual check (rules §7). */
+const visualPrompt = {
+  question: z.string().min(1),
+  hint: z.string().min(1),
+  reference: z.object({ src: z.string().startsWith("/"), alt: z.string().min(1) }),
+  sellerQuestion: z.enum(["tagStitching", "zipper", "bales"]),
 };
 
 const ruleSchema = z.discriminatedUnion("kind", [
@@ -84,6 +92,21 @@ const ruleSchema = z.discriminatedUnion("kind", [
     signal: z.literal("hard"),
     combos: z.array(z.object({ batch: z.string(), letter: z.string(), styleNumber: z.string() })),
   }),
+  z.object({
+    ...ruleBase,
+    ...visualPrompt,
+    kind: z.literal("visualTrait"),
+    signal: z.literal("soft"),
+    field: z.enum(["thread", "bales"]),
+  }),
+  z.object({
+    ...ruleBase,
+    ...visualPrompt,
+    kind: z.literal("zipperEra"),
+    signal: z.literal("hard"),
+    toleranceYears: z.number().int().min(0),
+    periods: z.object({ lampo: hardwareEra, b: hardwareEra }),
+  }),
 ]);
 
 export const knowledgeSchema = z.object({
@@ -111,6 +134,9 @@ export const knowledgeSchema = z.object({
     tabBack: z.string(),
     letterIllegible: z.string(),
     yearMismatch: z.string(),
+    tagStitching: z.string(),
+    zipper: z.string(),
+    bales: z.string(),
   }),
   rules: z.array(ruleSchema),
 });

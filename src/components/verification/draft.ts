@@ -22,6 +22,9 @@ export interface WizardDraft {
   madeInItalySize: Choice<TagObservation["madeInItalySize"]>;
   brandLine: Choice<TagObservation["brandLine"]>;
   stamp925: Choice<TagObservation["stamp925"]>;
+  thread: Choice<TagObservation["thread"]>;
+  zipper: Choice<TagObservation["zipper"]>;
+  bales: Choice<TagObservation["bales"]>;
 }
 
 export type DraftField = keyof WizardDraft;
@@ -51,11 +54,15 @@ export const emptyDraft: WizardDraft = {
   madeInItalySize: null,
   brandLine: null,
   stamp925: null,
+  thread: null,
+  zipper: null,
+  bales: null,
 };
 
-export const STEPS = ["Ogłoszenie", "Okucia", "Płytka", "Odwrót metki", "Oznaczenia"] as const;
+export const STEPS = ["Ogłoszenie", "Okucia", "Płytka", "Odwrót metki", "Oznaczenia", "Cechy wizualne"] as const;
 export const PLATE_STEP = 2;
-const LAST_STEP = STEPS.length - 1;
+export const MARKINGS_STEP = 4;
+export const VISUAL_STEP = 5;
 
 const REQUIRED = "Wybierz jedną z odpowiedzi.";
 
@@ -108,9 +115,14 @@ export function validateStep(step: number, d: WizardDraft): FieldErrors {
       }
       if (d.madeInItalySize === null) e.madeInItalySize = REQUIRED;
       break;
-    case LAST_STEP:
+    case MARKINGS_STEP:
       if (d.brandLine === null) e.brandLine = REQUIRED;
       if (d.stamp925 === null) e.stamp925 = REQUIRED;
+      break;
+    case VISUAL_STEP:
+      if (d.thread === null) e.thread = REQUIRED;
+      if (d.zipper === null) e.zipper = REQUIRED;
+      if (d.bales === null) e.bales = REQUIRED;
       break;
   }
   return e;
@@ -120,7 +132,7 @@ export function validateStep(step: number, d: WizardDraft): FieldErrors {
 export function isFinalStep(step: number, d: WizardDraft): boolean {
   if (step === 1) return d.hardware === "unknown" || d.hardware === "giant-or-other";
   if (step === PLATE_STEP) return d.tagPhoto === "missing";
-  return step === LAST_STEP;
+  return step === VISUAL_STEP;
 }
 
 /** Answers never given (cards skipped by an early stop) are sent as "unknown". */
@@ -142,5 +154,8 @@ export function toObservation(d: WizardDraft): TagObservation {
     stamp925: d.stamp925 ?? "unknown",
     madeInItalySize: d.madeInItalySize ?? "unknown",
     declaredYear: parseYear(d.declaredYear),
+    thread: d.thread ?? "unknown",
+    zipper: d.zipper ?? "unknown",
+    bales: d.bales ?? "unknown",
   };
 }

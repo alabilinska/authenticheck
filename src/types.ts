@@ -30,6 +30,12 @@ export interface TagObservation {
   madeInItalySize: "small" | "large" | Unknown;
   /** Year the seller claims, from the start card; optional. */
   declaredYear: number | null;
+  /** Visual check V-01 (rules §7): the top seam of the tag is black or very dark. */
+  thread: "yes" | "no" | Unknown;
+  /** Visual check V-02: what is stamped on the underside of the zipper pull. */
+  zipper: "lampo" | "b" | Unknown;
+  /** Visual check V-03: the bales have the thick, rounded, organic twist. */
+  bales: "yes" | "no" | Unknown;
 }
 
 /** "M-01" … "S-13", as in balenciaga-city-tag-rules.md. */

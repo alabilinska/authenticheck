@@ -16,6 +16,9 @@ const base: TagObservation = {
   stamp925: "absent",
   madeInItalySize: "small",
   declaredYear: null,
+  thread: "yes",
+  zipper: "lampo",
+  bales: "yes",
 };
 
 const tag = (overrides: Partial<TagObservation> = {}): TagEvaluation => evaluateTag({ ...base, ...overrides });
@@ -71,7 +74,7 @@ describe("rules §5 — constructed valid cases", () => {
   });
 
   it("V4: D + dot → S/S 2016, reading chosen by the brand line", () => {
-    const e = tag({ batchNumber: "2048", seasonLetter: "D", madeInItalySize: "unknown" });
+    const e = tag({ batchNumber: "2048", seasonLetter: "D", madeInItalySize: "unknown", zipper: "b" });
     expect(e.riskLevel).toBe("low");
     expect(fired(e)).toEqual([]);
     expect(e.year).toEqual({ status: "resolved", reading: { season: "S/S", year: 2016 }, resolvedBy: "S-05" });
@@ -321,7 +324,13 @@ describe("every rule is accounted for on the risk path", () => {
 
 describe("year resolution at the boundaries (review F2)", () => {
   it("(a) strict beats tolerance: O + large MADE IN ITALY → F/W 2023", () => {
-    const e = tag({ seasonLetter: "O", brandLine: "unknown", stamp925: "unknown", madeInItalySize: "large" });
+    const e = tag({
+      seasonLetter: "O",
+      brandLine: "unknown",
+      stamp925: "unknown",
+      madeInItalySize: "large",
+      zipper: "b",
+    });
     expect(e.year).toEqual({ status: "resolved", reading: { season: "F/W", year: 2023 }, resolvedBy: "S-13" });
     expect(e.riskLevel).toBe("low");
   });
@@ -372,5 +381,71 @@ describe("input normalization (review F4)", () => {
   it("N° typed in the batch field is stripped", () => {
     const e = tag({ batchNumber: "N° 4892" });
     expect(e.passed).toContain("S-11");
+  });
+});
+
+describe("visual checks (rules §7.1)", () => {
+  it("V-01: a seam that is not black is a soft signal", () => {
+    expectRisk(tag({ thread: "no" }), { risk: "medium", soft: ["V-01"], year: "resolved" });
+  });
+
+  it("V-03: bales without the twist are a soft signal", () => {
+    expectRisk(tag({ bales: "no" }), { risk: "medium", soft: ["V-03"], year: "resolved" });
+  });
+
+  it("can't see on all three abstains, asks the three seller questions and keeps the risk", () => {
+    const e = tag({ thread: "unknown", zipper: "unknown", bales: "unknown" });
+    expectRisk(e, { risk: "low", year: "resolved" });
+    expect(e.abstained).toEqual(expect.arrayContaining(["V-01", "V-02", "V-03"]));
+    expect(e.sellerQuestions).toEqual(
+      expect.arrayContaining([questions.tagStitching, questions.zipper, questions.bales]),
+    );
+  });
+
+  it("V-02: a B pull on a bag dated 2005 is hard", () => {
+    const e = tag({ seasonLetter: "A", stamp925: "present", madeInItalySize: "unknown", zipper: "b" });
+    expectRisk(e, { risk: "high", hard: ["V-02"], year: "resolved" });
+    expect(e.hardSignals[0]?.message).toContain("2005");
+  });
+
+  it("V-02: a B pull on a bag dated 2014 is soft (one year from the change)", () => {
+    expectRisk(tag({ seasonLetter: "H", madeInItalySize: "large", zipper: "b" }), {
+      risk: "medium",
+      soft: ["V-02"],
+      year: "resolved",
+    });
+  });
+
+  it("V-02: Lampo on a bag dated 2015 is soft", () => {
+    expectRisk(tag({ seasonLetter: "F", madeInItalySize: "large" }), {
+      risk: "medium",
+      soft: ["V-02"],
+      year: "resolved",
+    });
+  });
+
+  it("V-02: Lampo on a bag dated 2016 is hard", () => {
+    expectRisk(tag({ seasonLetter: "D", madeInItalySize: "unknown" }), {
+      risk: "high",
+      hard: ["V-02"],
+      year: "resolved",
+    });
+  });
+
+  it("V-02 abstains while the year is unresolved", () => {
+    const e = tag({ brandLine: "unknown", stamp925: "unknown", madeInItalySize: "unknown", zipper: "b" });
+    expect(e.year.status).toBe("ambiguous");
+    expect(e.abstained).toContain("V-02");
+  });
+
+  it("V-02: no season letter (2001–2003) with a B pull is hard", () => {
+    const e = tag({
+      seasonLetter: "none",
+      brandLine: "unknown",
+      stamp925: "unknown",
+      madeInItalySize: "unknown",
+      zipper: "b",
+    });
+    expect(hard(e)).toContain("V-02");
   });
 });

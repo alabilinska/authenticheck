@@ -193,3 +193,18 @@ export function UnknownToggle({
     </label>
   );
 }
+
+/** A reference photo for a visual check; fixed box so the card does not jump while it loads. */
+export function ReferencePhoto({ src, alt }: { src: string; alt: string }) {
+  return (
+    <figure className="overflow-hidden rounded-lg border border-white/10 bg-black/30">
+      <img src={src} alt={alt} loading="lazy" decoding="async" className="aspect-[4/3] w-full object-contain" />
+      <figcaption className="flex items-center justify-between gap-2 px-3 py-1.5 text-xs text-blue-100/60">
+        <span>Zdjęcie poglądowe</span>
+        <a href={src} target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:underline">
+          Powiększ
+        </a>
+      </figcaption>
+    </figure>
+  );
+}

@@ -252,30 +252,80 @@ function evaluateLetter(ctx: Context, obs: TagObservation): YearStatus {
   return { status: "ambiguous", readings: readings.map(toYearReading) };
 }
 
+/** Years between an era and the tag year (the no-letter period as its whole range); null when the year is undecided. */
+function eraGap(ctx: Context, year: YearStatus, from: number, to: number | null): { gap: number; rok: string } | null {
+  const eraTo = to ?? Infinity;
+  if (year.status === "resolved") {
+    return { gap: rangeGap(year.reading.year, year.reading.year, from, eraTo), rok: String(year.reading.year) };
+  }
+  if (year.status === "no-letter") {
+    const period = ctx.knowledge.noLetterPeriod;
+    return {
+      gap: rangeGap(period.from, period.to, from, eraTo),
+      rok: `${String(period.from)}–${String(period.to)} (brak litery sezonu)`,
+    };
+  }
+  return null;
+}
+
+function formatRange(from: number, to: number | null): string {
+  return to === null ? `od ${String(from)}` : `${String(from)}–${String(to)}`;
+}
+
 function checkHardware(ctx: Context, hardware: ClassicHardware, year: YearStatus): void {
   const rule = ruleOfKind(ctx.knowledge, "hardwareEra");
-  if (hardware === "classic-variant-unknown" || year.status === "ambiguous" || year.status === "unknown") {
+  const era = hardware === "classic-variant-unknown" ? null : ctx.knowledge.hardwareEras[hardware];
+  const dated = era === null ? null : eraGap(ctx, year, era.from, era.to);
+  if (era === null || dated === null) {
     ctx.abstained.push(rule.id);
     return;
   }
-  const era = ctx.knowledge.hardwareEras[hardware];
-  const eraTo = era.to ?? Infinity;
-  let gap: number;
-  let rok: string;
-  if (year.status === "resolved") {
-    gap = rangeGap(year.reading.year, year.reading.year, era.from, eraTo);
-    rok = String(year.reading.year);
-  } else {
-    const { from, to } = ctx.knowledge.noLetterPeriod;
-    gap = rangeGap(from, to, era.from, eraTo);
-    rok = `${String(from)}–${String(to)} (brak litery sezonu)`;
-  }
-  if (gap === 0) {
+  if (dated.gap === 0) {
     ctx.passed.push(rule.id);
     return;
   }
-  const zakres = era.to === null ? `od ${String(era.from)}` : `${String(era.from)}–${String(era.to)}`;
-  signal(ctx, rule, gap <= rule.toleranceYears ? "soft" : "hard", { okucia: era.label, zakres, rok });
+  signal(ctx, rule, dated.gap <= rule.toleranceYears ? "soft" : "hard", {
+    okucia: era.label,
+    zakres: formatRange(era.from, era.to),
+    rok: dated.rok,
+  });
+}
+
+/** V-01 and V-03: soft on their own (rules §7); "can't see" abstains and asks the seller. */
+function checkVisualTraits(ctx: Context, obs: TagObservation): void {
+  for (const rule of rulesOfKind(ctx.knowledge, "visualTrait")) {
+    const answer = obs[rule.field];
+    if (answer === "unknown") {
+      ctx.abstained.push(rule.id);
+      ask(ctx, rule.sellerQuestion);
+    } else if (answer === "no") signal(ctx, rule, "soft");
+    else ctx.passed.push(rule.id);
+  }
+}
+
+/** V-02: the zipper variant against the tag year, like the hardware era (S-07). */
+function checkZipper(ctx: Context, zipper: TagObservation["zipper"], year: YearStatus): void {
+  const rule = ruleOfKind(ctx.knowledge, "zipperEra");
+  if (zipper === "unknown") {
+    ctx.abstained.push(rule.id);
+    ask(ctx, rule.sellerQuestion);
+    return;
+  }
+  const era = rule.periods[zipper];
+  const dated = eraGap(ctx, year, era.from, era.to);
+  if (dated === null) {
+    ctx.abstained.push(rule.id);
+    return;
+  }
+  if (dated.gap === 0) {
+    ctx.passed.push(rule.id);
+    return;
+  }
+  signal(ctx, rule, dated.gap <= rule.toleranceYears ? "soft" : "hard", {
+    zamek: era.label,
+    zakres: formatRange(era.from, era.to),
+    rok: dated.rok,
+  });
 }
 
 function checkDeclaredYear(ctx: Context, declared: number | null, year: YearStatus): void {
@@ -393,6 +443,10 @@ export function evaluateTag(obs: TagObservation, knowledge: Knowledge = defaultK
   else if (fake.combos.some((c) => c.batch === batch && c.letter === letter && c.styleNumber === style)) {
     signal(ctx, fake, "hard");
   } else ctx.passed.push(fake.id);
+
+  // V-01–V-03 — visual checks (rules §7).
+  checkVisualTraits(ctx, obs);
+  checkZipper(ctx, obs.zipper, year);
 
   checkHardware(ctx, hardware, year);
   checkDeclaredYear(ctx, obs.declaredYear, year);

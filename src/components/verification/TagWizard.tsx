@@ -9,6 +9,7 @@ import {
   STEPS,
   toObservation,
   validateStep,
+  VISUAL_STEP,
   type DraftField,
   type FieldErrors,
   type WizardDraft,
@@ -19,6 +20,7 @@ import { HardwareStep } from "./HardwareStep";
 import { PlateStep } from "./PlateStep";
 import { TabBackStep } from "./TabBackStep";
 import { MarkingsStep } from "./MarkingsStep";
+import { VisualStep } from "./VisualStep";
 import { ResultCard } from "./ResultCard";
 
 export default function TagWizard() {
@@ -129,6 +131,7 @@ export default function TagWizard() {
         {step === PLATE_STEP && <PlateStep {...stepProps} inputError={inputError} onConfirm={confirmStyleNumber} />}
         {step === 3 && <TabBackStep {...stepProps} />}
         {step === 4 && <MarkingsStep {...stepProps} />}
+        {step === VISUAL_STEP && <VisualStep {...stepProps} />}
         <div className="flex gap-3 pt-2">
           {step > 0 && (
             <Button

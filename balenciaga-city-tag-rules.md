@@ -296,6 +296,20 @@ the year from the tag, as in the Lampo/`B` case.
 Reference image filenames are not in this file — name them after the rule IDs
 (`visual-lampo-underside.jpg`) so the config can point at them.
 
+### 7.1 Rules
+
+| ID | Rule | Signal | Status | Message (PL) |
+|---|---|---|---|---|
+| `V-01` | Top seam of the tag is black or very dark | soft; "can't see" → question to seller (Tag stitching) | confirmed | Górny szew metki nie jest czarny. W oryginale ta nitka jest czarna lub bardzo ciemna, niezależnie od koloru torebki i metki. |
+| `V-02` | Zipper pull vs letter year: `Lampo` up to 2014, `B` from 2015 | hard; soft within one year of the change; "can't see" → question to seller (Zipper) | confirmed | Rodzaj zamka nie pasuje do roku z metki: {zamek} występuje w latach {zakres}, a litera wskazuje na {rok}. |
+| `V-03` | The bales have a thick, rounded, organic twist with smoothed wire ends | soft; "can't see" → question to seller (Bales) | confirmed | Kółko przy pasku nie ma grubego, zaokrąglonego skrętu jak w oryginale. |
+
+`V-02` reads "≈ 2014/2015" as Lampo up to 2014 and `B` from 2015, with one year of tolerance: a `B` pull
+on a 2014 bag or Lampo on a 2015 bag is soft, anything further apart is hard. With an unresolved year the
+rule abstains. Reference images in the app: `public/reference/visual-thread-tag.webp`,
+`public/reference/visual-lampo-zipper.webp`, `public/reference/visual-bales-ring.png` (temporary, to be
+replaced with own photographs).
+
 ---
 
 ## 8. Questions to the seller (FR-004, FR-008)
