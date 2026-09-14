@@ -235,6 +235,6 @@ No data changes. Dashboard settings are one-time and apply to local and producti
 
 - [x] 2.6 Supabase dashboard settings applied — f5ef29a
 - [x] 2.7 Local reset end to end, sign in with the new password — f5ef29a
-- [ ] 2.8 Email link opened on another device reaches the new-password form
+- [x] 2.8 Email link opened on another device reaches the new-password form — 70c6abf
 - [x] 2.9 Used or expired link shows the invalid-link message; old password no longer works — f5ef29a
-- [ ] 2.10 Same walk-through works on production after the deploy
+- [x] 2.10 Same walk-through works on production after the deploy — 70c6abf
