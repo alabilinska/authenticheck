@@ -57,6 +57,7 @@ npm run dev
 - `npm test` - Run the unit tests (Vitest)
 - `npm run test:watch` - Run the unit tests in watch mode
 - `npm run typecheck` - Type-check the project (`astro check`)
+- `npm run test:e2e` - End-to-end test of the main verification path (Playwright; needs `E2E_EMAIL` and `E2E_PASSWORD` of a test account in `.dev.vars`; first run `npx playwright install chromium`)
 - `npm run format` - Run Prettier
 
 ## Project Structure

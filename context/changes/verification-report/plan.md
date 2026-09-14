@@ -154,28 +154,28 @@ Playwright and one test that walks the US-01 path locally.
 
 #### Automated
 
-- [x] 1.1 Unit tests pass
-- [x] 1.2 Lint passes with exit code 0
-- [x] 1.3 Type check passes
-- [x] 1.4 Build passes
+- [x] 1.1 Unit tests pass — 6d5d492
+- [x] 1.2 Lint passes with exit code 0 — 6d5d492
+- [x] 1.3 Type check passes — 6d5d492
+- [x] 1.4 Build passes — 6d5d492
 
 #### Manual
 
-- [x] 1.5 V1 with batch 123 shows medium risk and the tag-photo question
-- [x] 1.6 Copy button puts the message with the link and numbered questions on the clipboard
-- [x] 1.7 Ambiguous year lists S-07, S-08 and V-02 under the unresolved-year section
+- [x] 1.5 V1 with batch 123 shows medium risk and the tag-photo question — 6d5d492
+- [x] 1.6 Copy button puts the message with the link and numbered questions on the clipboard — 6d5d492
+- [x] 1.7 Ambiguous year lists S-07, S-08 and V-02 under the unresolved-year section — 6d5d492
 
 ### Phase 2: End-to-end test of the main path
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass
-- [ ] 2.2 Lint passes with exit code 0
-- [ ] 2.3 Type check passes
-- [ ] 2.4 Build passes
-- [ ] 2.5 End-to-end test passes locally
+- [x] 2.1 Unit tests pass
+- [x] 2.2 Lint passes with exit code 0
+- [x] 2.3 Type check passes
+- [x] 2.4 Build passes
+- [x] 2.5 End-to-end test passes locally
 
 #### Manual
 
-- [ ] 2.6 Test account created and credentials added to .dev.vars
-- [ ] 2.7 E2E run watched once headed and follows the real wizard
+- [x] 2.6 Test account created and credentials added to .dev.vars
+- [x] 2.7 E2E run watched once headed and follows the real wizard

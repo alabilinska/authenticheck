@@ -58,7 +58,8 @@ link lands on `GET /api/auth/confirm?code=…` (PKCE — works only in the brows
 - `npm test` / `npm run test:watch` — Vitest unit tests (`src/**/*.test.ts`, node environment, plain config without
   Astro's Vite setup); one file: `npx vitest run src/lib/services/tag-validation/evaluate.test.ts`
 - `npm run typecheck` — `astro check`
-- The PRD's end-to-end test of the main verification path is still owed (roadmap S-04).
+- `npm run test:e2e` — Playwright end-to-end test of the main path (`e2e/*.spec.ts`) against `npm run dev` on :4321;
+  needs `E2E_EMAIL` / `E2E_PASSWORD` of a test account in `.dev.vars` (skipped without them); not run in CI
 
 Wrangler (Worker `authenticheck`). Production deploys come from Workers Builds on `main`; CI never deploys.
 
