@@ -575,24 +575,24 @@ Nie dotyczy. Brak zmian w schemacie bazy, w `knowledge.json` i w kodzie produkcy
 
 #### Automated
 
-- [x] 4.1 Unit tests pass: `npm test` (łącznie 3 expected fail)
-- [x] 4.2 Plik przechodzi osobno: `npx vitest run src/lib/services/verifications.test.ts`
-- [x] 4.3 Linting passes: `npm run lint`
-- [x] 4.4 Type checking passes: `npm run typecheck`
+- [x] 4.1 Unit tests pass: `npm test` (łącznie 3 expected fail) — a17dc28
+- [x] 4.2 Plik przechodzi osobno: `npx vitest run src/lib/services/verifications.test.ts` — a17dc28
+- [x] 4.3 Linting passes: `npm run lint` — a17dc28
+- [x] 4.4 Type checking passes: `npm run typecheck` — a17dc28
 
 #### Manual
 
-- [x] 4.5 Tymczasowa naprawa `toListItem` odwraca oba `it.fails`; cofnięta
-- [x] 4.6 Zamiana kolumn w `toInsertRow` zapala tabelę „lista = raport”; cofnięta
+- [x] 4.5 Tymczasowa naprawa `toListItem` odwraca oba `it.fails`; cofnięta — a17dc28
+- [x] 4.6 Zamiana kolumn w `toInsertRow` zapala tabelę „lista = raport”; cofnięta — a17dc28
 
 ### Phase 5: Cookbook — `test-plan.md` §6.1 i §6.5
 
 #### Automated
 
-- [ ] 5.1 `grep -n "TBD — see §3 Phase 1" context/foundation/test-plan.md` nie zwraca nic
-- [ ] 5.2 Pełny zestaw nadal zielony: `npm test`
+- [x] 5.1 `grep -n "TBD — see §3 Phase 1" context/foundation/test-plan.md` nie zwraca nic
+- [x] 5.2 Pełny zestaw nadal zielony: `npm test`
 
 #### Manual
 
-- [ ] 5.3 §6.1 wystarcza do dodania testu nowej reguły bez czytania planu
-- [ ] 5.4 §6.5 zawiera kandydata do `--refresh`
+- [x] 5.3 §6.1 wystarcza do dodania testu nowej reguły bez czytania planu
+- [x] 5.4 §6.5 zawiera kandydata do `--refresh`

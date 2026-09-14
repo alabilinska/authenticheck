@@ -88,7 +88,39 @@ Jak dodawać nowe testy w tym projekcie. Każda podsekcja zostanie uzupełniona,
 
 ### 6.1 Adding a unit test for a rule (werdykt silnika)
 
-- TBD — see §3 Phase 1 (wzorzec: przypadek z dokumentu reguł jako źródło oczekiwań; brak fałszywego niskiego i fałszywego wysokiego ryzyka).
+**Gdzie (Vitest, środowisko Node, `*.test.ts` obok kodu):**
+
+- `src/lib/services/tag-validation/evaluate.test.ts` — przypadki §5 dokumentu reguł (V1–V6, X1–X16) i zachowania zdecydowane.
+- `src/lib/services/tag-validation/knowledge.test.ts` — strażnik zgodności `knowledge.json` z dokumentem reguł: tabele parsowane z Markdowna, wartości z prozy jako literały.
+- `src/lib/services/tag-validation/invariants.test.ts` — niezmienniki agregacji na siatce kombinacji i na zmienionych kopiach wiedzy; decyzja produktowa „nie widać”.
+- `src/lib/services/tag-validation/input-errors.test.ts` — błędne dane: bezpieczne ścieżki silnika i blok `LUKA:`.
+- `src/components/verification/draft.test.ts` — `validateStep` i łańcuch kreator → silnik.
+- `src/lib/services/verifications.test.ts` — mapowania wierszy, schemat API, spójność listy z raportem.
+- `src/components/verification/report.test.ts` — etykiety wyniku.
+
+**Zasady:**
+
+- Źródłem oczekiwań jest `balenciaga-city-tag-rules.md` — tabela parsowana z Markdowna albo literał z komentarzem `// :<linia dokumentu>` — nigdy `knowledge.json` (to byłaby tautologia).
+- Zmiana reguły: najpierw dokument, potem JSON. Strażnik w `knowledge.test.ts` ma się zapalić, gdy zmieni się jedno bez drugiego; nowa tolerancja albo okres to nowy literał w jego testach prozy.
+- „Po zmianie reguł” = `evaluateTag(obs, zmienionaKopia)`, gdzie kopia to `structuredClone(defaultKnowledge)` po edycji, przepuszczona przez `knowledgeSchema.parse`. Bez `vi.mock` pliku wiedzy.
+- Warianty błędnych danych generuj z kategorii błędu (znak spoza alfabetu, znak niewidoczny, pełna szerokość, zamiana lub podmiana cyfry, odwrócone grupy, pusty lub biały znak, wielkość liter wartownika), nie z listy naprawionych literówek. Znaki niewidoczne zapisuj jako `"\u200B"`.
+- `LUKA:` = zwykły test charakteryzujący zachowanie, które definiuje sam dokument reguł; nazwa cytuje regułę i linię dokumentu. Zmiana dokumentu albo silnika świadomie zmienia jego kolor.
+- `it.fails` tylko dla prawdziwych błędów, nazwa `BŁĄD (lekcja N): …`, zawsze z osobnym zielonym testem `precondition`. W `it.fails` jedyną spodziewanie nieudaną linią jest asercja końcowa; po naprawie zdejmij `.fails`.
+- Nowa reguła twarda: kolumna Signal dokumentu → `documentedHardRules` w `fixtures.ts` → profil w siatce `invariants.test.ts`, jeśli siatka jej jeszcze nie odpala (powie to asercja niepustości).
+- Zanim zaufasz nowemu testowi, zrób tymczasową mutację (wartość w JSON, agregacja w silniku, regex kreatora), zobacz czerwony test i cofnij.
+
+**Wspólne dane:** `src/lib/services/tag-validation/fixtures.ts` — `v1Observation` (przypadek V1; nadpisuj pojedyncze pola) i `documentedHardRules`.
+
+**Test referencyjny na wzorzec:**
+
+- wartość z prozy dokumentu — `knowledge.test.ts` › „uses the tolerances the document states, and no others”
+- tabela parsowana z dokumentu — `knowledge.test.ts` › „encodes the §3.2 letter table…”
+- niezmiennik z asercją niepustości — `invariants.test.ts` › „holds for every combination…” i „is not vacuous…”
+- błędne dane z kategorii — `input-errors.test.ts` › „unconfirmed style number with …”
+- znana luka — `input-errors.test.ts` › „LUKA: M-03 …”
+- znany błąd — `verifications.test.ts` › „precondition (…)” i „BŁĄD (lekcja 5), …”
+
+**Uruchomienie:** `npm test`; jeden plik: `npx vitest run src/lib/services/tag-validation/knowledge.test.ts`. Po fazie 1 wynik to zielony zestaw plus 3 × „expected fail” (etykieta fail-open, 2 × lista = raport po zmianie reguł).
 
 ### 6.2 Adding an integration test for data isolation
 
@@ -105,6 +137,13 @@ Jak dodawać nowe testy w tym projekcie. Każda podsekcja zostanie uzupełniona,
 ### 6.5 Per-rollout-phase notes
 
 (Uzupełniane po każdej fazie: 2–3 linie o tym, czego faza nauczyła.)
+
+**Faza 1 — Silnik reguł bez fałszywych werdyktów** (`testing-rule-engine-verdicts`, 2026-09-14)
+
+- Część celów #2 była sprzeczna z dokumentem reguł (S-01, M-03 i potwierdzony M-01 są w nim twarde), więc zamiast „nigdy twardy” są testy `LUKA:`. Zmiana to decyzja produktowa, która zaczyna się w dokumencie.
+- Rozjazd listy z raportem po zmianie reguł i etykieta fail-open (`outcomeLabel("risk", null)` → „Niskie ryzyko”) czekają na lekcję 5 jako 3 × `it.fails`.
+- Tolerancje S-08 (jeden rok) i S-13 (±1 rok wokół 2010/2011) poprawione w dokumencie reguł; `knowledge.json` bez zmian. „Niskie” przy wielu „nie widać” zostaje decyzją produktową (niespójność PRD `:35` vs `:110`), udokumentowaną w `invariants.test.ts`.
+- **Kandydat do `/10x-test-plan --refresh`:** stary wiersz bez nowego pola obserwacji nie przechodzi `parseRow`, a lista mapuje wszystkie wiersze naraz, więc jeden taki wiersz wysypuje całą listę „Moje weryfikacje” (research fazy 1, pytanie 6). To ryzyko zmiany schematu obserwacji, nie etykiety — poza §2 w obecnym kształcie.
 
 ## 7. What We Deliberately Don't Test
 
