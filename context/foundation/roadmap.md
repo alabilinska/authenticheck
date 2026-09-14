@@ -43,7 +43,7 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 | --- | --- | --- | --- | --- | --- |
 | F-01 | connect-auth-database-project | (foundation) the auth-and-database project declared in `tech-stack.md` exists and is connected locally and in production; the existing sign-up, sign-in and sign-out flow works end to end | — | Access Control, FR-001 | done |
 | S-01 | tag-validation-first-result | user can start a verification (declared year, listing link, price; line fixed to Classic City medium) and, after entering what the tag shows — plate numbers and season letter, the first number on the back of the tab, hardware type, brand-line style, 925 stamp and MADE IN ITALY size — immediately see which rules pass or fail, each with its message and confidence level, and the result: a risk level, or unsupported for a variant outside v1; an unresolved year and input errors are shown without a verdict, and a missing tag photo becomes a seller question and raises the risk one step | F-01, the rule knowledge file (committed 2026-09-14) | US-01, FR-002, FR-003, FR-004 | ready |
-| S-03 | visual-checklist | user can answer the three visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, and "can't see" stays neutral and becomes a seller question | S-01, reference photos for the three checks committed to the repository | FR-006, FR-004 | blocked |
+| S-03 | visual-checklist | user can answer the three visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, "can't see" stays neutral and becomes a seller question, and each trait is a soft signal on its own and a hard one only when it contradicts the tag year | S-01, reference photos for the three checks committed to the repository | FR-006, FR-004 | proposed |
 | S-04 | verification-report | user can see one report with the result — a risk level, or unsupported — and the signals that set it: passed checks, failed hard signals shown separately, unchecked items and checks that abstained because the year is unresolved; they can copy a ready-made list of seller questions, and a low-risk report states that no warning signs were found in the checked traits | S-03 | US-01, FR-007, FR-008 | proposed |
 | S-05 | save-and-list-verifications | user can save a verification and later open it from their own list, where each listing shows its risk label; no other user can see it | F-01, S-04 | US-01, FR-009 | proposed |
 | S-06 | edit-saved-verification | user can re-open a saved verification, change any answer (e.g. "can't see" → "yes" after the seller sends photos) and see the report recalculated | S-05 | FR-011 | proposed |
@@ -104,16 +104,15 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ### S-03: Visual checklist with reference photos
 
-- **Outcome:** user can answer the three visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, and "can't see" stays neutral and becomes a seller question.
+- **Outcome:** user can answer the three visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, "can't see" stays neutral and becomes a seller question, and each trait is a soft signal on its own and a hard one only when it contradicts the tag year.
 - **Change ID:** visual-checklist
 - **PRD refs:** FR-006, FR-004
 - **Prerequisites:** S-01, reference photos for the three checks committed to the repository
 - **Parallel with:** S-08
 - **Blockers:** —
-- **Unknowns:** 
-  - Are the visual checks hard or soft signals? The PRD treats a "no" as hard; the rule knowledge file (§7) makes each trait soft on its own and hard only in combination with the tag year. — Owner: user. Block: yes. (PRD Open Question 5.)
-- **Risk:** Depends on the year decoded in S-01; the photos already exist outside the repository, so once the signal question is settled the work is mostly content plus the era switch.
-- **Status:** blocked
+- **Unknowns:** —
+- **Risk:** Depends on the year decoded in S-01; the photos already exist outside the repository, so the work is mostly content plus the era switch, where a single contradiction (e.g. a `B` zipper pull on a bag dated 2005) must become a hard signal.
+- **Status:** proposed
 
 ### S-04: Verification report with seller questions
 
@@ -181,7 +180,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | --- | --- | --- | --- | --- |
 | F-01 | connect-auth-database-project | Connect the auth-and-database project locally and in production | done | Done 2026-09-13 outside the change workflow — see `## Done` |
 | S-01 | tag-validation-first-result | First verification: validate the tag and show the result | yes | Run `/10x-plan tag-validation-first-result` — the north star |
-| S-03 | visual-checklist | Visual checklist: three checks with hints and reference photos | no | Blocked by PRD Open Question 5; photos not yet in the repo |
+| S-03 | visual-checklist | Visual checklist: three checks with hints and reference photos | no | Waits for S-01 and the photos in the repo |
 | S-04 | verification-report | Report: result, signals and copyable seller questions | no | Waits for S-03 |
 | S-05 | save-and-list-verifications | Save a verification and list it with its risk label | no | Waits for S-04 |
 | S-06 | edit-saved-verification | Re-open a saved verification, edit answers, recalculate | no | Waits for S-05 |
@@ -197,7 +196,7 @@ This table is the clean handoff to Jira/Linear or any MCP-backed backlog.
 3. **Which rules are "confirmed" vs "probable"?** Resolved 2026-09-13 (policy): a rule is "confirmed" only when the knowledge file cites a source for it; otherwise it ships as "probable". — Owner: user. Block: no.
 4. **Which lines are selectable in v1?** Resolved 2026-09-14: Classic City medium with classic hardware only; Motorcycle and Giant hardware are out of scope and reported as unsupported. — Owner: user. Block: no.
 5. **Unresolved dependency audit.** The lockfile is unchanged since bootstrap and the audit still reports 2 critical and 14 high findings. Part of the high findings in the page framework are fixed by a patch release within the current major version; the critical one (remote code execution through AVIF image optimization) is fixed only in the next major version, which also requires the next major version of the deploy adapter. Decide: upgrade, or accept with a recorded mitigation. — Owner: user. Block: roadmap-wide, before the first external user (does not block planning).
-6. **Are the visual checks hard or soft signals?** FR-006 and the PRD's Business Logic treat a visual trait answered "no" as a hard signal; the rule knowledge file (§7) makes each trait soft on its own and hard only in combination with the tag year. — Owner: user. Block: S-03.
+6. **Are the visual checks hard or soft signals?** Resolved 2026-09-14: as in the rule knowledge file (§7) — each trait is soft on its own and hard only when it contradicts the tag year; PRD FR-006 and Business Logic updated. — Owner: user. Block: no.
 
 ## Parked
 
