@@ -140,14 +140,26 @@ By default Supabase requires email confirmation before a user can sign in. To sk
 
 Users can then sign in immediately after sign-up without clicking a confirmation link.
 
+### Password reset setup (Supabase dashboard, one-time)
+
+Local dev and production share one Supabase project, so these settings serve both:
+
+1. **Authentication → URL Configuration → Site URL**: `https://authenticheck.alicja-a-bilinska.workers.dev`
+2. **Authentication → URL Configuration → Redirect URLs**: `https://authenticheck.alicja-a-bilinska.workers.dev/api/auth/confirm` and `http://localhost:4321/api/auth/confirm`
+
+The default "Reset password" email is used as is: its link returns to `/api/auth/confirm?code=…` (PKCE), so it works only in the browser where the reset was requested; elsewhere the user sees a message asking to request a new link from that browser. To make the link work on any device, change the template to link to `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery` — the endpoint already handles it, but editing templates needs a paid Supabase plan or custom SMTP. Emails go through Supabase's built-in sender: a low hourly limit and restricted recipients — configure custom SMTP before external users.
+
 ### Auth routes
 
-| Route                 | Description                                                             |
-| --------------------- | ----------------------------------------------------------------------- |
-| `/auth/signin`        | Email/password sign-in form                                             |
-| `/auth/signup`        | Email/password sign-up form                                             |
-| `/auth/confirm-email` | Post-signup "check your inbox" page                                     |
-| `/dashboard`          | Example protected page (redirects to `/auth/signin` if unauthenticated) |
+| Route                   | Description                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| `/auth/signin`          | Email/password sign-in form                                                    |
+| `/auth/signup`          | Email/password sign-up form                                                    |
+| `/auth/confirm-email`   | Post-signup page: "Account ready" when signed in, "Check your email" otherwise |
+| `/auth/forgot-password` | Request a password reset link by email                                         |
+| `/auth/reset-password`  | Set a new password (only with the session from the email link)                 |
+| `/api/auth/confirm`     | Target of the reset email link (`?code=…`, or `?token_hash=…&type=recovery`)   |
+| `/dashboard`            | Example protected page (redirects to `/auth/signin` if unauthenticated)        |
 
 Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_ROUTES` array there to require authentication.
 

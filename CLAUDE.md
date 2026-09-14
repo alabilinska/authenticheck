@@ -42,8 +42,11 @@ without secrets; misconfiguration surfaces only at runtime.
 Request flow: `src/middleware.ts` resolves the Supabase user on every request into
 `context.locals.user` (typed in `src/env.d.ts`) and redirects unauthenticated requests whose
 path starts with an entry in `PROTECTED_ROUTES` to `/auth/signin`. Add every new
-authenticated route there. Auth endpoints: `src/pages/api/auth/{signin,signup,signout}.ts`
-(form POST → redirect with `?error=`); pages under `src/pages/auth/`.
+authenticated route there. Auth endpoints: `src/pages/api/auth/{signin,signup,signout,forgot-password,reset-password}.ts`
+(form POST → redirect with `?error=`); pages under `src/pages/auth/`. Password reset: the default Supabase email
+link lands on `GET /api/auth/confirm?code=…` (PKCE — works only in the browser that requested the reset);
+`?token_hash=…&type=recovery` is also handled, for a customised "Reset password" template. Redirect URLs must list
+`/api/auth/confirm` (README); shared logic in `src/lib/services/password-reset.ts`.
 
 ## Commands
 

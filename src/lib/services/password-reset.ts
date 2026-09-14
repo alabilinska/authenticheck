@@ -35,3 +35,23 @@ export function confirmUrl(origin: string): string {
 export function firstIssueMessage(error: z.ZodError): string {
   return error.issues.at(0)?.message ?? "Invalid input";
 }
+
+export const INVALID_LINK_MESSAGE = "This reset link is invalid or has expired. Request a new one.";
+export const PASSWORD_UPDATED_MESSAGE = "Password updated — sign in with your new password.";
+
+export const OTHER_BROWSER_MESSAGE =
+  "Open the reset link in the same browser where you requested it, or request a new link from this browser.";
+
+/** Where a missing session or a bad email link sends the user. */
+export const invalidLinkRedirect = `/auth/forgot-password?error=${encodeURIComponent(INVALID_LINK_MESSAGE)}`;
+
+/**
+ * Where a failed code exchange sends the user. The default Supabase link uses PKCE: its code verifier lives in a
+ * cookie of the browser that requested the reset, so the link fails in any other browser.
+ */
+export function codeExchangeFailureRedirect(errorCode: string | undefined): string {
+  if (errorCode === "pkce_code_verifier_not_found") {
+    return `/auth/forgot-password?error=${encodeURIComponent(OTHER_BROWSER_MESSAGE)}`;
+  }
+  return invalidLinkRedirect;
+}

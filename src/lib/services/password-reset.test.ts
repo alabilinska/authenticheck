@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  codeExchangeFailureRedirect,
   confirmRedirectPath,
   confirmUrl,
   firstIssueMessage,
@@ -56,5 +57,17 @@ describe("confirmUrl", () => {
     ["http://localhost:4321/", "http://localhost:4321/api/auth/confirm"],
   ])("builds the confirm URL from %s", (origin, expected) => {
     expect(confirmUrl(origin)).toBe(expected);
+  });
+});
+
+describe("codeExchangeFailureRedirect", () => {
+  it("asks to use the requesting browser when the PKCE code verifier is missing", () => {
+    expect(decodeURIComponent(codeExchangeFailureRedirect("pkce_code_verifier_not_found"))).toContain(
+      "same browser where you requested it",
+    );
+  });
+
+  it.each(["otp_expired", "flow_state_not_found", undefined])("treats %j as an invalid or expired link", (code) => {
+    expect(decodeURIComponent(codeExchangeFailureRedirect(code))).toContain("invalid or has expired");
   });
 });

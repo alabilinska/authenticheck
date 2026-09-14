@@ -198,6 +198,10 @@ No data changes. Dashboard settings are one-time and apply to local and producti
 - Auth pattern: `src/pages/api/auth/signin.ts`, `src/components/auth/SignUpForm.tsx`
 - Post-sign-up bug: `src/pages/auth/confirm-email.astro:4`
 
+## Implementation Notes
+
+- 2026-09-14, Phase 2: editing the "Reset password" email template needs a paid Supabase plan, which the developer declined. Adapted with the developer's approval: the default template is kept; `/api/auth/confirm` exchanges the default link's `?code=` for a session (`exchangeCodeForSession`, PKCE) and still handles `?token_hash=…&type=recovery` for a future customised template. Consequence: the link works only in the browser that requested the reset; opened elsewhere it shows "open the link in the browser where you requested it". Dashboard step 2.6 is now Site URL + Redirect URLs only, and 2.8 is verified as that message instead of the new-password form.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
@@ -206,31 +210,31 @@ No data changes. Dashboard settings are one-time and apply to local and producti
 
 #### Automated
 
-- [x] 1.1 Unit tests pass
-- [x] 1.2 Lint passes
-- [x] 1.3 Type check passes
-- [x] 1.4 Build passes
+- [x] 1.1 Unit tests pass — bffde6e
+- [x] 1.2 Lint passes — bffde6e
+- [x] 1.3 Type check passes — bffde6e
+- [x] 1.4 Build passes — bffde6e
 
 #### Manual
 
-- [x] 1.5 Local sign-up lands on "Account ready" and its link opens the dashboard
-- [x] 1.6 Signed-out /auth/confirm-email shows "Check your email"
-- [ ] 1.7 Production sign-up shows "Account ready" after the deploy
+- [x] 1.5 Local sign-up lands on "Account ready" and its link opens the dashboard — bffde6e
+- [x] 1.6 Signed-out /auth/confirm-email shows "Check your email" — bffde6e
+- [x] 1.7 Production sign-up shows "Account ready" after the deploy — bffde6e
 
 ### Phase 2: Password reset flow
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass
-- [ ] 2.2 Lint passes
-- [ ] 2.3 Type check passes
-- [ ] 2.4 Build passes
-- [ ] 2.5 Unauthenticated /auth/reset-password and tokenless /api/auth/confirm redirect to the invalid-link message
+- [x] 2.1 Unit tests pass
+- [x] 2.2 Lint passes
+- [x] 2.3 Type check passes
+- [x] 2.4 Build passes
+- [x] 2.5 Unauthenticated /auth/reset-password and tokenless /api/auth/confirm redirect to the invalid-link message
 
 #### Manual
 
-- [ ] 2.6 Supabase dashboard settings applied
-- [ ] 2.7 Local reset end to end, sign in with the new password
+- [x] 2.6 Supabase dashboard settings applied
+- [x] 2.7 Local reset end to end, sign in with the new password
 - [ ] 2.8 Email link opened on another device reaches the new-password form
-- [ ] 2.9 Used or expired link shows the invalid-link message; old password no longer works
+- [x] 2.9 Used or expired link shows the invalid-link message; old password no longer works
 - [ ] 2.10 Same walk-through works on production after the deploy
