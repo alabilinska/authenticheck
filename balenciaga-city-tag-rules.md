@@ -191,6 +191,12 @@ Mutually exclusive, i.e. hard contradictions:
 | `S-12` | Batch `0754` + letter `C` + number `115748` | hard flag | confirmed | Ta dokładna kombinacja numerów pojawia się na tysiącach podróbek City. Autentyczne egzemplarze z tym numerem są bardzo rzadkie. |
 | `S-13` | `MADE IN ITALY` in large letters ↔ letter year 2011 or later | hard | confirmed | Duży napis MADE IN ITALY pojawia się na metkach dopiero od 2011 roku, a litera wskazuje na {rok}. |
 
+Two rules fire in both directions, so each carries a second message for the opposite
+observation (the table shows the default one):
+
+- `S-06`, stamp absent while the letter points to 2005–2008: Płytki z lat 2005–2008 mają stempel 925, a tu go nie ma, choć litera wskazuje na {rok}.
+- `S-13`, small `MADE IN ITALY` while the letter points to 2011 or later: Mały napis MADE IN ITALY występuje na metkach do 2010 roku, a litera wskazuje na {rok}.
+
 ### 3.5 Resolving the double letters
 
 1. **Brand line** (`S-05`) — underscore means 2004 or earlier. Settles `D`, `C`, `B`: the first
@@ -244,7 +250,7 @@ photographs of specific bags):
 
 | # | Input | Expected |
 |---|---|---|
-| X1 | row 1 = `11574` | `M-01` hard |
+| X1 | row 1 = `11574` | `M-01` hard — in the app only once the buyer confirms the entry; unconfirmed it is an input error asking to re-read |
 | X2 | row 1 = `0754` | `M-05` input error, no risk verdict |
 | X3 | row 1 = six digits other than `115748` | `M-02` → `unsupported`, not risk |
 | X4 | plate `115748`, first number on the tab back different | `M-03` hard |

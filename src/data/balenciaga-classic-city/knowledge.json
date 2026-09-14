@@ -1,0 +1,247 @@
+{
+  "source": "balenciaga-city-tag-rules.md",
+  "scope": {
+    "styleNumbers": ["115748"],
+    "unsupportedMessage": "Na razie obsługujemy tylko Classic City w rozmiarze medium z klasycznymi okuciami — to nie znaczy, że z torebką jest coś nie tak."
+  },
+  "hardwareEras": {
+    "classic-flat-brass": { "label": "płaskie mosiężne okucia (flat brass)", "from": 2000, "to": 2002 },
+    "classic-pewter": { "label": "cynowe okucia (pewter)", "from": 2003, "to": 2004 },
+    "classic-aged-brass": { "label": "okucia z postarzanego mosiądzu (aged brass)", "from": 2004, "to": null }
+  },
+  "noLetterPeriod": { "from": 2001, "to": 2003 },
+  "seasonLetters": {
+    "D": [
+      { "season": "F/W", "year": 2003, "confidence": "confirmed" },
+      { "season": "S/S", "year": 2016, "confidence": "confirmed" }
+    ],
+    "C": [
+      { "season": "S/S", "year": 2004, "confidence": "confirmed" },
+      { "season": "F/W", "year": 2016, "confidence": "confirmed" }
+    ],
+    "B": [
+      { "season": "F/W", "year": 2004, "confidence": "confirmed" },
+      { "season": "S/S", "year": 2017, "confidence": "probable" }
+    ],
+    "A": [
+      { "season": "S/S", "year": 2005, "confidence": "confirmed" },
+      { "season": "F/W", "year": 2017, "confidence": "probable" }
+    ],
+    "Z": [
+      { "season": "F/W", "year": 2005, "confidence": "confirmed" },
+      { "season": "F/W", "year": 2018, "confidence": "probable" }
+    ],
+    "Y": [{ "season": "S/S", "year": 2006, "confidence": "confirmed" }],
+    "W": [
+      { "season": "F/W", "year": 2006, "confidence": "confirmed" },
+      { "season": "S/S", "year": 2018, "confidence": "probable" }
+    ],
+    "V": [
+      { "season": "S/S", "year": 2007, "confidence": "confirmed" },
+      { "season": null, "year": 2019, "confidence": "probable" }
+    ],
+    "U": [
+      { "season": "F/W", "year": 2007, "confidence": "confirmed" },
+      { "season": null, "year": 2020, "confidence": "probable" }
+    ],
+    "T": [{ "season": "S/S", "year": 2008, "confidence": "confirmed" }],
+    "S": [
+      { "season": "F/W", "year": 2008, "confidence": "confirmed" },
+      { "season": null, "year": 2021, "confidence": "probable" }
+    ],
+    "R": [
+      { "season": "S/S", "year": 2009, "confidence": "confirmed" },
+      { "season": null, "year": 2022, "confidence": "probable" }
+    ],
+    "Q": [{ "season": "F/W", "year": 2009, "confidence": "confirmed" }],
+    "P": [
+      { "season": "S/S", "year": 2010, "confidence": "confirmed" },
+      { "season": "S/S", "year": 2023, "confidence": "probable" }
+    ],
+    "O": [
+      { "season": "F/W", "year": 2010, "confidence": "confirmed" },
+      { "season": "F/W", "year": 2023, "confidence": "probable" }
+    ],
+    "N": [{ "season": "S/S", "year": 2011, "confidence": "confirmed" }],
+    "M": [{ "season": "F/W", "year": 2011, "confidence": "confirmed" }],
+    "L": [{ "season": "S/S", "year": 2012, "confidence": "confirmed" }],
+    "K": [{ "season": "F/W", "year": 2012, "confidence": "confirmed" }],
+    "J": [{ "season": "S/S", "year": 2013, "confidence": "confirmed" }],
+    "I": [{ "season": "F/W", "year": 2013, "confidence": "confirmed" }],
+    "H": [{ "season": "S/S", "year": 2014, "confidence": "confirmed" }],
+    "G": [{ "season": "F/W", "year": 2014, "confidence": "confirmed" }],
+    "F": [{ "season": "S/S", "year": 2015, "confidence": "confirmed" }],
+    "E": [{ "season": "F/W", "year": 2015, "confidence": "confirmed" }]
+  },
+  "features": {
+    "brandLine": {
+      "underscore": [{ "to": 2004 }],
+      "dot": [{ "from": 2005 }]
+    },
+    "stamp925": {
+      "present": [{ "to": 2008 }],
+      "absent": [{ "to": 2004 }, { "from": 2008 }]
+    },
+    "madeInItalySize": {
+      "small": [{ "to": 2010 }],
+      "large": [{ "from": 2011 }]
+    }
+  },
+  "sellerQuestions": {
+    "hardware": "Jakie okucia ma ta torebka — klasyczne czy Giant? Poproszę o zdjęcie ćwieku i nitu na spodzie rączki.",
+    "tagPhoto": "Poproszę o zdjęcie metki w środku torebki — z przodu i z odwrotu, tak żeby numery były ostre.",
+    "tabBack": "Poproszę o zdjęcie odwrotu skórzanej metki, z numerami i napisem MADE IN ITALY.",
+    "letterIllegible": "Litera sezonu jest nieczytelna na zdjęciu — czy da się zrobić ujęcie pod światło, pod kątem?",
+    "yearMismatch": "Metka wskazuje na rok {rok}. Czy wiadomo, z którego sezonu jest ta torebka i skąd pochodzi?"
+  },
+  "rules": [
+    {
+      "id": "M-01",
+      "kind": "styleNumberFormat",
+      "signal": "hard",
+      "confidence": "confirmed",
+      "pattern": "^\\d{6}$",
+      "message": "Numer modelu ma zawsze sześć cyfr. Sprawdź, czy to na pewno ten numer, a nie numer partii."
+    },
+    {
+      "id": "M-02",
+      "kind": "styleNumberSupported",
+      "signal": "unsupported",
+      "confidence": "confirmed",
+      "message": "Ten numer nie odpowiada Classic City w rozmiarze medium. Na razie obsługujemy tylko ten wariant — to nie znaczy, że z torebką jest coś nie tak."
+    },
+    {
+      "id": "M-03",
+      "kind": "plateMatchesTab",
+      "signal": "hard",
+      "confidence": "confirmed",
+      "message": "Numer z płytki i numer ze skórzanej metki różnią się. W oryginale są identyczne."
+    },
+    {
+      "id": "M-04",
+      "kind": "classicHasPlate",
+      "signal": "hard",
+      "confidence": "confirmed",
+      "message": "City z klasycznymi okuciami ma metalową płytkę na metce. Sama skórzana metka to niezgodność."
+    },
+    {
+      "id": "M-05",
+      "kind": "styleNumberLooksLikeBatch",
+      "signal": "input-error",
+      "confidence": "probable",
+      "batchDigits": 4,
+      "prefixes": ["N°", "Nº", "No"],
+      "message": "To wygląda na numer partii. Numer modelu jest niżej na płytce albo jako pierwszy na odwrocie skórzanej metki."
+    },
+    {
+      "id": "S-01",
+      "kind": "letterKnown",
+      "signal": "hard",
+      "confidence": "confirmed",
+      "message": "Ta litera nie występuje w oznaczeniach Balenciagi."
+    },
+    {
+      "id": "S-02",
+      "kind": "letterForbidden",
+      "signal": "hard",
+      "confidence": "confirmed",
+      "letters": ["X"],
+      "message": "Balenciaga pomija literę X. Taka metka nie pochodzi z oryginału."
+    },
+    {
+      "id": "S-03",
+      "kind": "letterIllegible",
+      "signal": "soft",
+      "confidence": "probable",
+      "message": "Nie udało się odczytać litery sezonu. Poproś sprzedawcę o ostre zdjęcie odwrotu metki."
+    },
+    {
+      "id": "S-04",
+      "kind": "letterBranch",
+      "signal": "branch",
+      "confidence": "confirmed",
+      "message": "Ta litera odpowiada dwóm sezonom. Rozstrzygnie to napis na metce, stempel 925 i wielkość napisu MADE IN ITALY."
+    },
+    {
+      "id": "S-05",
+      "kind": "periodFeature",
+      "feature": "brandLine",
+      "signal": "hard",
+      "toleranceYears": 0,
+      "confidence": "confirmed",
+      "message": "Litera wskazuje na rok {rok}, a napis na metce pochodzi z innego okresu."
+    },
+    {
+      "id": "S-06",
+      "kind": "periodFeature",
+      "feature": "stamp925",
+      "signal": "hard",
+      "toleranceYears": 0,
+      "confidence": "confirmed",
+      "message": "Stempel 925 występuje tylko na płytkach do 2008 roku, a litera wskazuje na {rok}.",
+      "messageByValue": {
+        "absent": "Płytki z lat 2005–2008 mają stempel 925, a tu go nie ma, choć litera wskazuje na {rok}."
+      }
+    },
+    {
+      "id": "S-07",
+      "kind": "hardwareEra",
+      "signal": "hard",
+      "toleranceYears": 1,
+      "confidence": "confirmed",
+      "message": "Rodzaj okuć nie pasuje do roku z metki: {okucia} występowały w latach {zakres}, a litera wskazuje na {rok}."
+    },
+    {
+      "id": "S-08",
+      "kind": "declaredYear",
+      "signal": "soft",
+      "toleranceYears": 1,
+      "confidence": "confirmed",
+      "message": "Litera na metce wskazuje na {rok}, a sprzedawca podaje {rok_deklarowany}. Zapytaj, skąd ta różnica."
+    },
+    {
+      "id": "S-09",
+      "kind": "noLetterClaim",
+      "signal": "hard",
+      "afterYear": 2003,
+      "confidence": "confirmed",
+      "message": "Od 2003 roku każda metka ma literę sezonu."
+    },
+    {
+      "id": "S-10",
+      "kind": "noLetterPresented",
+      "signal": "pass",
+      "beforeYear": 2003,
+      "confidence": "confirmed",
+      "message": ""
+    },
+    {
+      "id": "S-11",
+      "kind": "batchFormat",
+      "signal": "soft",
+      "pattern": "^\\d{4}$",
+      "confidence": "probable",
+      "message": "Numer partii ma zwykle cztery cyfry. Sprawdź odczyt."
+    },
+    {
+      "id": "S-12",
+      "kind": "knownCounterfeit",
+      "signal": "hard",
+      "confidence": "confirmed",
+      "combos": [{ "batch": "0754", "letter": "C", "styleNumber": "115748" }],
+      "message": "Ta dokładna kombinacja numerów pojawia się na tysiącach podróbek City. Autentyczne egzemplarze z tym numerem są bardzo rzadkie."
+    },
+    {
+      "id": "S-13",
+      "kind": "periodFeature",
+      "feature": "madeInItalySize",
+      "signal": "hard",
+      "toleranceYears": 1,
+      "confidence": "confirmed",
+      "message": "Duży napis MADE IN ITALY pojawia się na metkach dopiero od 2011 roku, a litera wskazuje na {rok}.",
+      "messageByValue": {
+        "small": "Mały napis MADE IN ITALY występuje na metkach do 2010 roku, a litera wskazuje na {rok}."
+      }
+    }
+  ]
+}
