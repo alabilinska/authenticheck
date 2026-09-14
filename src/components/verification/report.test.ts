@@ -54,8 +54,10 @@ describe("outcomeLabel", () => {
   });
 
   it("precondition: the low-risk label is exactly “Niskie ryzyko”", () => {
-    // Keeps the it.fails below honest: it cannot pass because of a typo in the label.
+    // Keeps the it.fails below honest: it cannot pass because of a typo in the label…
     expect(outcomeLabel("risk", "low")).toBe("Niskie ryzyko");
+    // …and the call under test returns a label instead of throwing.
+    expect(typeof outcomeLabel("risk", null)).toBe("string");
   });
 
   // Known bug, fixed in lesson 5: the label is fail-open — anything not high or medium reads as low,

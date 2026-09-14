@@ -171,6 +171,7 @@ Przypiąć strukturalną gwarancję agregacji poziomu ryzyka na przyciętej siat
   - deklarowany rok (`null`, 2002, 2010, 2019).
 
   Płytka jest ustawiona na V1.
+
 - **Siatka B (bramki i wiersz 1).** Profile płytki:
   - V1,
   - `leather-only`,
@@ -181,6 +182,7 @@ Przypiąć strukturalną gwarancję agregacji poziomu ryzyka na przyciętej siat
   - inny sześciocyfrowy numer.
 
   Profile są krzyżowane z `tagPhoto` (2), okuciami (wszystkie 6) i podzbiorem liter.
+
 - **Asercje na każdym wyniku:**
   - `hardSignals.length > 0 ⇒ outcome === "risk" && riskLevel === "high"`,
   - `riskLevel === "low" ⇒ hardSignals` i `softSignals` puste,
@@ -373,6 +375,7 @@ Zestawić etykietę listy z werdyktem raportu dla tego samego wiersza. Dla werdy
   - `tagPhoto: "missing"` `medium`.
 
   Wiersz zbudowany jest z `toInsertRow(cmd, evaluateTag(obs))` plus pola bazy, przepuszczony przez `parseRow`. Asercje: `(outcome, riskLevel)` z `toListItem` równa się parze z `toDto(...).evaluation`, a `outcomeLabel` obu jest równy.
+
 - Po edycji: wiersz z `toUpdateRow(changed, evaluateTag(changed.observation), now)` spełnia tę samą równość, a werdykt faktycznie zmienił się względem wiersza przed edycją.
 
 - **Zachowanie asertowane:** dla wierszy zapisanych przy obecnych regułach lista i raport pokazują ten sam werdykt, także po edycji.
@@ -523,6 +526,17 @@ Nie dotyczy. Brak zmian w schemacie bazy, w `knowledge.json` i w kodzie produkcy
 - Silnik: `src/lib/services/tag-validation/evaluate.ts:88-99`, `:197-204`, `:375-427`
 - Istniejące wzorce testów: `evaluate.test.ts:38-44` (`expectRisk`), `knowledge.test.ts:13-19` (parser tabeli reguł)
 - Archiwum: `context/archive/2026-09-14-tag-validation-first-result/plan.md:46`, `plan-brief.md:63`, `reviews/plan-review.md:93`
+
+## Deviations (implementation)
+
+Odstępstwa uzgodnione w trakcie wdrożenia; bloki faz powyżej opisują pierwotny zamiar.
+
+- **Faza 1 — reguły twarde:** strażnik wybiera reguły, których kolumna Signal _zawiera_ słowo „hard” (a nie „zaczyna się od”). S-07 ma „soft at the boundary seasons, hard when …”, więc tylko to odczytanie daje listę 12 reguł z Key Discoveries.
+- **Faza 1 — dodatkowe sprawdzenia:** strażnik obejmuje też format M-01 (sześć cyfr), `batchDigits` M-05 i komunikaty „w drugą stronę” S-06/S-13 (`messageByValue`) oraz, po przeglądzie (F9), pytania do sprzedawcy z §8 — wszystko z dokumentu reguł.
+- **Faza 2 — lista reguł twardych:** `documentedHardRules` leży w `fixtures.ts` (wspólna dla strażnika i siatki) i jest sprawdzana względem dokumentu w `knowledge.test.ts`.
+- **Faza 2 — niezmiennik `soft > 0 && hard === 0 ⇒ medium`:** sprawdzany tylko dla `outcome === "risk"`. M-02 to sygnał miękki przy wyniku `unsupported` (X3), gdzie poziom ryzyka jest `null`.
+- **Faza 3 — numer z odwrotu `"115 7 48"`:** to pojedyncze spacje, które silnik dopuszcza (czyta `115748`, M-03 przechodzi), więc ma osobny test „dozwolone spacje”; wstrzymanie pokrywają `"115  748"` (podwójna spacja) i `"115-748"`.
+- **Faza 3 — nazwy testów „LUKA:”:** cytują regułę i § dokumentu, a numery linii stoją w komentarzu nad testem (przegląd wdrożenia, F3), bo dokument przesuwa się przy każdej edycji.
 
 ## Progress
 

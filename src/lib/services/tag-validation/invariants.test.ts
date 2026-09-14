@@ -81,7 +81,7 @@ function broken(e: TagEvaluation): string[] {
   if (e.outcome === "risk" && soft > 0 && hard === 0 && e.riskLevel !== "medium") {
     problems.push("soft signals only, but not medium");
   }
-  if ((e.riskLevel !== null) !== (e.outcome === "risk")) problems.push("risk level present without a risk outcome");
+  if ((e.riskLevel !== null) !== (e.outcome === "risk")) problems.push("risk level and risk outcome disagree");
   if (e.outcome !== "risk" && hard > 0) problems.push("hard signal on a no-verdict outcome");
   return problems;
 }
@@ -124,10 +124,11 @@ function changedKnowledge(edit: (knowledge: Knowledge) => void): Knowledge {
   return knowledgeSchema.parse(knowledge);
 }
 
-const CHANGED_KNOWLEDGE: [string, Knowledge][] = [
+/** Edits a rules update could make; each is applied to a fresh copy inside its own test. */
+const CHANGED_KNOWLEDGE: [string, (knowledge: Knowledge) => void][] = [
   [
     "every tolerance 0, zipper change moved to 2010/2011",
-    changedKnowledge((knowledge) => {
+    (knowledge) => {
       for (const rule of knowledge.rules) {
         if ("toleranceYears" in rule) rule.toleranceYears = 0;
         if (rule.kind === "zipperEra") {
@@ -135,14 +136,14 @@ const CHANGED_KNOWLEDGE: [string, Knowledge][] = [
           rule.periods.b.from = 2011;
         }
       }
-    }),
+    },
   ],
   [
     "every tolerance 3, aged brass from 2006",
-    changedKnowledge((knowledge) => {
+    (knowledge) => {
       for (const rule of knowledge.rules) if ("toleranceYears" in rule) rule.toleranceYears = 3;
       knowledge.hardwareEras["classic-aged-brass"].from = 2006;
-    }),
+    },
   ],
 ];
 
@@ -160,8 +161,12 @@ describe("invariant: a hard signal always means high risk (risk #1)", () => {
     expect([...riskLevels].sort()).toEqual(["high", "low", "medium", "null"]);
   });
 
-  it.each(CHANGED_KNOWLEDGE)("holds on changed knowledge: %s", (_name, knowledge) => {
-    expect(runGrid(fullGrid(), knowledge).violations).toEqual([]);
+  it.each(CHANGED_KNOWLEDGE)("holds on changed knowledge: %s", (_name, edit) => {
+    const { violations, hardFired, riskLevels } = runGrid(fullGrid(), changedKnowledge(edit));
+    expect(violations).toEqual([]);
+    // Not vacuous: the changed rules still reach hard signals and high risk.
+    expect(hardFired.size).toBeGreaterThan(0);
+    expect(riskLevels.has("high")).toBe(true);
   });
 });
 

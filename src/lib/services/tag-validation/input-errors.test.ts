@@ -89,16 +89,19 @@ describe("safe paths: ambiguous input gives an input error or an abstention", ()
 // force a deliberate update. They are not the target — risk #2 wants an input error or an abstention
 // here, and getting there is a product decision that starts in the rules document (CLAUDE.md).
 describe("LUKA: the rules document makes these rules hard, so a typo can reach high risk", () => {
+  // Document lines live in these comments, not in the test names, so a document edit does not rename tests.
+  // §3.4 :182 — S-01 "Letter is a single uppercase letter from the table", signal hard.
   for (const seasonLetter of ["", " ", "Ć", "0", "CC"]) {
-    it(`LUKA: S-01 (§3.4 :182 "a single uppercase letter from the table", hard) — malformed letter ${label(seasonLetter)} gives hard S-01; only the wizard blocks it`, () => {
+    it(`LUKA: S-01 (§3.4 "a single uppercase letter from the table", hard) — malformed letter ${label(seasonLetter)} gives hard S-01; only the wizard blocks it`, () => {
       const e = tag({ seasonLetter });
       expect(e.riskLevel).toBe("high");
       expect(ids(e.hardSignals)).toEqual(["S-01"]);
     });
   }
 
+  // §3.4 :182 — S-01 as above; the engine knows the sentinels "unknown" and "none" in lower case only.
   for (const seasonLetter of ["Unknown", "NONE"]) {
-    it(`LUKA: S-01 (§3.4 :182) — sentinel in another case ${label(seasonLetter)} gives hard S-01; the wizard always sends lower case, so only API clients reach it`, () => {
+    it(`LUKA: S-01 (§3.4) — sentinel in another case ${label(seasonLetter)} gives hard S-01; the wizard always sends lower case, so only API clients reach it`, () => {
       const e = tag({ seasonLetter });
       expect(e.riskLevel).toBe("high");
       expect(ids(e.hardSignals)).toEqual(["S-01"]);
@@ -110,16 +113,18 @@ describe("LUKA: the rules document makes these rules hard, so a typo can reach h
     ["one digit substituted", "115749"],
     ["groups in reverse order", "3444 115748"],
   ];
+  // §2.4 :86 — M-03 "Number on the plate = first number on the back of the tab", hard; §5 X4 :262.
   for (const [category, tabBackFirstNumber] of TAB_BACK_TYPOS) {
-    it(`LUKA: M-03 (§2.4 :86, X4 :262, hard) — tab back with ${category} (${label(tabBackFirstNumber)}) gives hard M-03 with no confirmation step`, () => {
+    it(`LUKA: M-03 (§2.4, X4, hard) — tab back with ${category} (${label(tabBackFirstNumber)}) gives hard M-03 with no confirmation step`, () => {
       const e = tag({ tabBackFirstNumber });
       expect(e.riskLevel).toBe("high");
       expect(ids(e.hardSignals)).toEqual(["M-03"]);
     });
   }
 
+  // §5 X1 :259 — a confirmed 11574 is M-01 hard; §2.1 :45 "Separators: none inside the number".
   for (const styleNumber of ["115 748", `115748${ZWSP}`, "１１５７４８"]) {
-    it(`LUKA: M-01 (X1 :259, §2.1 :45 "none inside the number") — confirmed style number ${label(styleNumber)} gives hard M-01 and M-03`, () => {
+    it(`LUKA: M-01 (X1, §2.1 "none inside the number") — confirmed style number ${label(styleNumber)} gives hard M-01 and M-03`, () => {
       const e = tag({ styleNumber, styleNumberConfirmed: true });
       expect(e.riskLevel).toBe("high");
       // M-03 compares the tab back without spaces with the style number as typed, so one format decision fires both.

@@ -68,6 +68,25 @@ const astroConfig = tseslint.config({
   },
 });
 
+// fixtures.ts holds test data only; production code must not depend on it.
+const testSupportConfig = tseslint.config({
+  files: ["src/**/*.{ts,tsx,astro}"],
+  ignores: ["src/**/*.test.ts"],
+  rules: {
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          {
+            group: ["**/fixtures", "./fixtures"],
+            message: "fixtures.ts is test support only — import it from *.test.ts files.",
+          },
+        ],
+      },
+    ],
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
@@ -75,5 +94,6 @@ export default tseslint.config(
   eslintPluginAstro.configs["flat/recommended"],
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
+  testSupportConfig,
   eslintPluginPrettier,
 );

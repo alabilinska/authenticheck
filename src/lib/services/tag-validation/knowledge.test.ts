@@ -1,9 +1,17 @@
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { knowledgeSchema, type Reading, type RuleDef } from "./schema";
 import { defaultKnowledge } from "./evaluate";
 import { documentedHardRules } from "./fixtures";
+
+// Resolved from this file, not from the working directory, so the tests also run from an IDE runner;
+// split on CRLF too, so a Windows checkout does not silently drop every table row.
+const rulesDoc = readFileSync(
+  fileURLToPath(new URL("../../../../balenciaga-city-tag-rules.md", import.meta.url)),
+  "utf8",
+);
+const docLines = rulesDoc.split(/\r?\n/);
 
 describe("knowledge file", () => {
   it("validates against the schema", () => {
@@ -12,8 +20,7 @@ describe("knowledge file", () => {
   });
 
   it("contains every rule ID listed in the rules document (§2.4, §3.4, §7.1)", () => {
-    const doc = readFileSync(resolve(process.cwd(), "balenciaga-city-tag-rules.md"), "utf8");
-    const documented = [...doc.matchAll(/^\| `([MSV]-\d{2})` \|/gm)].map((m) => m[1]);
+    const documented = [...rulesDoc.matchAll(/^\| `([MSV]-\d{2})` \|/gm)].map((m) => m[1]);
     const encoded = defaultKnowledge.rules.map((rule) => rule.id);
     expect(documented.length).toBe(21);
     expect(encoded.sort()).toEqual([...documented].sort());
@@ -30,8 +37,6 @@ describe("knowledge file", () => {
 // knowledge.json itself. Tables are parsed from the Markdown; prose values are literals, each with
 // the document line it comes from. Changing a rule means changing the document first (CLAUDE.md).
 
-const rulesDoc = readFileSync(resolve(process.cwd(), "balenciaga-city-tag-rules.md"), "utf8");
-
 /** Trimmed cells of a Markdown table row; `null` when the line is not a table row. */
 function cells(line: string): string[] | null {
   if (!line.startsWith("|") || !line.endsWith("|")) return null;
@@ -43,11 +48,10 @@ function cells(line: string): string[] | null {
 
 /** Lines under a heading, up to the next heading of level 1–3. */
 function section(heading: string): string[] {
-  const lines = rulesDoc.split("\n");
-  const start = lines.findIndex((line) => line.startsWith(heading));
+  const start = docLines.findIndex((line) => line.startsWith(heading));
   if (start === -1) throw new Error(`The rules document has no section "${heading}"`);
-  const end = lines.findIndex((line, i) => i > start && /^#{1,3} /.test(line));
-  return lines.slice(start + 1, end === -1 ? undefined : end);
+  const end = docLines.findIndex((line, i) => i > start && /^#{1,3} /.test(line));
+  return docLines.slice(start + 1, end === -1 ? undefined : end);
 }
 
 interface DocumentedRule {
@@ -59,7 +63,7 @@ interface DocumentedRule {
 /** Rows of the rule tables in §2.4, §3.4 and §7.1: `| ID | Rule | Signal | Status | Message (PL) |`. */
 function documentedRules(): DocumentedRule[] {
   const rows: DocumentedRule[] = [];
-  for (const line of rulesDoc.split("\n")) {
+  for (const line of docLines) {
     const row = cells(line);
     if (row?.length !== 5) continue;
     const [idCell, , signal, , message] = row;
@@ -153,6 +157,30 @@ describe("knowledge file matches the rules document — tables", () => {
       "messageByValue" in r && r.messageByValue !== undefined ? [[r.id, r.messageByValue]] : [],
     );
     expect(Object.fromEntries(encoded)).toEqual(Object.fromEntries(documented));
+  });
+
+  it("carries every seller question verbatim from the §8 table", () => {
+    // §8 row label → key of sellerQuestions. The authenticity card has no key: FR-005 is a gap (§6).
+    const keyByLabel = new Map<string, string | null>([
+      ["Hardware unknown (scope gate — ask first)", "hardware"],
+      ["Tag photo", "tagPhoto"],
+      ["Back of the tab", "tabBack"],
+      ["Season letter illegible", "letterIllegible"],
+      ["Authenticity card", null],
+      ["Zipper", "zipper"],
+      ["Tag stitching", "tagStitching"],
+      ["Bales", "bales"],
+      ["Year mismatch", "yearMismatch"],
+    ]);
+    const documented: Record<string, string> = {};
+    for (const line of section("## 8.")) {
+      const row = cells(line);
+      if (row?.length !== 2 || row[0] === "Missing" || /^-+$/.test(row[0])) continue;
+      const key = keyByLabel.get(row[0]);
+      if (key === undefined) throw new Error(`Unmapped §8 row "${row[0]}" in the rules document`);
+      if (key !== null) documented[key] = row[1];
+    }
+    expect(defaultKnowledge.sellerQuestions).toEqual(documented);
   });
 });
 

@@ -229,11 +229,15 @@ describe("list = report after a rules change (#5)", () => {
   ];
 
   for (const change of RULE_CHANGES) {
-    it(`precondition (${change.name}): the old rules gave ${change.saved}, the current give ${change.now}, and the row parses`, () => {
+    it(`precondition (${change.name}): the old rules gave ${change.saved}, the current give ${change.now}, and the row reads on both paths`, () => {
       // Keeps the it.fails below honest: a broken setup cannot make it "pass" by throwing.
       expect(evaluateTag(change.observation, change.old).riskLevel).toBe(change.saved);
       expect(evaluateTag(change.observation).riskLevel).toBe(change.now);
-      expect(savedRow(change.observation, evaluateTag(change.observation, change.old)).risk_level).toBe(change.saved);
+      const saved = savedRow(change.observation, evaluateTag(change.observation, change.old));
+      expect(saved.risk_level).toBe(change.saved);
+      // The calls inside the it.fails below run on this very row without throwing.
+      expect(toListItem(saved).riskLevel).toBe(change.saved);
+      expect(toDto(saved).evaluation.riskLevel).toBe(change.now);
     });
 
     it.fails(
