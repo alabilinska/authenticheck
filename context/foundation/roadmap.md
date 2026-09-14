@@ -9,7 +9,7 @@ main_goal: speed
 top_blocker: time
 milestone_id: v1-verification-flow
 milestone_seq: 1
-milestone_status: open
+milestone_status: done
 ---
 
 # Roadmap: Authenticheck
@@ -20,7 +20,7 @@ milestone_status: open
 
 ## Milestone
 
-**M-01: Balenciaga verification v1 — from tag details to a saved report** — Status: open
+**M-01: Balenciaga verification v1 — from tag details to a saved report** — Status: done
 
 - **Intent:** Prove that brand and era knowledge encoded as checkable rules lets a buyer judge a Balenciaga Classic City listing before buying — the tag and visual checks produce a result with seller questions — and that the buyer can keep, revisit and correct those verifications.
 - **Source materials:** `context/foundation/prd.md` (v1); rule content in `balenciaga-city-tag-rules.md`
@@ -212,7 +212,9 @@ This table is the clean handoff to Jira/Linear or any MCP-backed backlog.
 
 ## Milestone History
 
-(Append-only. Empty on the first milestone.)
+(Append-only.)
+
+- **M-01: Balenciaga verification v1 — from tag details to a saved report** (`v1-verification-flow`) — closed 2026-09-14. F-01 and S-01, S-03–S-08 archived: tag and visual checks give a risk level with seller questions, verifications can be saved, listed, edited and deleted per user, password reset works, and the end-to-end test of the main path passes locally.
 
 ## Done
 
