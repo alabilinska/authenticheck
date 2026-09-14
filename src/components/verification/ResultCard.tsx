@@ -164,21 +164,38 @@ function RuleItem({ id }: { id: RuleId }) {
 
 type SaveState = { status: "idle" | "saving" } | { status: "saved"; id: string } | { status: "error"; message: string };
 
-/** S-05: saves the verification once; the server evaluates the observation again. */
-function SaveVerification({ command }: { command: SaveVerificationCommand }) {
+/**
+ * S-05 / S-06: saves the verification — POST when new, PUT when it already has an id —
+ * and the server evaluates the observation again.
+ */
+function SaveVerification({
+  command,
+  verificationId,
+  onSaved,
+}: {
+  command: SaveVerificationCommand;
+  verificationId?: string;
+  onSaved?: (id: string) => void;
+}) {
   const [state, setState] = useState<SaveState>({ status: "idle" });
+  const editing = verificationId !== undefined;
 
   async function save() {
     setState({ status: "saving" });
     try {
-      const response = await fetch("/api/verifications", {
-        method: "POST",
+      const response = await fetch(editing ? `/api/verifications/${verificationId}` : "/api/verifications", {
+        method: editing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(command),
       });
       const body: unknown = await response.json();
       const id = response.ok ? savedVerificationId(body) : null;
-      setState(id === null ? { status: "error", message: apiErrorMessage(body) } : { status: "saved", id });
+      if (id === null) {
+        setState({ status: "error", message: apiErrorMessage(body) });
+        return;
+      }
+      setState({ status: "saved", id });
+      onSaved?.(id);
     } catch {
       setState({ status: "error", message: "Nie udało się połączyć z serwerem. Spróbuj ponownie." });
     }
@@ -190,7 +207,7 @@ function SaveVerification({ command }: { command: SaveVerificationCommand }) {
         role="status"
         className="rounded-xl border border-emerald-400/40 bg-emerald-500/15 p-4 text-sm text-emerald-100"
       >
-        Zapisano.{" "}
+        {editing ? "Zapisano zmiany." : "Zapisano."}{" "}
         <a href={`/verifications/${state.id}`} className="underline">
           Zobacz zapisaną weryfikację
         </a>{" "}
@@ -212,7 +229,7 @@ function SaveVerification({ command }: { command: SaveVerificationCommand }) {
         }}
         className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
       >
-        {state.status === "saving" ? "Zapisuję…" : "Zapisz weryfikację"}
+        {state.status === "saving" ? "Zapisuję…" : editing ? "Zapisz zmiany" : "Zapisz weryfikację"}
       </Button>
       {state.status === "error" && (
         <p role="alert" className="text-sm text-red-300">
@@ -232,9 +249,20 @@ interface ResultCardProps {
   onRestart?: () => void;
   /** Wizard only: what to save; absent on a saved verification. */
   saveCommand?: SaveVerificationCommand;
+  /** Wizard only: set once the verification exists — saving then updates it (S-06). */
+  verificationId?: string;
+  onSaved?: (id: string) => void;
 }
 
-export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart, saveCommand }: ResultCardProps) {
+export function ResultCard({
+  evaluation: e,
+  listingUrl,
+  onEdit,
+  onRestart,
+  saveCommand,
+  verificationId,
+  onSaved,
+}: ResultCardProps) {
   const head = headline(e);
   const year = e.outcome === "risk" ? yearLine(e.year) : null;
   const passed = [...new Set(e.passed)];
@@ -304,7 +332,7 @@ export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart, saveC
         </Section>
       )}
 
-      {saveCommand && <SaveVerification command={saveCommand} />}
+      {saveCommand && <SaveVerification command={saveCommand} verificationId={verificationId} onSaved={onSaved} />}
 
       {(onEdit ?? onRestart) && (
         <div className="flex flex-wrap gap-3">

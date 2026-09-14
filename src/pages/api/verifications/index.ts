@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { apiError, json } from "@/lib/api";
+import { apiError, invalidInput, json, readJson } from "@/lib/api";
 import { listVerifications, saveVerification, saveVerificationSchema } from "@/lib/services/verifications";
 import { createClient } from "@/lib/supabase";
 
@@ -22,18 +22,10 @@ export const POST: APIRoute = async (context) => {
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) return apiError(503, "SERVICE_UNAVAILABLE", "Baza danych nie jest skonfigurowana.");
 
-  let body: unknown;
-  try {
-    body = await context.request.json();
-  } catch {
-    return apiError(400, "INVALID_INPUT", "Treść żądania musi być poprawnym JSON-em.");
-  }
-  const parsed = saveVerificationSchema.safeParse(body);
-  if (!parsed.success) {
-    return apiError(400, "INVALID_INPUT", "Dane weryfikacji są niepoprawne.", {
-      issues: parsed.error.issues.map((issue) => ({ path: issue.path.join("."), message: issue.message })),
-    });
-  }
+  const body = await readJson(context.request);
+  if (!body.ok) return apiError(400, "INVALID_INPUT", "Treść żądania musi być poprawnym JSON-em.");
+  const parsed = saveVerificationSchema.safeParse(body.value);
+  if (!parsed.success) return invalidInput(parsed.error);
 
   const result = await saveVerification(supabase, parsed.data);
   if (!result.ok) return apiError(500, "DATABASE_ERROR", "Nie udało się zapisać weryfikacji.");

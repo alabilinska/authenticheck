@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { TagObservation } from "@/types";
 import { evaluateTag } from "@/lib/services/tag-validation/evaluate";
-import { parseRow, saveVerificationSchema, toDto, toInsertRow, toListItem } from "./verifications";
+import { parseRow, saveVerificationSchema, toDto, toInsertRow, toListItem, toUpdateRow } from "./verifications";
 
 // Rules test case V1 with the visual checks answered: low risk, S/S 2009.
 const v1: TagObservation = {
@@ -86,5 +86,14 @@ describe("row mapping", () => {
       reading: { season: "S/S", year: 2009 },
       resolvedBy: "S-13",
     });
+  });
+});
+
+describe("update row (S-06)", () => {
+  it("recomputes the outcome and risk level and stamps updated_at", () => {
+    const changed = { ...command, observation: { ...v1, zipper: "b" as const } };
+    const now = new Date("2026-09-14T15:00:00Z");
+    const update = toUpdateRow(changed, evaluateTag(changed.observation), now);
+    expect(update).toMatchObject({ outcome: "risk", risk_level: "high", updated_at: "2026-09-14T15:00:00.000Z" });
   });
 });

@@ -24,8 +24,17 @@ import { MarkingsStep } from "./MarkingsStep";
 import { VisualStep } from "./VisualStep";
 import { ResultCard } from "./ResultCard";
 
-export default function TagWizard() {
-  const [draft, setDraft] = useState<WizardDraft>(emptyDraft);
+interface TagWizardProps {
+  /** S-06: answers of a saved verification to edit. */
+  initialDraft?: WizardDraft;
+  /** S-06: the verification being edited; saving then updates it. */
+  verificationId?: string;
+}
+
+export default function TagWizard({ initialDraft, verificationId }: TagWizardProps) {
+  const [draft, setDraft] = useState<WizardDraft>(initialDraft ?? emptyDraft);
+  // After the first save, later saves update the same verification instead of creating duplicates.
+  const [savedId, setSavedId] = useState<string | undefined>(verificationId);
   const [step, setStep] = useState(0);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [inputError, setInputError] = useState<InputError | null>(null);
@@ -98,6 +107,7 @@ export default function TagWizard() {
     setErrors({});
     setInputError(null);
     setResult(null);
+    setSavedId(undefined);
     goTo(0);
   }
 
@@ -112,8 +122,10 @@ export default function TagWizard() {
             setResult(null);
             focusTarget.current = "heading";
           }}
-          onRestart={restart}
+          onRestart={verificationId === undefined ? restart : undefined}
           saveCommand={toSaveCommand(draft)}
+          verificationId={savedId}
+          onSaved={setSavedId}
         />
       </div>
     );

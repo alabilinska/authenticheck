@@ -81,6 +81,11 @@ export function toInsertRow(command: SaveVerificationCommand, evaluation: TagEva
   };
 }
 
+/** S-06: columns written on update — the whole command is replaced and the evaluation recomputed. */
+export function toUpdateRow(command: SaveVerificationCommand, evaluation: TagEvaluation, now: Date) {
+  return { ...toInsertRow(command, evaluation), updated_at: now.toISOString() };
+}
+
 export function toListItem(row: VerificationRow): VerificationListItem {
   return {
     id: row.id,
@@ -154,4 +159,24 @@ export async function saveVerification(
     .single();
   if (error) return { ok: false };
   return { ok: true, value: toDto(parseRow(data)) };
+}
+
+/** S-06: replaces the answers of one of the user's verifications; `value: null` when it is not theirs or absent. */
+export async function updateVerification(
+  supabase: SupabaseClient,
+  userId: string,
+  id: string | undefined,
+  command: SaveVerificationCommand,
+): Promise<StoreResult<VerificationDto | null>> {
+  const parsedId = z.uuid().safeParse(id);
+  if (!parsedId.success) return { ok: true, value: null };
+  const { data, error }: { data: unknown; error: unknown } = await supabase
+    .from("verifications")
+    .update(toUpdateRow(command, evaluateTag(command.observation), new Date()))
+    .eq("id", parsedId.data)
+    .eq("user_id", userId)
+    .select("*")
+    .maybeSingle();
+  if (error) return { ok: false };
+  return { ok: true, value: data === null ? null : toDto(parseRow(data)) };
 }

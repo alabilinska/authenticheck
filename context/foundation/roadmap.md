@@ -46,7 +46,7 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 | S-03 | visual-checklist | user can answer the three visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, "can't see" stays neutral and becomes a seller question, and each trait is a soft signal on its own and a hard one only when it contradicts the tag year | S-01, reference photos for the three checks committed to the repository | FR-006, FR-004 | done |
 | S-04 | verification-report | user can see one report with the result — a risk level, or unsupported — and the signals that set it: passed checks, failed hard signals shown separately, unchecked items and checks that abstained because the year is unresolved; they can copy a ready-made list of seller questions, and a low-risk report states that no warning signs were found in the checked traits | S-03 | US-01, FR-007, FR-008 | done |
 | S-05 | save-and-list-verifications | user can save a verification and later open it from their own list, where each listing shows its risk label; no other user can see it | F-01, S-04 | US-01, FR-009 | in-progress |
-| S-06 | edit-saved-verification | user can re-open a saved verification, change any answer (e.g. "can't see" → "yes" after the seller sends photos) and see the report recalculated | S-05 | FR-011 | proposed |
+| S-06 | edit-saved-verification | user can re-open a saved verification, change any answer (e.g. "can't see" → "yes" after the seller sends photos) and see the report recalculated | S-05 | FR-011 | in-progress |
 | S-07 | delete-verification | user can delete a saved verification from their list | S-05 | FR-010 | proposed |
 | S-08 | password-reset | user can reset a forgotten password by email and sign in with the new one; after sign-up, the page tells the user whether the account is ready to use or waits for email confirmation | F-01 | FR-001 | done |
 
@@ -148,7 +148,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Recalculation must run the same rules as the first pass, otherwise an edited report and a fresh one can disagree.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-07: Delete a verification
 

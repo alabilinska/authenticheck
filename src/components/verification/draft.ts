@@ -174,3 +174,35 @@ export function toSaveCommand(d: WizardDraft): SaveVerificationCommand {
     observation: toObservation(d),
   };
 }
+
+/** S-06: the wizard state for a saved verification — the inverse of `toSaveCommand`. */
+export function fromSaveCommand(command: SaveVerificationCommand): WizardDraft {
+  const o = command.observation;
+  const letter = o.seasonLetter.trim();
+  let letterMode: WizardDraft["letterMode"] = "letter";
+  if (letter === "none") letterMode = "none";
+  else if (letter === "unknown") letterMode = "unknown";
+
+  return {
+    listingUrl: command.listingUrl,
+    declaredYear: command.declaredYear === null ? "" : String(command.declaredYear),
+    price: command.price === null ? "" : String(command.price),
+    hardware: o.hardware,
+    tagPhoto: o.tagPhoto,
+    tagConstruction: o.tagConstruction,
+    styleNumber: o.styleNumber,
+    styleNumberConfirmed: o.styleNumberConfirmed,
+    batchNumber: o.batchNumber === "unknown" ? "" : o.batchNumber,
+    batchUnknown: o.batchNumber === "unknown",
+    letterMode,
+    seasonLetter: letterMode === "letter" ? letter : "",
+    tabBackFirstNumber: o.tabBackFirstNumber === "unknown" ? "" : o.tabBackFirstNumber,
+    tabBackUnknown: o.tabBackFirstNumber === "unknown",
+    madeInItalySize: o.madeInItalySize,
+    brandLine: o.brandLine,
+    stamp925: o.stamp925,
+    thread: o.thread,
+    zipper: o.zipper,
+    bales: o.bales,
+  };
+}
