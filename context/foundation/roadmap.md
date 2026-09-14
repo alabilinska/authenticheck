@@ -3,7 +3,7 @@ project: Authenticheck
 version: 1
 status: draft
 created: 2026-09-13
-updated: 2026-09-13
+updated: 2026-09-14
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -14,18 +14,18 @@ milestone_status: open
 
 # Roadmap: Authenticheck
 
-> Derived from `context/foundation/prd.md` (v1, including the decisions recorded on 2026-09-13) + auto-researched codebase baseline.
+> Derived from `context/foundation/prd.md` (v1, including the decisions recorded on 2026-09-13 and 2026-09-14) + auto-researched codebase baseline.
 > Edit-in-place; archive when superseded.
 > Slices below are listed in dependency order. The "At a glance" table is the index.
 
 ## Milestone
 
-**M-01: Balenciaga verification v1 — from tag numbers to a saved report** — Status: open
+**M-01: Balenciaga verification v1 — from tag details to a saved report** — Status: open
 
-- **Intent:** Prove that brand and era knowledge encoded as checkable rules lets a buyer judge a Balenciaga City listing before buying — tag, card and visual checks produce a risk level with seller questions — and that the buyer can keep, revisit and correct those verifications.
-- **Source materials:** `context/foundation/prd.md` (v1)
-- **Done when:** every F-NN and S-NN below is `done`, and the PRD's end-to-end test of the main path (sign in → new verification → tag numbers → checklist answers → report) passes.
-- **Scope anchors:** FR-001 – FR-011 (all marked must-have in the PRD), US-01.
+- **Intent:** Prove that brand and era knowledge encoded as checkable rules lets a buyer judge a Balenciaga Classic City listing before buying — the tag and visual checks produce a result with seller questions — and that the buyer can keep, revisit and correct those verifications.
+- **Source materials:** `context/foundation/prd.md` (v1); rule content in `balenciaga-city-tag-rules.md`
+- **Done when:** every F-NN and S-NN below is `done`, and the PRD's end-to-end test of the main path (sign in → new verification → tag details → checklist answers → report) passes.
+- **Scope anchors:** FR-001 – FR-004 and FR-006 – FR-011 (must-have in the PRD), US-01. FR-005 (authenticity card) was deferred to v2 on 2026-09-14 — see Parked.
 
 ## Vision recap
 
@@ -33,7 +33,7 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 
 ## North star
 
-**S-01: First verification: tag numbers to a risk level** — the first slice where the app does something a notes file cannot: rules stored as data judge a real tag and produce a risk level. With the goal set to speed, it goes first; the card, checklist and report only add evidence on top of it.
+**S-01: First verification: tag details to a result** — the first slice where the app does something a notes file cannot: rules stored as data judge a real tag and produce a result. With the goal set to speed, it goes first; the checklist and report only add evidence on top of it.
 
 > "North star" here means the smallest end-to-end slice whose delivery proves the core product hypothesis — the one claim the whole product stands on (here: rules encoded as data can judge a real tag) — so it is sequenced as early as its prerequisites allow.
 
@@ -42,10 +42,9 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
 | F-01 | connect-auth-database-project | (foundation) the auth-and-database project declared in `tech-stack.md` exists and is connected locally and in production; the existing sign-up, sign-in and sign-out flow works end to end | — | Access Control, FR-001 | done |
-| S-01 | tag-validation-first-result | user can start a verification (line, declared year, listing link, price) and, after entering the tag's two lines, immediately see which rules pass or fail — each with its message and confidence level — and the resulting risk level; a missing tag photo becomes a seller question and raises the risk one step | F-01, the developer's rule knowledge file (rules with sources, authentic and faulty examples) committed to the repository | US-01, FR-002, FR-003, FR-004 | proposed |
-| S-02 | authenticity-card-check | user can enter the authenticity-card numbers and see match, mismatch or no card against the tag; a mismatch is a hard signal (it alone sets high risk), a match adds little weight, and a missing card or card photo stays neutral and becomes a seller question | S-01 | FR-005, FR-004 | proposed |
-| S-03 | visual-checklist | user can answer the three hard-signal visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, and "can't see" stays neutral and becomes a seller question | S-01, reference photos for the three checks committed to the repository | FR-006, FR-004 | proposed |
-| S-04 | verification-report | user can see one report with the risk level and the signals that set it — passed checks, failed hard signals shown separately, unchecked items — and copy a ready-made list of seller questions; a low-risk report states that no warning signs were found in the checked traits | S-02, S-03 | US-01, FR-007, FR-008 | proposed |
+| S-01 | tag-validation-first-result | user can start a verification (declared year, listing link, price; line fixed to Classic City medium) and, after entering what the tag shows — plate numbers and season letter, the first number on the back of the tab, hardware type, brand-line style, 925 stamp and MADE IN ITALY size — immediately see which rules pass or fail, each with its message and confidence level, and the result: a risk level, or unsupported for a variant outside v1; an unresolved year and input errors are shown without a verdict, and a missing tag photo becomes a seller question and raises the risk one step | F-01, the rule knowledge file (committed 2026-09-14) | US-01, FR-002, FR-003, FR-004 | ready |
+| S-03 | visual-checklist | user can answer the three visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, and "can't see" stays neutral and becomes a seller question | S-01, reference photos for the three checks committed to the repository | FR-006, FR-004 | blocked |
+| S-04 | verification-report | user can see one report with the result — a risk level, or unsupported — and the signals that set it: passed checks, failed hard signals shown separately, unchecked items and checks that abstained because the year is unresolved; they can copy a ready-made list of seller questions, and a low-risk report states that no warning signs were found in the checked traits | S-03 | US-01, FR-007, FR-008 | proposed |
 | S-05 | save-and-list-verifications | user can save a verification and later open it from their own list, where each listing shows its risk label; no other user can see it | F-01, S-04 | US-01, FR-009 | proposed |
 | S-06 | edit-saved-verification | user can re-open a saved verification, change any answer (e.g. "can't see" → "yes" after the seller sends photos) and see the report recalculated | S-05 | FR-011 | proposed |
 | S-07 | delete-verification | user can delete a saved verification from their list | S-05 | FR-010 | proposed |
@@ -57,20 +56,19 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 | Stream | Theme | Chain | Note |
 | --- | --- | --- | --- |
-| A | Verification path | `F-01` → `S-01` → `S-02` → `S-04` → `S-05` → `S-06` | The shortest route to the first proof and a saved report — the speed-first spine. |
-| B | Visual checklist | `S-03` | Branches from `S-01`; joins Stream A at `S-04`. |
-| C | List upkeep | `S-07` | Branches from `S-05` in Stream A; runs alongside `S-06`. |
-| D | Account recovery | `S-08` | Branches from `F-01`; runs alongside the whole of Stream A. |
+| A | Verification path | `F-01` → `S-01` → `S-03` → `S-04` → `S-05` → `S-06` | The shortest route to the first proof and a saved report — the speed-first spine. |
+| B | List upkeep | `S-07` | Branches from `S-05` in Stream A; runs alongside `S-06`. |
+| C | Account recovery | `S-08` | Branches from `F-01`; runs alongside the whole of Stream A. |
 
 ## Baseline
 
-What's already in place in the codebase as of `2026-09-13` (auto-researched + user-confirmed).
+What's already in place in the codebase as of `2026-09-14` (auto-researched + user-confirmed).
 Foundations below assume these are present and do NOT re-scaffold them.
 
 - **Frontend:** present — SSR framework with interactive islands, utility CSS and one UI component (`astro.config.mjs`, `src/components/ui/button.tsx`); only the starter's pages (`src/pages/index.astro`, placeholder `src/pages/dashboard.astro`, `src/pages/auth/*`) — no product UI.
 - **Backend / API:** partial — three form-POST auth endpoints (`src/pages/api/auth/{signin,signup,signout}.ts`); no product endpoints.
-- **Data:** partial — the database service is used only for auth; `supabase/config.toml` exists, but there are no migrations, tables or seed data. Rule knowledge and reference photos for the three visual checks exist **outside the repository** (developer's collected file and photos), not yet committed.
-- **Auth:** partial — sign-up, sign-in, sign-out and route protection (`src/middleware.ts`, `PROTECTED_ROUTES`); password reset absent; no auth-and-database project connected, so in production the app runs in its "not configured" mode.
+- **Data:** partial — the database service is used only for auth; no migrations, tables or seed data. The tag-rule knowledge is in the repository (`balenciaga-city-tag-rules.md`, committed 2026-09-14); reference photos for the three visual checks are still outside it.
+- **Auth:** partial — sign-up, sign-in, sign-out and route protection (`src/middleware.ts`, `PROTECTED_ROUTES`), connected to the project locally and in production (F-01); password reset absent.
 - **Deploy / infra:** present — Worker live on workers.dev, production auto-deploys from `main`, CI runs lint + build only (`wrangler.jsonc`, `.github/workflows/ci.yml`, `context/deployment/deploy-plan.md`). Pre-commit hooks are configured but not installed locally. Dependency audit unresolved since bootstrap: 2 critical, 14 high (see Open Roadmap Questions).
 - **Observability:** partial — platform request logs enabled (`wrangler.jsonc` `observability`); no logging library or error tracking.
 - **Tests:** absent — no test runner or test files; the PRD's success criteria require a rule test set and an end-to-end test.
@@ -87,60 +85,46 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Parallel with:** —
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** The sign-in code already exists but has never run against a real project; wiring it first lets S-01 sit behind sign-in from the start instead of retrofitting access control. Watch the free plan's per-request CPU limit once every request checks the session (see `infrastructure.md`).
+- **Risk:** The sign-in code already existed but had never run against a real project; wiring it first lets S-01 sit behind sign-in from the start instead of retrofitting access control. Watch the free plan's per-request CPU limit once every request checks the session (see `infrastructure.md`).
 - **Status:** done
 
 ## Slices
 
-### S-01: First verification: tag numbers to a risk level
+### S-01: First verification: tag details to a result
 
-- **Outcome:** user can start a verification (line, declared year, listing link, price) and, after entering the tag's two lines, immediately see which rules pass or fail — each with its message and confidence level — and the resulting risk level; a missing tag photo becomes a seller question and raises the risk one step.
+- **Outcome:** user can start a verification (declared year, listing link, price; line fixed to Classic City medium) and, after entering what the tag shows — plate numbers and season letter, the first number on the back of the tab, hardware type, brand-line style, 925 stamp and MADE IN ITALY size — immediately see which rules pass or fail, each with its message and confidence level, and the result: a risk level, or unsupported for a variant outside v1; an unresolved year and input errors are shown without a verdict, and a missing tag photo becomes a seller question and raises the risk one step.
 - **Change ID:** tag-validation-first-result
 - **PRD refs:** US-01, FR-002, FR-003, FR-004
-- **Prerequisites:** F-01, the developer's rule knowledge file (rules with sources, authentic and faulty examples) committed to the repository
-- **Parallel with:** S-08
-- **Blockers:** —
-- **Unknowns:** 
-  - Which lines are selectable in v1 — City only, or City + Motorcycle? — Owner: user. Block: no. (PRD Open Question 4; answered by the rule knowledge file.)
-- **Risk:** The milestone's deepest investment: the rules and their test examples decide whether the product works at all, and the PRD guardrail of zero false "format correct" results applies here first. Sequenced first so a wrong rule shape surfaces before the card, checklist and report build on it.
-- **Status:** proposed
-
-### S-02: Authenticity card check
-
-- **Outcome:** user can enter the authenticity-card numbers and see match, mismatch or no card against the tag; a mismatch is a hard signal (it alone sets high risk), a match adds little weight, and a missing card or card photo stays neutral and becomes a seller question.
-- **Change ID:** authenticity-card-check
-- **PRD refs:** FR-005, FR-004
-- **Prerequisites:** S-01
-- **Parallel with:** S-03, S-08
-- **Blockers:** —
-- **Unknowns:** 
-  - Which card field is compared with which tag field — Owner: user. Block: no. (Rule knowledge file, card section.)
-- **Risk:** A small rule set, but the asymmetric weighting is easy to invert; kept apart from S-01 so the tag rules are proven first.
-- **Status:** proposed
-
-### S-03: Visual checklist with reference photos
-
-- **Outcome:** user can answer the three hard-signal visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, and "can't see" stays neutral and becomes a seller question.
-- **Change ID:** visual-checklist
-- **PRD refs:** FR-006, FR-004
-- **Prerequisites:** S-01, reference photos for the three checks committed to the repository
-- **Parallel with:** S-02, S-08
-- **Blockers:** —
-- **Unknowns:** 
-  - Expected answer per era for each check (e.g. zipper variant after 2014) — Owner: user. Block: no. (Rule knowledge file, visual-checks section.)
-- **Risk:** Depends on the year decoded in S-01; the photos already exist outside the repository, so the work is mostly content plus the era switch.
-- **Status:** proposed
-
-### S-04: Verification report with seller questions
-
-- **Outcome:** user can see one report with the risk level and the signals that set it — passed checks, failed hard signals shown separately, unchecked items — and copy a ready-made list of seller questions; a low-risk report states that no warning signs were found in the checked traits.
-- **Change ID:** verification-report
-- **PRD refs:** US-01, FR-007, FR-008
-- **Prerequisites:** S-02, S-03
+- **Prerequisites:** F-01, the rule knowledge file (committed 2026-09-14)
 - **Parallel with:** S-08
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** The first slice where the whole US-01 path runs, so it carries the PRD's end-to-end test of the main path; the guardrail "never low risk when a hard signal failed" is verified here across all three evidence sources.
+- **Risk:** The milestone's deepest investment: the rules and their test cases decide whether the product works at all. The rules falsify but never verify — a well-made counterfeit passes a correct tag — so the zero-false-positive guardrail is tested as "no invalid entry is accepted". The plate prints the numbers in the reverse of the row order, so a misread must surface as an input error, not as risk.
+- **Status:** ready
+
+### S-03: Visual checklist with reference photos
+
+- **Outcome:** user can answer the three visual checks — black thread on the tag, Lampo zipper, spiral hardware twist — as yes / no / can't see, each with a hint and a reference photo legible on a phone; era-dependent checks use the year decoded from the tag, and "can't see" stays neutral and becomes a seller question.
+- **Change ID:** visual-checklist
+- **PRD refs:** FR-006, FR-004
+- **Prerequisites:** S-01, reference photos for the three checks committed to the repository
+- **Parallel with:** S-08
+- **Blockers:** —
+- **Unknowns:** 
+  - Are the visual checks hard or soft signals? The PRD treats a "no" as hard; the rule knowledge file (§7) makes each trait soft on its own and hard only in combination with the tag year. — Owner: user. Block: yes. (PRD Open Question 5.)
+- **Risk:** Depends on the year decoded in S-01; the photos already exist outside the repository, so once the signal question is settled the work is mostly content plus the era switch.
+- **Status:** blocked
+
+### S-04: Verification report with seller questions
+
+- **Outcome:** user can see one report with the result — a risk level, or unsupported — and the signals that set it: passed checks, failed hard signals shown separately, unchecked items and checks that abstained because the year is unresolved; they can copy a ready-made list of seller questions, and a low-risk report states that no warning signs were found in the checked traits.
+- **Change ID:** verification-report
+- **PRD refs:** US-01, FR-007, FR-008
+- **Prerequisites:** S-03
+- **Parallel with:** S-08
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** The first slice where the whole US-01 path runs, so it carries the PRD's end-to-end test of the main path; the guardrail "never low risk when a hard signal failed" is verified here across the tag and visual evidence.
 - **Status:** proposed
 
 ### S-05: Save and list verifications
@@ -185,7 +169,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Change ID:** password-reset
 - **PRD refs:** FR-001
 - **Prerequisites:** F-01
-- **Parallel with:** S-01, S-02, S-03, S-04, S-05, S-06, S-07
+- **Parallel with:** S-01, S-03, S-04, S-05, S-06, S-07
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Independent of the verification flow, so it can go to a separate agent run in parallel; sign-up and sign-in already exist, only reset is missing. Also fixes the post-sign-up page: it currently picks its message by build mode, so production always says "check your inbox" even when email confirmation is off and no email is sent.
@@ -196,10 +180,9 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
 | --- | --- | --- | --- | --- |
 | F-01 | connect-auth-database-project | Connect the auth-and-database project locally and in production | done | Done 2026-09-13 outside the change workflow — see `## Done` |
-| S-01 | tag-validation-first-result | First verification: validate the tag and show a risk level | no | Waits for F-01 and the rule knowledge file in the repo |
-| S-02 | authenticity-card-check | Check the authenticity card against the tag | no | Waits for S-01 |
-| S-03 | visual-checklist | Visual checklist: three checks with hints and reference photos | no | Waits for S-01 and the photos in the repo |
-| S-04 | verification-report | Report: risk level, signals and copyable seller questions | no | Waits for S-02 and S-03 |
+| S-01 | tag-validation-first-result | First verification: validate the tag and show the result | yes | Run `/10x-plan tag-validation-first-result` — the north star |
+| S-03 | visual-checklist | Visual checklist: three checks with hints and reference photos | no | Blocked by PRD Open Question 5; photos not yet in the repo |
+| S-04 | verification-report | Report: result, signals and copyable seller questions | no | Waits for S-03 |
 | S-05 | save-and-list-verifications | Save a verification and list it with its risk label | no | Waits for S-04 |
 | S-06 | edit-saved-verification | Re-open a saved verification, edit answers, recalculate | no | Waits for S-05 |
 | S-07 | delete-verification | Delete a saved verification | no | Waits for S-05 |
@@ -210,14 +193,17 @@ This table is the clean handoff to Jira/Linear or any MCP-backed backlog.
 ## Open Roadmap Questions
 
 1. **Deadline vs scope.** The hard deadline (2026-09-14) leaves ~4 after-hours evenings for the full v1 scope (accounts with password reset, tag validation with era decoding, authenticity card, 3-signal checklist, report, list + delete, and — restored after shaping — editing a saved verification, FR-011), first sized for 3 weeks. A further scope cut was offered during shaping and declined; the compression was accepted deliberately. This is the single largest delivery risk. — Owner: user. Block: no (acknowledged).
-2. **Does the rule test set exist yet?** Resolved 2026-09-13: the source is the developer's collected knowledge file (rules + authentic and faulty examples); every example becomes a test case. Pending: the file is committed to the repository. — Owner: user. Block: S-01 (and through it S-02 – S-07).
+2. **Does the rule test set exist yet?** Resolved 2026-09-13: the source is the developer's collected knowledge file (rules + authentic and faulty examples); every example becomes a test case. Committed 2026-09-14 as `balenciaga-city-tag-rules.md`. — Owner: user. Block: no.
 3. **Which rules are "confirmed" vs "probable"?** Resolved 2026-09-13 (policy): a rule is "confirmed" only when the knowledge file cites a source for it; otherwise it ships as "probable". — Owner: user. Block: no.
-4. **Which lines are selectable in v1?** Non-Goals scope v1 to "Balenciaga City / Motorcycle"; FR-002 and US-01 mention only City. — Owner: user. Block: no (answered by the rule knowledge file; tracked as an S-01 Unknown).
+4. **Which lines are selectable in v1?** Resolved 2026-09-14: Classic City medium with classic hardware only; Motorcycle and Giant hardware are out of scope and reported as unsupported. — Owner: user. Block: no.
 5. **Unresolved dependency audit.** The lockfile is unchanged since bootstrap and the audit still reports 2 critical and 14 high findings. Part of the high findings in the page framework are fixed by a patch release within the current major version; the critical one (remote code execution through AVIF image optimization) is fixed only in the next major version, which also requires the next major version of the deploy adapter. Decide: upgrade, or accept with a recorded mitigation. — Owner: user. Block: roadmap-wide, before the first external user (does not block planning).
+6. **Are the visual checks hard or soft signals?** FR-006 and the PRD's Business Logic treat a visual trait answered "no" as a hard signal; the rule knowledge file (§7) makes each trait soft on its own and hard only in combination with the tag year. — Owner: user. Block: S-03.
 
 ## Parked
 
-- **Other brands (Louis Vuitton, Gucci, Chloé)** — Why parked: PRD §Non-Goals; v1 carries only Balenciaga City / Motorcycle knowledge on a brand-agnostic engine.
+- **Authenticity card check (FR-005)** — Why parked: deferred to v2 on 2026-09-14 (PRD §Non-Goals); the rule knowledge file has no sourced data on the card's contents. Formerly slice S-02 `authenticity-card-check`.
+- **Other Balenciaga variants (Motorcycle, City with Giant hardware, other City sizes)** — Why parked: PRD §Non-Goals; no sourced rules, such bags are reported as unsupported.
+- **Other brands (Louis Vuitton, Gucci, Chloé)** — Why parked: PRD §Non-Goals; v1 carries only Balenciaga Classic City medium knowledge on a brand-agnostic engine.
 - **Photo analysis (image recognition, AI)** — Why parked: PRD §Non-Goals; the buyer looks and answers, the app never inspects photos.
 - **Valuation, reference prices and automatic listing import** — Why parked: PRD §Non-Goals; link and price are the buyer's own notes.
 - **Sharing verifications and a native mobile app** — Why parked: PRD §Non-Goals; each buyer sees only their own, web in a phone browser.
