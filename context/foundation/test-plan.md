@@ -50,7 +50,7 @@ Każdy wiersz to osobna faza wdrażania, która otworzy własny folder zmiany pr
 
 | #   | Phase name                            | Goal (one line)                                                                                                                      | Risks covered | Test types  | Status      | Change folder                                 |
 | --- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------- | ----------- | ----------- | --------------------------------------------- |
-| 1   | Silnik reguł bez fałszywych werdyktów | Udowodnić, że podróbka nie dostaje niskiego, a literówka nie daje wysokiego ryzyka; pilnować zgodności etykiety i reguł z dokumentem | #1, #2, #5    | unit        | researched  | context/changes/testing-rule-engine-verdicts/ |
+| 1   | Silnik reguł bez fałszywych werdyktów | Udowodnić, że podróbka nie dostaje niskiego, a literówka nie daje wysokiego ryzyka; pilnować zgodności etykiety i reguł z dokumentem | #1, #2, #5    | unit        | complete    | context/changes/testing-rule-engine-verdicts/ |
 | 2   | Izolacja kont i ochrona tras          | Udowodnić, że cudze weryfikacje są niedostępne na poziomie bazy i tras, a brak logowania jest odrzucany                              | #3, #6        | integration | not started | —                                             |
 | 3   | Bramka e2e w CI                       | Zablokować wdrożenie zmiany, która psuje główną ścieżkę weryfikacji                                                                  | #4            | e2e + gates | not started | —                                             |
 
