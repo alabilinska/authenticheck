@@ -12,7 +12,15 @@ export default defineConfig({
     baseURL: "http://localhost:4321",
     trace: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    // Signs the test account in once; specs load the session instead of logging in through the UI.
+    { name: "setup", testMatch: /auth\.setup\.ts/ },
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"], storageState: "playwright/.auth/user.json" },
+      dependencies: ["setup"],
+    },
+  ],
   webServer: {
     command: "npm run dev -- --port 4321",
     url: "http://localhost:4321",

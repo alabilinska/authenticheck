@@ -5,6 +5,9 @@ import { expect, test, type Page } from "@playwright/test";
 const email = process.env.E2E_EMAIL;
 const password = process.env.E2E_PASSWORD;
 
+// Signing in is part of the path under test, so this spec starts signed out instead of loading storageState.
+test.use({ storageState: { cookies: [], origins: [] } });
+
 function group(page: Page, legend: string | RegExp) {
   return page.getByRole("group", { name: legend });
 }
