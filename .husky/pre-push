@@ -1,0 +1,3 @@
+# Heavier checks before code leaves the machine (10xDevs m3l3); per-edit checks live in .claude/hooks/post-edit.sh.
+npm test
+npm run typecheck
