@@ -53,7 +53,10 @@ export function savedVerificationId(body: unknown): string | null {
 }
 
 /** The message from a `{ error: { code, message } }` response, with a fallback. */
-export function apiErrorMessage(body: unknown): string {
+export function apiErrorMessage(
+  body: unknown,
+  fallback = "Nie udało się zapisać weryfikacji. Spróbuj ponownie.",
+): string {
   const message = field(field(body, "error"), "message");
-  return typeof message === "string" ? message : "Nie udało się zapisać weryfikacji. Spróbuj ponownie.";
+  return typeof message === "string" ? message : fallback;
 }

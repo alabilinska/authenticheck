@@ -180,3 +180,22 @@ export async function updateVerification(
   if (error) return { ok: false };
   return { ok: true, value: data === null ? null : toDto(parseRow(data)) };
 }
+
+/** S-07: deletes one of the user's verifications; `value: false` when it is absent or not theirs. */
+export async function deleteVerification(
+  supabase: SupabaseClient,
+  userId: string,
+  id: string | undefined,
+): Promise<StoreResult<boolean>> {
+  const parsedId = z.uuid().safeParse(id);
+  if (!parsedId.success) return { ok: true, value: false };
+  // Selecting the deleted ids tells a missing or foreign id apart without a separate read.
+  const { data, error }: { data: unknown; error: unknown } = await supabase
+    .from("verifications")
+    .delete()
+    .eq("id", parsedId.data)
+    .eq("user_id", userId)
+    .select("id");
+  if (error) return { ok: false };
+  return { ok: true, value: z.array(z.unknown()).parse(data).length > 0 };
+}
