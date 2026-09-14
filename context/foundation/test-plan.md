@@ -118,9 +118,9 @@ Jak dodawać nowe testy w tym projekcie. Każda podsekcja zostanie uzupełniona,
 - niezmiennik z asercją niepustości — `invariants.test.ts` › „holds for every combination…” i „is not vacuous…”
 - błędne dane z kategorii — `input-errors.test.ts` › „unconfirmed style number with …”
 - znana luka — `input-errors.test.ts` › „LUKA: M-03 …”
-- znany błąd — `verifications.test.ts` › „precondition (…)” i „BŁĄD (lekcja 5), …”
+- znany błąd — `it.fails` + zielony warunek wstępny; po naprawie `.fails` znika, np. `verifications.test.ts` › „list = report after a rules change” (setup + test)
 
-**Uruchomienie:** `npm test`; jeden plik: `npx vitest run src/lib/services/tag-validation/knowledge.test.ts`. Po fazie 1 wynik to zielony zestaw plus 3 × „expected fail” (etykieta fail-open, 2 × lista = raport po zmianie reguł).
+**Uruchomienie:** `npm test`; jeden plik: `npx vitest run src/lib/services/tag-validation/knowledge.test.ts`. Po naprawach z lekcji 5 cały zestaw jest zielony, bez „expected fail”.
 
 ### 6.2 Adding an integration test for data isolation
 
@@ -141,7 +141,7 @@ Jak dodawać nowe testy w tym projekcie. Każda podsekcja zostanie uzupełniona,
 **Faza 1 — Silnik reguł bez fałszywych werdyktów** (`testing-rule-engine-verdicts`, 2026-09-14)
 
 - Część celów #2 była sprzeczna z dokumentem reguł (S-01, M-03 i potwierdzony M-01 są w nim twarde), więc zamiast „nigdy twardy” są testy `LUKA:`. Zmiana to decyzja produktowa, która zaczyna się w dokumencie.
-- Rozjazd listy z raportem po zmianie reguł i etykieta fail-open (`outcomeLabel("risk", null)` → „Niskie ryzyko”) czekają na lekcję 5 jako 3 × `it.fails`.
+- Rozjazd listy z raportem po zmianie reguł i etykieta fail-open (`outcomeLabel("risk", null)` → „Niskie ryzyko”) weszły jako 3 × `it.fails` i zostały naprawione w lekcji 5: lista liczy werdykt z zapisanej obserwacji, a wynik bez poziomu to „Brak oceny ryzyka” (także w nagłówku raportu). Dawne `it.fails` są dziś zwykłymi testami.
 - Tolerancje S-08 (jeden rok) i S-13 (±1 rok wokół 2010/2011) poprawione w dokumencie reguł; `knowledge.json` bez zmian. „Niskie” przy wielu „nie widać” zostaje decyzją produktową (niespójność PRD `:35` vs `:110`), udokumentowaną w `invariants.test.ts`.
 - **Kandydat do `/10x-test-plan --refresh`:** stary wiersz bez nowego pola obserwacji nie przechodzi `parseRow`, a lista mapuje wszystkie wiersze naraz, więc jeden taki wiersz wysypuje całą listę „Moje weryfikacje” (research fazy 1, pytanie 6). To ryzyko zmiany schematu obserwacji, nie etykiety — poza §2 w obecnym kształcie.
 

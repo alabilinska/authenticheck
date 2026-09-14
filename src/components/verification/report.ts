@@ -30,14 +30,18 @@ export function sellerMessage(questions: string[], listingUrl: string): string {
   ].join("\n");
 }
 
-/** Short label for a verification's result, used on the list of saved verifications. */
+/**
+ * Short label for a verification's result, used on the list of saved verifications.
+ * Fails closed: only an explicit "low" reads as low risk; a result without a level never does.
+ */
 export function outcomeLabel(outcome: TagEvaluation["outcome"], riskLevel: TagEvaluation["riskLevel"]): string {
   if (outcome === "unsupported") return "Nieobsługiwany wariant";
   if (outcome === "scope-unknown") return "Brak danych o okuciach";
   if (outcome === "input-error") return "Błąd odczytu metki";
   if (riskLevel === "high") return "Wysokie ryzyko";
   if (riskLevel === "medium") return "Średnie ryzyko";
-  return "Niskie ryzyko";
+  if (riskLevel === "low") return "Niskie ryzyko";
+  return "Brak oceny ryzyka";
 }
 
 function field(value: unknown, key: string): unknown {

@@ -53,20 +53,17 @@ describe("outcomeLabel", () => {
     }
   });
 
-  it("precondition: the low-risk label is exactly “Niskie ryzyko”", () => {
-    // Keeps the it.fails below honest: it cannot pass because of a typo in the label…
+  it("the low-risk label is exactly “Niskie ryzyko”", () => {
+    // Keeps the test below honest: it cannot pass because of a typo in the label.
     expect(outcomeLabel("risk", "low")).toBe("Niskie ryzyko");
-    // …and the call under test returns a label instead of throwing.
-    expect(typeof outcomeLabel("risk", null)).toBe("string");
   });
 
-  // Known bug, fixed in lesson 5: the label is fail-open — anything not high or medium reads as low,
-  // including `risk` with no level. The engine never produces that pair today (invariants.test.ts),
-  // but `risk_level` is a `text` column without a CHECK, and a future outcome would inherit the default.
-  // Proposed fix: return "Niskie ryzyko" only for riskLevel === "low" and a neutral label otherwise.
-  // ResultCard.tsx (heading of the report) has the same fail-open default; components are outside phase 1.
-  it.fails("BŁĄD (lekcja 5): risk without a level is not labelled as low risk", () => {
+  // Fixed in lesson 5 (was an it.fails): the label was fail-open — anything not high or medium read as low,
+  // including `risk` with no level. The engine never produces that pair (invariants.test.ts), but a future
+  // outcome would have inherited the default. Now only "low" reads as low; ResultCard.tsx fails closed too.
+  it("risk without a level is not labelled as low risk", () => {
     expect(outcomeLabel("risk", null)).not.toBe("Niskie ryzyko");
+    expect(outcomeLabel("risk", null)).toBe("Brak oceny ryzyka");
   });
 });
 

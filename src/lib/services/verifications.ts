@@ -86,24 +86,33 @@ export function toUpdateRow(command: SaveVerificationCommand, evaluation: TagEva
   return { ...toInsertRow(command, evaluation), updated_at: now.toISOString() };
 }
 
-export function toListItem(row: VerificationRow): VerificationListItem {
+function listItem(row: VerificationRow, evaluation: TagEvaluation): VerificationListItem {
   return {
     id: row.id,
     listingUrl: row.listing_url,
     declaredYear: row.declared_year,
-    outcome: row.outcome,
-    riskLevel: row.risk_level,
+    outcome: evaluation.outcome,
+    riskLevel: evaluation.riskLevel,
     createdAt: row.created_at,
   };
 }
 
+/**
+ * The verdict is recomputed from the stored observation, exactly like the report, so the list follows rule
+ * updates. The stored `outcome` / `risk_level` columns are a snapshot from save time and are not read here.
+ */
+export function toListItem(row: VerificationRow): VerificationListItem {
+  return listItem(row, evaluateTag(row.observation));
+}
+
 /** The evaluation is recomputed, so a saved verification always reflects the current rules. */
 export function toDto(row: VerificationRow): VerificationDto {
+  const evaluation = evaluateTag(row.observation);
   return {
-    ...toListItem(row),
+    ...listItem(row, evaluation),
     price: row.price,
     observation: row.observation,
-    evaluation: evaluateTag(row.observation),
+    evaluation,
     updatedAt: row.updated_at,
   };
 }

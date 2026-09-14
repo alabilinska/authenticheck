@@ -37,7 +37,11 @@ function headline(e: TagEvaluation): { title: string; tone: Tone; description?: 
     case "risk":
       if (e.riskLevel === "high") return { title: "Wysokie ryzyko", tone: "high" };
       if (e.riskLevel === "medium") return { title: "Średnie ryzyko", tone: "medium" };
-      return { title: "Niskie ryzyko — w sprawdzonych cechach nie ma sygnałów ostrzegawczych", tone: "low" };
+      if (e.riskLevel === "low") {
+        return { title: "Niskie ryzyko — w sprawdzonych cechach nie ma sygnałów ostrzegawczych", tone: "low" };
+      }
+      // Fails closed, like outcomeLabel: a result without a level never reads as low risk.
+      return { title: "Brak oceny ryzyka", tone: "neutral" };
   }
 }
 

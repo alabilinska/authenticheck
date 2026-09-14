@@ -121,9 +121,8 @@ describe("update row (S-06)", () => {
   });
 });
 
-// Risk #5: the list label comes from the stored `outcome` / `risk_level` columns (toListItem), the report
-// recomputes the evaluation from the stored observation (toDto). The two reading paths are compared
-// here for the same row — never the stored value with itself.
+// Risk #5: the list reads a row through toListItem, the report through toDto. The two reading paths are compared
+// here for the same row — never the stored value with itself — so they cannot drift apart again.
 
 /** A row as the Data API returns it after POST: columns from `evaluation`, then parsed like any read. */
 function savedRow(observation: TagObservation, evaluation: TagEvaluation = evaluateTag(observation)): VerificationRow {
@@ -195,13 +194,11 @@ function knowledgeWithBZipperFrom(year: number): Knowledge {
   return knowledgeSchema.parse(knowledge);
 }
 
-// Known bug, fixed in lesson 5: the stored columns do not know which rules produced them, and nothing
+// Fixed in lesson 5 (was an it.fails): the stored columns do not know which rules produced them, and nothing
 // recomputes them when the rules change (migration 20260914130000_create_verifications.sql: "Denormalised
-// from the evaluation at save time, so the list needs no recomputation"). After a rules update the list keeps
-// the old label while the report shows the new verdict — and the DTO of GET /api/verifications/[id] carries
-// both at once (`riskLevel` stored, `evaluation.riskLevel` fresh).
-// Proposed fix: the list recomputes the verdict from `observation` (the engine is pure and one user's list
-// is small); the columns may stay for sorting and filtering. That also removes the contradiction in the DTO.
+// from the evaluation at save time"). The list used to keep the old label while the report showed the new
+// verdict, and the DTO of GET /api/verifications/[id] carried both at once. Now the list recomputes the verdict
+// from `observation`, like the report; the columns stay as a save-time snapshot.
 describe("list = report after a rules change (#5)", () => {
   const RULE_CHANGES: {
     name: string;
@@ -229,27 +226,20 @@ describe("list = report after a rules change (#5)", () => {
   ];
 
   for (const change of RULE_CHANGES) {
-    it(`precondition (${change.name}): the old rules gave ${change.saved}, the current give ${change.now}, and the row reads on both paths`, () => {
-      // Keeps the it.fails below honest: a broken setup cannot make it "pass" by throwing.
+    it(`setup (${change.name}): the old rules gave ${change.saved}, the current give ${change.now}, and the row stores the old verdict`, () => {
+      // Without this the test below could pass trivially, e.g. if both rule sets gave the same verdict.
       expect(evaluateTag(change.observation, change.old).riskLevel).toBe(change.saved);
       expect(evaluateTag(change.observation).riskLevel).toBe(change.now);
-      const saved = savedRow(change.observation, evaluateTag(change.observation, change.old));
-      expect(saved.risk_level).toBe(change.saved);
-      // The calls inside the it.fails below run on this very row without throwing.
-      expect(toListItem(saved).riskLevel).toBe(change.saved);
-      expect(toDto(saved).evaluation.riskLevel).toBe(change.now);
+      expect(savedRow(change.observation, evaluateTag(change.observation, change.old)).risk_level).toBe(change.saved);
     });
 
-    it.fails(
-      `BŁĄD (lekcja 5), ${change.name}: a row saved under the old rules shows the report's verdict on the list and in its DTO`,
-      () => {
-        const saved = savedRow(change.observation, evaluateTag(change.observation, change.old));
-        const dto = toDto(saved);
-        expect([toListItem(saved).riskLevel, dto.riskLevel]).toEqual([
-          dto.evaluation.riskLevel,
-          dto.evaluation.riskLevel,
-        ]);
-      },
-    );
+    it(`${change.name}: a row saved under the old rules shows the report's verdict on the list and in its DTO`, () => {
+      const saved = savedRow(change.observation, evaluateTag(change.observation, change.old));
+      const dto = toDto(saved);
+      expect([toListItem(saved).riskLevel, dto.riskLevel]).toEqual([
+        dto.evaluation.riskLevel,
+        dto.evaluation.riskLevel,
+      ]);
+    });
   }
 });
