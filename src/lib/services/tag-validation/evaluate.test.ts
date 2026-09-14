@@ -449,3 +449,38 @@ describe("visual checks (rules §7.1)", () => {
     expect(hard(e)).toContain("V-02");
   });
 });
+
+describe("soft signals come with a seller question (PRD: every medium report has a concrete action)", () => {
+  it("S-11: a batch number that is not 4 digits asks for the tag photo", () => {
+    const e = tag({ batchNumber: "123" });
+    expectRisk(e, { risk: "medium", soft: ["S-11"], year: "resolved" });
+    expect(e.sellerQuestions).toEqual([questions.tagPhoto]);
+  });
+
+  it("V-01 and V-03 answered no ask for the seam and the bales", () => {
+    expect(tag({ thread: "no" }).sellerQuestions).toEqual([questions.tagStitching]);
+    expect(tag({ bales: "no" }).sellerQuestions).toEqual([questions.bales]);
+  });
+
+  const mediumCases: [string, Partial<TagObservation>][] = [
+    ["S-11 batch 123", { batchNumber: "123" }],
+    ["V-01 no", { thread: "no" }],
+    ["V-03 no", { bales: "no" }],
+    [
+      "X10 A + pewter",
+      { seasonLetter: "A", stamp925: "present", madeInItalySize: "unknown", hardware: "classic-pewter" },
+    ],
+    ["X13 claim 2019", { seasonLetter: "Q", madeInItalySize: "unknown", declaredYear: 2019 }],
+    ["X15 M + small MII", { seasonLetter: "M" }],
+    ["V-02 B on 2014", { seasonLetter: "H", madeInItalySize: "large", zipper: "b" }],
+    ["illegible letter", { seasonLetter: "unknown" }],
+    ["no tag photo", { tagPhoto: "missing" }],
+  ];
+  for (const [name, overrides] of mediumCases) {
+    it(`${name}: medium risk with at least one seller question`, () => {
+      const e = tag(overrides);
+      expect(e.riskLevel).toBe("medium");
+      expect(e.sellerQuestions.length).toBeGreaterThan(0);
+    });
+  }
+});

@@ -200,6 +200,7 @@
     {
       "id": "S-07",
       "title": "Okucia pasują do roku",
+      "sellerQuestion": "hardware",
       "kind": "hardwareEra",
       "signal": "hard",
       "toleranceYears": 1,
@@ -236,6 +237,7 @@
     {
       "id": "S-11",
       "title": "Numer partii ma cztery cyfry",
+      "sellerQuestion": "tagPhoto",
       "kind": "batchFormat",
       "signal": "soft",
       "pattern": "^\\d{4}$",
@@ -254,6 +256,7 @@
     {
       "id": "S-13",
       "title": "Wielkość napisu MADE IN ITALY pasuje do roku",
+      "sellerQuestion": "tabBack",
       "kind": "periodFeature",
       "feature": "madeInItalySize",
       "signal": "hard",

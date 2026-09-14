@@ -51,6 +51,10 @@ function signal(
 ): void {
   const entry: RuleSignal = { ruleId: rule.id, severity, confidence: rule.confidence, message: fill(message, vars) };
   (severity === "hard" ? ctx.hard : ctx.soft).push(entry);
+  // A soft signal is a doubt, not a verdict: it always comes with a concrete question for the seller (PRD).
+  if (severity === "soft" && "sellerQuestion" in rule && rule.sellerQuestion !== undefined) {
+    ask(ctx, rule.sellerQuestion);
+  }
 }
 
 function ask(ctx: Context, key: QuestionKey, vars: Record<string, string> = {}): void {

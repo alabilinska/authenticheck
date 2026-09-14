@@ -19,6 +19,18 @@ const hardwareEra = z.object({
   to: z.number().int().nullable(),
 });
 
+/** Keys of `sellerQuestions`; a soft signal of a rule with `sellerQuestion` adds that question. */
+const questionKey = z.enum([
+  "hardware",
+  "tagPhoto",
+  "tabBack",
+  "letterIllegible",
+  "yearMismatch",
+  "tagStitching",
+  "zipper",
+  "bales",
+]);
+
 const ruleBase = {
   id: z.string().regex(/^[MSV]-\d{2}$/),
   /** Short Polish name shown next to passed and abstained rules. */
@@ -65,12 +77,14 @@ const ruleSchema = z.discriminatedUnion("kind", [
     toleranceYears: z.number().int().min(0),
     /** Message for a specific observed value, when the default one only fits the other value. */
     messageByValue: z.record(z.string(), z.string()).optional(),
+    sellerQuestion: questionKey.optional(),
   }),
   z.object({
     ...ruleBase,
     kind: z.literal("hardwareEra"),
     signal: z.literal("hard"),
     toleranceYears: z.number().int().min(0),
+    sellerQuestion: questionKey.optional(),
   }),
   z.object({
     ...ruleBase,
@@ -85,7 +99,13 @@ const ruleSchema = z.discriminatedUnion("kind", [
     signal: z.literal("pass"),
     beforeYear: z.number().int(),
   }),
-  z.object({ ...ruleBase, kind: z.literal("batchFormat"), signal: z.literal("soft"), pattern: z.string() }),
+  z.object({
+    ...ruleBase,
+    kind: z.literal("batchFormat"),
+    signal: z.literal("soft"),
+    pattern: z.string(),
+    sellerQuestion: questionKey.optional(),
+  }),
   z.object({
     ...ruleBase,
     kind: z.literal("knownCounterfeit"),

@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { defaultKnowledge } from "@/lib/services/tag-validation/evaluate";
 import type { RuleId, RuleSignal, TagEvaluation, YearReading, YearStatus } from "@/types";
 import { cn } from "@/lib/utils";
+import { sellerMessage, splitAbstained } from "./report";
 
 const rulesById = new Map(defaultKnowledge.rules.map((rule) => [rule.id, rule]));
 const confidenceLabel = { confirmed: "potwierdzona", probable: "prawdopodobna" } as const;
@@ -72,12 +73,66 @@ function Badge({ confidence }: { confidence: RuleSignal["confidence"] }) {
   );
 }
 
-function Section({ title, tone, children }: { title: string; tone?: Tone; children: ReactNode }) {
+function Section({
+  title,
+  tone,
+  children,
+  footer,
+}: {
+  title: string;
+  tone?: Tone;
+  children: ReactNode;
+  footer?: ReactNode;
+}) {
   return (
     <section className={cn("rounded-xl border p-4", toneClasses[tone ?? "neutral"])}>
       <h3 className="mb-3 text-sm font-semibold">{title}</h3>
       <ul className="space-y-3">{children}</ul>
+      {footer}
     </section>
+  );
+}
+
+/** FR-008: copies the seller message; falls back to a text box when the clipboard is unavailable. */
+function CopyQuestions({ text }: { text: string }) {
+  const [state, setState] = useState<"idle" | "copied" | "manual">("idle");
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(text);
+      setState("copied");
+    } catch {
+      setState("manual");
+    }
+  }
+
+  return (
+    <div className="mt-4 space-y-2">
+      <div className="flex flex-wrap items-center gap-3">
+        <Button
+          type="button"
+          onClick={() => {
+            void copy();
+          }}
+          variant="outline"
+          className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition-colors hover:bg-white/20"
+        >
+          Kopiuj pytania do sprzedawcy
+        </Button>
+        <span role="status" className="text-xs text-emerald-200">
+          {state === "copied" ? "Skopiowano" : ""}
+        </span>
+      </div>
+      {state === "manual" && (
+        <textarea
+          readOnly
+          value={text}
+          rows={7}
+          aria-label="Wiadomość do sprzedawcy — zaznacz i skopiuj"
+          className="w-full rounded-lg border border-white/20 bg-black/30 p-2 text-xs text-white"
+        />
+      )}
+    </div>
   );
 }
 
@@ -118,7 +173,7 @@ export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart }: Res
   const head = headline(e);
   const year = e.outcome === "risk" ? yearLine(e.year) : null;
   const passed = [...new Set(e.passed)];
-  const abstained = [...new Set(e.abstained)];
+  const { yearUnresolved, other: abstained } = splitAbstained(e.abstained, e.year);
 
   return (
     <div className="space-y-4 text-white">
@@ -151,7 +206,10 @@ export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart }: Res
         </Section>
       )}
       {e.sellerQuestions.length > 0 && (
-        <Section title="Pytania do sprzedawcy">
+        <Section
+          title="Pytania do sprzedawcy"
+          footer={<CopyQuestions text={sellerMessage(e.sellerQuestions, listingUrl)} />}
+        >
           {e.sellerQuestions.map((q) => (
             <li key={q} className="text-sm">
               {q}
@@ -162,6 +220,13 @@ export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart }: Res
       {passed.length > 0 && (
         <Section title="Reguły spełnione" tone="low">
           {passed.map((id) => (
+            <RuleItem key={id} id={id} />
+          ))}
+        </Section>
+      )}
+      {yearUnresolved.length > 0 && (
+        <Section title="Wstrzymane — rok nierozstrzygnięty">
+          {yearUnresolved.map((id) => (
             <RuleItem key={id} id={id} />
           ))}
         </Section>
