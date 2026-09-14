@@ -130,15 +130,15 @@ V-01–V-03 exist in the rules document and the knowledge file, the engine evalu
 
 #### Automated
 
-- [x] 1.1 Unit tests pass
-- [x] 1.2 Lint passes with exit code 0
-- [x] 1.3 Type check passes
-- [x] 1.4 Build passes
+- [x] 1.1 Unit tests pass — 52be98f
+- [x] 1.2 Lint passes with exit code 0 — 52be98f
+- [x] 1.3 Type check passes — 52be98f
+- [x] 1.4 Build passes — 52be98f
 
 #### Manual
 
-- [x] 1.5 V1 + tak/Lampo/tak gives low risk and S/S 2009
-- [x] 1.6 Tag dated 2016 + Lampo gives high risk with the V-02 message
-- [x] 1.7 "nie widać" on all three adds three seller questions, risk unchanged
-- [x] 1.8 Reference photos visible and legible at phone width
-- [ ] 1.9 Same walk-through works on production after the deploy
+- [x] 1.5 V1 + tak/Lampo/tak gives low risk and S/S 2009 — 52be98f
+- [x] 1.6 Tag dated 2016 + Lampo gives high risk with the V-02 message — 52be98f
+- [x] 1.7 "nie widać" on all three adds three seller questions, risk unchanged — 52be98f
+- [x] 1.8 Reference photos visible and legible at phone width — 52be98f
+- [x] 1.9 Same walk-through works on production after the deploy — 52be98f
