@@ -46,8 +46,8 @@ Primary persona: the author — a vintage luxury-bag buyer who regularly evaluat
 
 ### US-01: Buyer verifies a Balenciaga City listing end-to-end
 
-- **Given** a signed-in buyer with a Vinted listing open showing the leather tag, the authenticity card and the hardware
-- **When** they start a new verification for line City / year 2010, enter the tag and card numbers, and answer the three visual checks
+- **Given** a signed-in buyer with a Vinted listing open showing the leather tag (plate and back of the tab) and the hardware
+- **When** they start a new verification for line City / year 2010, enter what the tag shows, and answer the three visual checks
 - **Then** they see a report with a risk level and at least one seller question or one decisive hard signal, and the saved verification appears on their list with its risk label
 
 #### Acceptance Criteria
@@ -63,18 +63,19 @@ Primary persona: the author — a vintage luxury-bag buyer who regularly evaluat
   > Socrates: Counter-argument considered: "for a single user, accounts are a week of plumbing with no domain value." Resolution: kept; accounts are an external requirement on the project, not a domain need. Recorded as such.
 
 ### Starting a verification
-- FR-002: Buyer can start a new verification by giving the line (brand locked to Balenciaga), the seller's declared year (optional), the listing link and an optional price. Priority: must-have
+- FR-002: Buyer can start a new verification by giving the line (fixed to Balenciaga Classic City medium in v1), the seller's declared year (optional), the listing link and an optional price. Priority: must-have
   > Socrates: Counter-argument considered: "the seller's declared year is often wrong; validating tag layout against it would false-fail authentic bags." Resolution: revised — the year decoded from the tag's letter code is the reference; the declared year is only compared against it, and a mismatch is a soft signal plus a seller question, never a hard fail.
 
 ### Leather tag & serial number
-- FR-003: Buyer can enter the tag's two lines (model number, serial number) and immediately see validation of format, model ↔ line, and decoded year ↔ tag layout, with a specific message naming the failed rule and its confidence level (confirmed / probable). Priority: must-have
+- FR-003: Buyer can enter what the tag shows — the style number and the batch number with its season letter from the metal plate, the first number on the back of the leather tab, the hardware type, the brand-line style (underscore or dot), the 925 stamp and the size of the MADE IN ITALY lettering — and immediately see validation of format, model ↔ line, plate ↔ tab match and decoded year ↔ tag layout, with a specific message naming the failed rule and its confidence level (confirmed / probable). Priority: must-have
   > Socrates: Counter-argument considered: "era/layout rules are uncertain for older years; a message naming a rule asserts more certainty than the sources have." Resolution: revised — every rule carries a confidence level as part of its data, and the message shows it ("Confirmed: model 115748 = City" vs "Probable: two-line layout appears from ~2007").
-- FR-004: Buyer can mark any check as unavailable ("no photo" / "can't see") so it becomes a seller question; a missing tag photo raises the risk level by one step, while a missing card (no card, or no photo of it) and "can't see" on a visual check are neutral. Priority: must-have
+- FR-004: Buyer can mark any check as unavailable ("no photo" / "can't see") so it becomes a seller question; a missing tag photo raises the risk level by one step, while "can't see" on a visual check is neutral. Priority: must-have
   > Socrates: Counter-argument considered: "a luxury-bag listing with no tag photo is itself a risk signal, not a neutral 'ask later'." Resolution: revised — absence of key evidence (tag, card) raises risk one level and generates a question; a detail not visible in the photos stays neutral.
   > Clarified 2026-09-13: only a missing **tag** photo raises risk; a missing card or card photo is neutral plus a seller question, consistent with FR-005.
 
 ### Authenticity card
-- FR-005: Buyer can enter the authenticity-card numbers and see match / mismatch / no card against the tag, weighted asymmetrically: mismatch is a hard signal, match carries low weight, no card is neutral plus a seller question. Priority: must-have
+- FR-005: Buyer can enter the authenticity-card numbers and see match / mismatch / no card against the tag, weighted asymmetrically: mismatch is a hard signal, match carries low weight, no card is neutral plus a seller question. Priority: nice-to-have
+  > Deferred to v2 on 2026-09-14: the rule knowledge file has no sourced data on what the card contains or which fields match the tag (§6); guessing would fail genuine bags.
   > Socrates: Counter-argument considered: "cards are easily faked and often lost — 'match' proves little and 'none' means nothing." Resolution: revised — the card can fail a bag but barely passes it; its evidential value is asymmetric.
 
 ### Visual checklist
@@ -82,7 +83,7 @@ Primary persona: the author — a vintage luxury-bag buyer who regularly evaluat
   > Socrates: Counter-argument considered: "hard traits changed between eras; three fixed questions false-fail authentic bags from other years." Resolution: revised — the tag's letter code decodes to a year via a simple dictionary, and era-dependent checks (zipper variant) key off it.
 
 ### Report
-- FR-007: Buyer sees a report with a risk level (low / medium / high) and the signals that set it: passed checks, failed hard signals shown separately, and unchecked items. Priority: must-have
+- FR-007: Buyer sees a report with a risk level (low / medium / high) — or, for a bag outside the supported variant, an "unsupported" result with no risk verdict — and the signals that set it: passed checks, failed hard signals shown separately, unchecked items, and year-dependent checks that abstained because the year is unresolved. Priority: must-have
   > Socrates: Counter-argument considered: "a point score next to the risk level is two messages; the user trusts an arbitrary number." Resolution: revised — point score dropped; the level follows from the rules (hard signal → high, missing tag → +1 level, …) and the report explains why.
 - FR-008: Buyer can copy a ready-made list of seller questions generated from the unchecked items. Priority: must-have
   > Socrates: Counter-argument considered: "templated questions tip off a dishonest seller about which traits are checked." Resolution: rejected — asking for a photo of the tag or of the handle attachments does not reveal what is being looked for.
@@ -97,16 +98,18 @@ Primary persona: the author — a vintage luxury-bag buyer who regularly evaluat
 
 ## Non-Functional Requirements
 
-- Number validation feels immediate: the result appears in under 1 second after the buyer submits the tag or card numbers.
+- Number validation feels immediate: the result appears in under 1 second after the buyer submits the tag details.
 - The product is usable in a browser on both phone and desktop; hints and reference photos remain legible on a phone screen, since verification typically happens next to an open listing.
 
 ## Business Logic
 
-The application determines a purchase-risk level and a list of missing evidence, where hard signals are decisive, missing evidence raises the risk, and the authenticity card only ever counts against the bag.
+The application determines a purchase-risk level and a list of missing evidence, where hard signals are decisive, missing evidence raises the risk, and a bag outside the supported variant is reported as unsupported instead of being judged.
 
-Inputs are what the buyer transcribes and observes from the listing: the model number and serial number from the leather tag, the numbers from the authenticity card, yes / no / can't-see answers to three visual checks, and "no photo" marks where evidence is absent; the line and the seller's declared year provide context. The year decoded from the tag's letter code is the reference; the declared year is only compared against it.
+Inputs are what the buyer transcribes and observes from the listing: the style number, batch number and season letter from the metal plate, the first number on the back of the leather tab, the hardware type, the brand-line style, the 925 stamp and the MADE IN ITALY size, yes / no / can't-see answers to three visual checks, and "no photo" marks where evidence is absent; the line and the seller's declared year provide context. The year decoded from the tag's letter code is the reference; the declared year is only compared against it.
 
-The output is a risk level with the signals that set it, plus the missing evidence phrased as copy-ready seller questions. Levels: **high** = at least one hard signal (rule failure on the tag, card mismatch, a hard visual trait answered "no"); **medium** = at least one soft signal (e.g. declared year disagrees with the decoded year) or a missing tag photo; **low** = everything checked and consistent (a missing card or card photo is neutral and only becomes a seller question). "Can't see" on a visual check does not lower the level but becomes a question.
+The output is a risk level with the signals that set it, plus the missing evidence phrased as copy-ready seller questions. Levels: **high** = at least one hard signal (rule failure on the tag, a hard visual trait answered "no"); **medium** = at least one soft signal (e.g. declared year disagrees with the decoded year) or a missing tag photo; **low** = everything checked and consistent. "Can't see" on a visual check does not lower the level but becomes a question.
+
+Besides the three levels, an evaluation can end in three states that carry no risk verdict: **unsupported** — the bag is outside the supported variant (hardware not classic, or a style number other than 115748), because the rules cannot tell an uncovered variant from a counterfeit; **year unresolved** — the season letter has two readings and no deciding feature is present, so year-dependent checks abstain instead of picking a reading; **input error** — the entry is implausible in a known way (e.g. a batch number typed as the style number), so the buyer is asked to re-read it. Rules and test cases: `balenciaga-city-tag-rules.md`.
 
 The buyer meets the rule twice: immediately after the tag step, where a hard signal can already settle the matter, and in the final report after the last check.
 
@@ -119,7 +122,9 @@ Rationale (user's choice over the local-profile recommendation): verifications s
 ## Non-Goals
 
 Functional:
-- Other brands (Louis Vuitton, Gucci, Chloé) — later iterations; v1 carries only Balenciaga City / Motorcycle knowledge, on a brand-agnostic engine.
+- Other brands (Louis Vuitton, Gucci, Chloé) — later iterations; v1 carries only Balenciaga Classic City medium with classic hardware, on a brand-agnostic engine.
+- Other Balenciaga variants (Motorcycle, City with Giant hardware, other City sizes) — no sourced rules; such bags are reported as unsupported, never judged.
+- Authenticity card check (FR-005) — deferred to v2: no sourced data on the card's contents (rule knowledge file §6).
 - Photo analysis — no image recognition or AI; the buyer looks and answers, the app never inspects photos. Load-bearing: shapes the whole flow.
 - Valuation / reference prices and automatic listing import (scraping, link parsing) — link and price are the buyer's own notes; nothing is fetched from marketplaces.
 - Sharing verifications between users, and a native mobile app — each buyer sees only their own; web in a phone browser instead of an app.
@@ -135,7 +140,9 @@ Non-functional:
 
 1. **Deadline vs scope.** The hard deadline (2026-09-14) leaves ~4 after-hours evenings for the full v1 scope (accounts with password reset, tag validation with era decoding, authenticity card, 3-signal checklist, report, list + delete, and — restored after shaping — editing a saved verification, FR-011), first sized for 3 weeks. A further scope cut was offered during shaping and declined; the compression was accepted deliberately. This is the single largest delivery risk. — Owner: user. Block: no (acknowledged).
 2. **Does the rule test set exist yet?** Two Primary criteria and one Guardrail depend on "the prepared test set" of authentic and faulty examples. Its preparation is not covered by any FR. — Owner: user. By: before implementation of FR-003. Block: yes for those criteria.
-   **Resolved 2026-09-13:** the source is the developer's already-collected knowledge file (rules + authentic and faulty examples); every example becomes a test case. Pending: the file is committed to the repository before the tag-validation work is planned.
+   **Resolved 2026-09-13:** the source is the developer's already-collected knowledge file (rules + authentic and faulty examples); every example becomes a test case. Pending: the file is committed to the repository before the tag-validation work is planned. Committed 2026-09-14 as `balenciaga-city-tag-rules.md`.
 3. **Which rules are "confirmed" vs "probable"?** FR-003 shows a confidence level per rule, and FR-006 depends on a tag letter-code → year dictionary and the zipper-variant change after 2014. The sources backing each rule and its confidence level are not yet listed. — Owner: user. By: before implementation of FR-003 / FR-006. Block: no (rules can ship as "probable").
    **Resolved 2026-09-13 (policy):** a rule is "confirmed" only when the knowledge file cites a source for it; otherwise it ships as "probable".
 4. **Which lines are selectable in v1?** Non-Goals scope v1 to "Balenciaga City / Motorcycle"; FR-002 and US-01 mention only City. — Owner: user. By: before implementation of FR-002. Block: no.
+   **Resolved 2026-09-14:** v1 covers Classic City medium with classic hardware only; Motorcycle and Giant hardware are out of scope and reported as unsupported.
+5. **Are the visual checks hard or soft signals?** FR-006 and the Business Logic treat a visual trait answered "no" as a hard signal; the rule knowledge file (§7) makes each trait soft on its own and hard only in combination with the tag year (e.g. a `B` zipper pull on a bag dated 2005). — Owner: user. By: before planning the visual checklist. Block: yes for the visual checklist.
