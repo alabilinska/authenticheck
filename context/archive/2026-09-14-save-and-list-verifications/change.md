@@ -1,10 +1,10 @@
 ---
 change_id: save-and-list-verifications
 title: Save verifications and list them per user
-status: implemented
+status: archived
 created: 2026-09-14
 updated: 2026-09-14
-archived_at: null
+archived_at: 2026-09-14T12:57:24Z
 ---
 
 ## Notes
