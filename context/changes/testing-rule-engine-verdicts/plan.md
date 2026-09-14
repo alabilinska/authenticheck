@@ -589,10 +589,10 @@ Nie dotyczy. Brak zmian w schemacie bazy, w `knowledge.json` i w kodzie produkcy
 
 #### Automated
 
-- [x] 5.1 `grep -n "TBD — see §3 Phase 1" context/foundation/test-plan.md` nie zwraca nic
-- [x] 5.2 Pełny zestaw nadal zielony: `npm test`
+- [x] 5.1 `grep -n "TBD — see §3 Phase 1" context/foundation/test-plan.md` nie zwraca nic — dc8ab16
+- [x] 5.2 Pełny zestaw nadal zielony: `npm test` — dc8ab16
 
 #### Manual
 
-- [x] 5.3 §6.1 wystarcza do dodania testu nowej reguły bez czytania planu
-- [x] 5.4 §6.5 zawiera kandydata do `--refresh`
+- [x] 5.3 §6.1 wystarcza do dodania testu nowej reguły bez czytania planu — dc8ab16
+- [x] 5.4 §6.5 zawiera kandydata do `--refresh` — dc8ab16
