@@ -169,13 +169,13 @@ Playwright and one test that walks the US-01 path locally.
 
 #### Automated
 
-- [x] 2.1 Unit tests pass
-- [x] 2.2 Lint passes with exit code 0
-- [x] 2.3 Type check passes
-- [x] 2.4 Build passes
-- [x] 2.5 End-to-end test passes locally
+- [x] 2.1 Unit tests pass — 329d3d1
+- [x] 2.2 Lint passes with exit code 0 — 329d3d1
+- [x] 2.3 Type check passes — 329d3d1
+- [x] 2.4 Build passes — 329d3d1
+- [x] 2.5 End-to-end test passes locally — 329d3d1
 
 #### Manual
 
-- [x] 2.6 Test account created and credentials added to .dev.vars
-- [x] 2.7 E2E run watched once headed and follows the real wizard
+- [x] 2.6 Test account created and credentials added to .dev.vars — 329d3d1
+- [x] 2.7 E2E run watched once headed and follows the real wizard — 329d3d1
