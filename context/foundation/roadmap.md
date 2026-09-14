@@ -48,7 +48,7 @@ A buyer of vintage Balenciaga bags on second-hand marketplaces has no simple way
 | S-05 | save-and-list-verifications | user can save a verification and later open it from their own list, where each listing shows its risk label; no other user can see it | F-01, S-04 | US-01, FR-009 | proposed |
 | S-06 | edit-saved-verification | user can re-open a saved verification, change any answer (e.g. "can't see" → "yes" after the seller sends photos) and see the report recalculated | S-05 | FR-011 | proposed |
 | S-07 | delete-verification | user can delete a saved verification from their list | S-05 | FR-010 | proposed |
-| S-08 | password-reset | user can reset a forgotten password by email and sign in with the new one; after sign-up, the page tells the user whether the account is ready to use or waits for email confirmation | F-01 | FR-001 | ready |
+| S-08 | password-reset | user can reset a forgotten password by email and sign in with the new one; after sign-up, the page tells the user whether the account is ready to use or waits for email confirmation | F-01 | FR-001 | in-progress |
 
 ## Streams
 
@@ -172,7 +172,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Independent of the verification flow, so it can go to a separate agent run in parallel; sign-up and sign-in already exist, only reset is missing. Also fixes the post-sign-up page: it currently picks its message by build mode, so production always says "check your inbox" even when email confirmation is off and no email is sent.
-- **Status:** ready
+- **Status:** in-progress
 
 ## Backlog Handoff
 
