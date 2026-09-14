@@ -546,30 +546,30 @@ Nie dotyczy. Brak zmian w schemacie bazy, w `knowledge.json` i w kodzie produkcy
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm test` (1 expected fail w `report.test.ts`)
-- [x] 2.2 Plik niezmiennika w budżecie czasu (~3 s): `npx vitest run src/lib/services/tag-validation/invariants.test.ts`
-- [x] 2.3 Linting passes: `npm run lint`
-- [x] 2.4 Type checking passes: `npm run typecheck`
+- [x] 2.1 Unit tests pass: `npm test` (1 expected fail w `report.test.ts`) — e3193d3
+- [x] 2.2 Plik niezmiennika w budżecie czasu (~3 s): `npx vitest run src/lib/services/tag-validation/invariants.test.ts` — e3193d3
+- [x] 2.3 Linting passes: `npm run lint` — e3193d3
+- [x] 2.4 Type checking passes: `npm run typecheck` — e3193d3
 
 #### Manual
 
-- [x] 2.5 Mutacja `finish` zapala niezmiennik; cofnięta
-- [x] 2.6 Usunięcie profilu płytki zapala asercję niepustości; cofnięte
-- [x] 2.7 Przypadki „nie widać” czytają się jak opis decyzji produktowej
+- [x] 2.5 Mutacja `finish` zapala niezmiennik; cofnięta — e3193d3
+- [x] 2.6 Usunięcie profilu płytki zapala asercję niepustości; cofnięte — e3193d3
+- [x] 2.7 Przypadki „nie widać” czytają się jak opis decyzji produktowej — e3193d3
 
 ### Phase 3: Błędne dane — zasłona kreatora, bezpieczne ścieżki silnika, znane luki (#2)
 
 #### Automated
 
-- [ ] 3.1 Unit tests pass: `npm test`
-- [ ] 3.2 Nowe testy przechodzą osobno: `npx vitest run src/components/verification/draft.test.ts src/lib/services/tag-validation/input-errors.test.ts`
-- [ ] 3.3 Linting passes: `npm run lint`
-- [ ] 3.4 Type checking passes: `npm run typecheck`
+- [x] 3.1 Unit tests pass: `npm test`
+- [x] 3.2 Nowe testy przechodzą osobno: `npx vitest run src/components/verification/draft.test.ts src/lib/services/tag-validation/input-errors.test.ts`
+- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.4 Type checking passes: `npm run typecheck`
 
 #### Manual
 
-- [ ] 3.5 Poluzowanie regexu litery zapala testy `validateStep` i łańcucha; cofnięte
-- [ ] 3.6 Testy „LUKA:” wskazują regułę i linię dokumentu
+- [x] 3.5 Poluzowanie regexu litery zapala testy `validateStep` i łańcucha; cofnięte
+- [x] 3.6 Testy „LUKA:” wskazują regułę i linię dokumentu
 
 ### Phase 4: Lista = raport (#5)
 

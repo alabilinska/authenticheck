@@ -55,6 +55,19 @@ describe("saveVerificationSchema", () => {
     const { observation: _omitted, ...rest } = command;
     expect(saveVerificationSchema.safeParse(rest).success).toBe(false);
   });
+
+  // LUKA (risk #2): the API takes any season letter up to 10 characters, so a client other than the wizard
+  // can save a false "high risk" (S-01, rules §3.4 :182). Not tightened in phase 1: the same
+  // tagObservationSchema parses stored rows, and the wizard saves the letter without trim(), so a stricter
+  // letter format could make old rows fail to parse — and one bad row fails the whole list.
+  it("LUKA: accepts a malformed season letter, which the engine turns into hard S-01", () => {
+    for (const seasonLetter of ["Ć", ""]) {
+      const result = saveVerificationSchema.safeParse({ ...command, observation: { ...v1, seasonLetter } });
+      expect(result.success, JSON.stringify(seasonLetter)).toBe(true);
+      if (!result.success) continue;
+      expect(evaluateTag(result.data.observation).hardSignals.map((s) => s.ruleId)).toEqual(["S-01"]);
+    }
+  });
 });
 
 describe("row mapping", () => {
