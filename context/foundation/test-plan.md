@@ -48,11 +48,11 @@ Najważniejsze scenariusze awarii, uporządkowane według ryzyka = wpływ × pra
 
 Każdy wiersz to osobna faza wdrażania, która otworzy własny folder zmiany przez `/10x-new`. Status przesuwa się od lewej do prawej; orkiestrator aktualizuje go, gdy na dysku pojawiają się kolejne artefakty.
 
-| #   | Phase name                            | Goal (one line)                                                                                                                      | Risks covered | Test types  | Status      | Change folder                                 |
-| --- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------- | ----------- | ----------- | --------------------------------------------- |
-| 1   | Silnik reguł bez fałszywych werdyktów | Udowodnić, że podróbka nie dostaje niskiego, a literówka nie daje wysokiego ryzyka; pilnować zgodności etykiety i reguł z dokumentem | #1, #2, #5    | unit        | complete    | context/changes/testing-rule-engine-verdicts/ |
-| 2   | Izolacja kont i ochrona tras          | Udowodnić, że cudze weryfikacje są niedostępne na poziomie bazy i tras, a brak logowania jest odrzucany                              | #3, #6        | integration | not started | —                                             |
-| 3   | Bramka e2e w CI                       | Zablokować wdrożenie zmiany, która psuje główną ścieżkę weryfikacji                                                                  | #4            | e2e + gates | not started | —                                             |
+| #   | Phase name                            | Goal (one line)                                                                                                                      | Risks covered | Test types  | Status      | Change folder                                            |
+| --- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------- | ----------- | ----------- | -------------------------------------------------------- |
+| 1   | Silnik reguł bez fałszywych werdyktów | Udowodnić, że podróbka nie dostaje niskiego, a literówka nie daje wysokiego ryzyka; pilnować zgodności etykiety i reguł z dokumentem | #1, #2, #5    | unit        | complete    | context/archive/2026-09-14-testing-rule-engine-verdicts/ |
+| 2   | Izolacja kont i ochrona tras          | Udowodnić, że cudze weryfikacje są niedostępne na poziomie bazy i tras, a brak logowania jest odrzucany                              | #3, #6        | integration | not started | —                                                        |
+| 3   | Bramka e2e w CI                       | Zablokować wdrożenie zmiany, która psuje główną ścieżkę weryfikacji                                                                  | #4            | e2e + gates | not started | —                                                        |
 
 Warstwy AI (hooki po edycji, przegląd wizyjny) pominięte: przy tej skali i tych ryzykach nie dają sygnału, którego nie dałyby tańsze testy deterministyczne.
 
