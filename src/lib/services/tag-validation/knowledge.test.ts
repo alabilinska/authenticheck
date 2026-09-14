@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { knowledgeSchema, type Reading, type RuleDef } from "./schema";
 import { defaultKnowledge } from "./evaluate";
+import { documentedHardRules } from "./fixtures";
 
 describe("knowledge file", () => {
   it("validates against the schema", () => {
@@ -110,26 +111,6 @@ function rule<K extends RuleDef["kind"]>(id: string, kind: K): RuleOfKind<K> {
   return found;
 }
 
-/**
- * Rules whose Signal column in the rules document says "hard" (§2.4, §3.4, §7.1), including the
- * mixed ones: S-07 "soft at the boundary seasons, hard when off by more than a year", S-12 "hard
- * flag", V-02 "hard; soft within one year of the change".
- */
-const DOCUMENTED_HARD_RULES = [
-  "M-01",
-  "M-03",
-  "M-04",
-  "S-01",
-  "S-02",
-  "S-05",
-  "S-06",
-  "S-07",
-  "S-09",
-  "S-12",
-  "S-13",
-  "V-02",
-];
-
 describe("knowledge file matches the rules document — tables", () => {
   it("encodes the §3.2 letter table: readings, seasons and confidence", () => {
     const documented = documentedLetters();
@@ -146,7 +127,7 @@ describe("knowledge file matches the rules document — tables", () => {
       .filter((r) => r.signal === "hard")
       .map((r) => r.id)
       .sort();
-    expect(documented).toEqual(DOCUMENTED_HARD_RULES);
+    expect(documented).toEqual(documentedHardRules);
     expect(encoded).toEqual(documented);
   });
 

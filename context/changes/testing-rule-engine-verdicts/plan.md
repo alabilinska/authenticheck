@@ -532,30 +532,30 @@ Nie dotyczy. Brak zmian w schemacie bazy, w `knowledge.json` i w kodzie produkcy
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npm test`
-- [x] 1.2 Strażnik wartości przechodzi osobno: `npx vitest run src/lib/services/tag-validation/knowledge.test.ts`
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Type checking passes: `npm run typecheck`
+- [x] 1.1 Unit tests pass: `npm test` — cbc7ea3
+- [x] 1.2 Strażnik wartości przechodzi osobno: `npx vitest run src/lib/services/tag-validation/knowledge.test.ts` — cbc7ea3
+- [x] 1.3 Linting passes: `npm run lint` — cbc7ea3
+- [x] 1.4 Type checking passes: `npm run typecheck` — cbc7ea3
 
 #### Manual
 
-- [x] 1.5 Mutacja wartości w `knowledge.json` zapala strażnika; cofnięta
-- [x] 1.6 Nowy tekst S-08 i S-13 w dokumencie zaakceptowany
+- [x] 1.5 Mutacja wartości w `knowledge.json` zapala strażnika; cofnięta — cbc7ea3
+- [x] 1.6 Nowy tekst S-08 i S-13 w dokumencie zaakceptowany — cbc7ea3
 
 ### Phase 2: Niezmiennik „twardy ⇒ wysokie”, wstrzymanie przy braku danych, etykieta fail-open (#1)
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass: `npm test` (1 expected fail w `report.test.ts`)
-- [ ] 2.2 Plik niezmiennika w budżecie czasu (~3 s): `npx vitest run src/lib/services/tag-validation/invariants.test.ts`
-- [ ] 2.3 Linting passes: `npm run lint`
-- [ ] 2.4 Type checking passes: `npm run typecheck`
+- [x] 2.1 Unit tests pass: `npm test` (1 expected fail w `report.test.ts`)
+- [x] 2.2 Plik niezmiennika w budżecie czasu (~3 s): `npx vitest run src/lib/services/tag-validation/invariants.test.ts`
+- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.4 Type checking passes: `npm run typecheck`
 
 #### Manual
 
-- [ ] 2.5 Mutacja `finish` zapala niezmiennik; cofnięta
-- [ ] 2.6 Usunięcie profilu płytki zapala asercję niepustości; cofnięte
-- [ ] 2.7 Przypadki „nie widać” czytają się jak opis decyzji produktowej
+- [x] 2.5 Mutacja `finish` zapala niezmiennik; cofnięta
+- [x] 2.6 Usunięcie profilu płytki zapala asercję niepustości; cofnięte
+- [x] 2.7 Przypadki „nie widać” czytają się jak opis decyzji produktowej
 
 ### Phase 3: Błędne dane — zasłona kreatora, bezpieczne ścieżki silnika, znane luki (#2)
 

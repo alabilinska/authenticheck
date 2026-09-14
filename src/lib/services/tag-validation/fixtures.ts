@@ -22,3 +22,24 @@ export const v1Observation: TagObservation = {
   zipper: "lampo",
   bales: "yes",
 };
+
+/**
+ * Rules whose Signal column in the rules document says "hard" (§2.4, §3.4, §7.1), including the
+ * mixed ones: S-07 "soft at the boundary seasons, hard when off by more than a year", S-12 "hard
+ * flag", V-02 "hard; soft within one year of the change". A new hard rule belongs here, in the
+ * document first (knowledge.test.ts checks both against each other).
+ */
+export const documentedHardRules = [
+  "M-01",
+  "M-03",
+  "M-04",
+  "S-01",
+  "S-02",
+  "S-05",
+  "S-06",
+  "S-07",
+  "S-09",
+  "S-12",
+  "S-13",
+  "V-02",
+];

@@ -45,6 +45,27 @@ describe("outcomeLabel", () => {
     expect(outcomeLabel("risk", "low")).toBe("Niskie ryzyko");
     expect(outcomeLabel("unsupported", null)).toBe("Nieobsługiwany wariant");
   });
+
+  // Risk #1: a result without a risk level must never read as "Niskie ryzyko".
+  it("labels no no-verdict outcome as low risk", () => {
+    for (const outcome of ["unsupported", "scope-unknown", "input-error"] as const) {
+      expect(outcomeLabel(outcome, null)).not.toBe("Niskie ryzyko");
+    }
+  });
+
+  it("precondition: the low-risk label is exactly “Niskie ryzyko”", () => {
+    // Keeps the it.fails below honest: it cannot pass because of a typo in the label.
+    expect(outcomeLabel("risk", "low")).toBe("Niskie ryzyko");
+  });
+
+  // Known bug, fixed in lesson 5: the label is fail-open — anything not high or medium reads as low,
+  // including `risk` with no level. The engine never produces that pair today (invariants.test.ts),
+  // but `risk_level` is a `text` column without a CHECK, and a future outcome would inherit the default.
+  // Proposed fix: return "Niskie ryzyko" only for riskLevel === "low" and a neutral label otherwise.
+  // ResultCard.tsx (heading of the report) has the same fail-open default; components are outside phase 1.
+  it.fails("BŁĄD (lekcja 5): risk without a level is not labelled as low risk", () => {
+    expect(outcomeLabel("risk", null)).not.toBe("Niskie ryzyko");
+  });
 });
 
 describe("save response guards", () => {
