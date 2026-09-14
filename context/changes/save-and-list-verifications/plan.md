@@ -187,14 +187,14 @@ On `main` after both branches are merged: the report gets "Zapisz weryfikację",
 
 #### Automated
 
-- [x] 2.1 Unit tests pass
-- [x] 2.2 Lint passes with exit code 0
-- [x] 2.3 Type check passes
-- [x] 2.4 Build passes
+- [x] 2.1 Unit tests pass — 594ccb3
+- [x] 2.2 Lint passes with exit code 0 — 594ccb3
+- [x] 2.3 Type check passes — 594ccb3
+- [x] 2.4 Build passes — 594ccb3
 
 #### Manual
 
-- [x] 2.5 Saving from the report shows the entry on the list with its risk label
-- [x] 2.6 Opening an entry shows the same report as before saving
-- [x] 2.7 A second account does not see the first account's entries
-- [ ] 2.8 Same walk-through works on production after the deploy
+- [x] 2.5 Saving from the report shows the entry on the list with its risk label — 594ccb3
+- [x] 2.6 Opening an entry shows the same report as before saving — 594ccb3
+- [x] 2.7 A second account does not see the first account's entries — 594ccb3
+- [x] 2.8 Same walk-through works on production after the deploy — 594ccb3
