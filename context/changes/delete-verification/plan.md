@@ -91,14 +91,14 @@ Service, API and the confirm-then-delete control.
 
 #### Automated
 
-- [x] 1.1 Unit tests pass
-- [x] 1.2 Lint passes with exit code 0
-- [x] 1.3 Type check passes
-- [x] 1.4 Build passes
-- [x] 1.5 Unauthenticated DELETE /api/verifications/<id> returns 401 UNAUTHENTICATED
+- [x] 1.1 Unit tests pass — 708be24
+- [x] 1.2 Lint passes with exit code 0 — 708be24
+- [x] 1.3 Type check passes — 708be24
+- [x] 1.4 Build passes — 708be24
+- [x] 1.5 Unauthenticated DELETE /api/verifications/<id> returns 401 UNAUTHENTICATED — 708be24
 
 #### Manual
 
-- [x] 1.6 Delete asks for confirmation; cancel keeps it; confirm removes it from the list
-- [x] 1.7 Test account gets 404 for another account's verification and it stays listed
-- [ ] 1.8 Same walk-through works on production after the deploy
+- [x] 1.6 Delete asks for confirmation; cancel keeps it; confirm removes it from the list — 708be24
+- [x] 1.7 Test account gets 404 for another account's verification and it stays listed — 708be24
+- [x] 1.8 Same walk-through works on production after the deploy — 708be24
