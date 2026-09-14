@@ -561,29 +561,29 @@ Nie dotyczy. Brak zmian w schemacie bazy, w `knowledge.json` i w kodzie produkcy
 
 #### Automated
 
-- [x] 3.1 Unit tests pass: `npm test`
-- [x] 3.2 Nowe testy przechodzą osobno: `npx vitest run src/components/verification/draft.test.ts src/lib/services/tag-validation/input-errors.test.ts`
-- [x] 3.3 Linting passes: `npm run lint`
-- [x] 3.4 Type checking passes: `npm run typecheck`
+- [x] 3.1 Unit tests pass: `npm test` — 6ac03b8
+- [x] 3.2 Nowe testy przechodzą osobno: `npx vitest run src/components/verification/draft.test.ts src/lib/services/tag-validation/input-errors.test.ts` — 6ac03b8
+- [x] 3.3 Linting passes: `npm run lint` — 6ac03b8
+- [x] 3.4 Type checking passes: `npm run typecheck` — 6ac03b8
 
 #### Manual
 
-- [x] 3.5 Poluzowanie regexu litery zapala testy `validateStep` i łańcucha; cofnięte
-- [x] 3.6 Testy „LUKA:” wskazują regułę i linię dokumentu
+- [x] 3.5 Poluzowanie regexu litery zapala testy `validateStep` i łańcucha; cofnięte — 6ac03b8
+- [x] 3.6 Testy „LUKA:” wskazują regułę i linię dokumentu — 6ac03b8
 
 ### Phase 4: Lista = raport (#5)
 
 #### Automated
 
-- [ ] 4.1 Unit tests pass: `npm test` (łącznie 3 expected fail)
-- [ ] 4.2 Plik przechodzi osobno: `npx vitest run src/lib/services/verifications.test.ts`
-- [ ] 4.3 Linting passes: `npm run lint`
-- [ ] 4.4 Type checking passes: `npm run typecheck`
+- [x] 4.1 Unit tests pass: `npm test` (łącznie 3 expected fail)
+- [x] 4.2 Plik przechodzi osobno: `npx vitest run src/lib/services/verifications.test.ts`
+- [x] 4.3 Linting passes: `npm run lint`
+- [x] 4.4 Type checking passes: `npm run typecheck`
 
 #### Manual
 
-- [ ] 4.5 Tymczasowa naprawa `toListItem` odwraca oba `it.fails`; cofnięta
-- [ ] 4.6 Zamiana kolumn w `toInsertRow` zapala tabelę „lista = raport”; cofnięta
+- [x] 4.5 Tymczasowa naprawa `toListItem` odwraca oba `it.fails`; cofnięta
+- [x] 4.6 Zamiana kolumn w `toInsertRow` zapala tabelę „lista = raport”; cofnięta
 
 ### Phase 5: Cookbook — `test-plan.md` §6.1 i §6.5
 
