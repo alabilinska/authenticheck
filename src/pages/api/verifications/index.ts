@@ -1,7 +1,6 @@
 import type { APIRoute } from "astro";
 import { apiError, json } from "@/lib/api";
-import { evaluateTag } from "@/lib/services/tag-validation/evaluate";
-import { parseRow, saveVerificationSchema, toDto, toInsertRow, toListItem } from "@/lib/services/verifications";
+import { listVerifications, saveVerification, saveVerificationSchema } from "@/lib/services/verifications";
 import { createClient } from "@/lib/supabase";
 
 /** GET /api/verifications — the signed-in user's saved verifications, newest first. */
@@ -11,15 +10,9 @@ export const GET: APIRoute = async (context) => {
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) return apiError(503, "SERVICE_UNAVAILABLE", "Baza danych nie jest skonfigurowana.");
 
-  const { data, error } = await supabase
-    .from("verifications")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
-  if (error) return apiError(500, "DATABASE_ERROR", "Nie udało się wczytać weryfikacji.");
-
-  const rows = (data as unknown[]).map(parseRow);
-  return json({ verifications: rows.map(toListItem) });
+  const result = await listVerifications(supabase, user.id);
+  if (!result.ok) return apiError(500, "DATABASE_ERROR", "Nie udało się wczytać weryfikacji.");
+  return json({ verifications: result.value });
 };
 
 /** POST /api/verifications — saves a verification; the server evaluates it. */
@@ -42,14 +35,7 @@ export const POST: APIRoute = async (context) => {
     });
   }
 
-  const evaluation = evaluateTag(parsed.data.observation);
-  // The Supabase client is untyped (no generated Database types): rows are parsed, never trusted.
-  const { data, error }: { data: unknown; error: unknown } = await supabase
-    .from("verifications")
-    .insert(toInsertRow(parsed.data, evaluation))
-    .select("*")
-    .single();
-  if (error) return apiError(500, "DATABASE_ERROR", "Nie udało się zapisać weryfikacji.");
-
-  return json({ verification: toDto(parseRow(data)) }, 201);
+  const result = await saveVerification(supabase, parsed.data);
+  if (!result.ok) return apiError(500, "DATABASE_ERROR", "Nie udało się zapisać weryfikacji.");
+  return json({ verification: result.value }, 201);
 };

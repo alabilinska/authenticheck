@@ -1,5 +1,6 @@
 import { z } from "astro/zod";
 import { evaluateTag } from "@/lib/services/tag-validation/evaluate";
+import type { createClient } from "@/lib/supabase";
 import type {
   SaveVerificationCommand,
   TagEvaluation,
@@ -100,4 +101,57 @@ export function toDto(row: VerificationRow): VerificationDto {
     evaluation: evaluateTag(row.observation),
     updatedAt: row.updated_at,
   };
+}
+
+type SupabaseClient = NonNullable<ReturnType<typeof createClient>>;
+
+/** Result of a database call: `ok: false` means the Data API returned an error. */
+export type StoreResult<T> = { ok: true; value: T } | { ok: false };
+
+// The Supabase client is untyped (no generated Database types): rows are parsed, never trusted.
+
+/** The user's saved verifications, newest first (RLS limits rows to the owner; the filter keeps it explicit). */
+export async function listVerifications(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<StoreResult<VerificationListItem[]>> {
+  const { data, error }: { data: unknown; error: unknown } = await supabase
+    .from("verifications")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) return { ok: false };
+  return { ok: true, value: z.array(z.unknown()).parse(data).map(parseRow).map(toListItem) };
+}
+
+/** One saved verification of the user; `value: null` when the id is malformed, absent or someone else's. */
+export async function getVerification(
+  supabase: SupabaseClient,
+  userId: string,
+  id: string | undefined,
+): Promise<StoreResult<VerificationDto | null>> {
+  const parsedId = z.uuid().safeParse(id);
+  if (!parsedId.success) return { ok: true, value: null };
+  const { data, error }: { data: unknown; error: unknown } = await supabase
+    .from("verifications")
+    .select("*")
+    .eq("id", parsedId.data)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) return { ok: false };
+  return { ok: true, value: data === null ? null : toDto(parseRow(data)) };
+}
+
+/** Saves a validated command; the evaluation is computed here, never taken from the client. */
+export async function saveVerification(
+  supabase: SupabaseClient,
+  command: SaveVerificationCommand,
+): Promise<StoreResult<VerificationDto>> {
+  const { data, error }: { data: unknown; error: unknown } = await supabase
+    .from("verifications")
+    .insert(toInsertRow(command, evaluateTag(command.observation)))
+    .select("*")
+    .single();
+  if (error) return { ok: false };
+  return { ok: true, value: toDto(parseRow(data)) };
 }

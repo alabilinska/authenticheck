@@ -1,0 +1,79 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { outcomeLabel } from "@/components/verification/report";
+import { listVerifications } from "@/lib/services/verifications";
+import { createClient } from "@/lib/supabase";
+
+// The /verifications prefix is protected in src/middleware.ts, so a user is present here.
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const userId = Astro.locals.user?.id ?? "";
+const result = supabase ? await listVerifications(supabase, userId) : null;
+
+const toneClasses = {
+  high: "border-red-400/40 bg-red-500/15 text-red-100",
+  medium: "border-amber-400/40 bg-amber-500/15 text-amber-100",
+  low: "border-emerald-400/40 bg-emerald-500/15 text-emerald-100",
+  none: "border-white/20 bg-white/10 text-white",
+} as const;
+const dateFormat = new Intl.DateTimeFormat("pl-PL", {
+  dateStyle: "medium",
+  timeStyle: "short",
+  timeZone: "Europe/Warsaw",
+});
+---
+
+<Layout title="Moje weryfikacje — Authenticheck" lang="pl">
+  <div class="bg-cosmic min-h-screen px-4 py-8 text-white">
+    <main class="mx-auto w-full max-w-xl space-y-6">
+      <a href="/dashboard" class="text-sm text-purple-300 hover:underline">← Panel</a>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h1
+          class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl"
+        >
+          Moje weryfikacje
+        </h1>
+        <a
+          href="/verifications/new"
+          class="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-purple-500"
+        >
+          Nowa weryfikacja
+        </a>
+      </div>
+      {
+        !result?.ok ? (
+          <p class="rounded-xl border border-red-500/30 bg-red-900/30 p-4 text-sm text-red-200">
+            Nie udało się wczytać weryfikacji. Spróbuj odświeżyć stronę.
+          </p>
+        ) : result.value.length === 0 ? (
+          <p class="rounded-xl border border-white/10 bg-white/10 p-4 text-sm text-blue-100/80">
+            Nie masz jeszcze zapisanych weryfikacji. Po sprawdzeniu torebki kliknij „Zapisz weryfikację” pod wynikiem.
+          </p>
+        ) : (
+          <ul class="space-y-3">
+            {result.value.map((item) => (
+              <li>
+                <a
+                  href={`/verifications/${item.id}`}
+                  class="block rounded-xl border border-white/10 bg-white/10 p-4 transition-colors hover:bg-white/15"
+                >
+                  <div class="flex items-start justify-between gap-3">
+                    <span class="truncate text-sm">{item.listingUrl}</span>
+                    <span
+                      class:list={`shrink-0 rounded-full border px-2 py-0.5 text-xs ${toneClasses[item.outcome === "risk" && item.riskLevel ? item.riskLevel : "none"]}`}
+                    >
+                      {outcomeLabel(item.outcome, item.riskLevel)}
+                    </span>
+                  </div>
+                  <p class="mt-1 text-xs text-blue-100/60">
+                    {dateFormat.format(new Date(item.createdAt))}
+                    {item.declaredYear !== null && ` · rok sprzedawcy: ${String(item.declaredYear)}`}
+                  </p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </main>
+  </div>
+</Layout>

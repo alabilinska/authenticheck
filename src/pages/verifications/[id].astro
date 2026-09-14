@@ -1,0 +1,47 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { ResultCard } from "@/components/verification/ResultCard";
+import { getVerification } from "@/lib/services/verifications";
+import { createClient } from "@/lib/supabase";
+
+// The /verifications prefix is protected in src/middleware.ts, so a user is present here.
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const userId = Astro.locals.user?.id ?? "";
+const result = supabase ? await getVerification(supabase, userId, Astro.params.id) : null;
+const verification = result?.ok ? result.value : null;
+if (result?.ok && verification === null) Astro.response.status = 404;
+if (!result?.ok) Astro.response.status = 500;
+
+const dateFormat = new Intl.DateTimeFormat("pl-PL", {
+  dateStyle: "medium",
+  timeStyle: "short",
+  timeZone: "Europe/Warsaw",
+});
+---
+
+<Layout title="Zapisana weryfikacja — Authenticheck" lang="pl">
+  <div class="bg-cosmic min-h-screen px-4 py-8 text-white">
+    <main class="mx-auto w-full max-w-xl space-y-6">
+      <a href="/verifications" class="text-sm text-purple-300 hover:underline">← Moje weryfikacje</a>
+      <h1
+        class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl"
+      >
+        Zapisana weryfikacja
+      </h1>
+      {
+        verification ? (
+          <>
+            <p class="text-sm text-blue-100/60">Zapisano {dateFormat.format(new Date(verification.createdAt))}</p>
+            <ResultCard evaluation={verification.evaluation} listingUrl={verification.listingUrl} client:load />
+          </>
+        ) : (
+          <p class="rounded-xl border border-white/10 bg-white/10 p-4 text-sm text-blue-100/80">
+            {result?.ok
+              ? "Nie ma takiej weryfikacji albo nie należy do Ciebie."
+              : "Nie udało się wczytać weryfikacji. Spróbuj odświeżyć stronę."}
+          </p>
+        )
+      }
+    </main>
+  </div>
+</Layout>

@@ -1,4 +1,4 @@
-import type { HardwareObservation, TagObservation } from "@/types";
+import type { HardwareObservation, SaveVerificationCommand, TagObservation } from "@/types";
 
 /** Radio answer not given yet. */
 type Choice<T> = T | null;
@@ -157,5 +157,20 @@ export function toObservation(d: WizardDraft): TagObservation {
     thread: d.thread ?? "unknown",
     zipper: d.zipper ?? "unknown",
     bales: d.bales ?? "unknown",
+  };
+}
+
+function parsePrice(value: string): number | null {
+  const normalised = value.trim().replace(",", ".");
+  return /^\d+(\.\d{1,2})?$/.test(normalised) ? Number(normalised) : null;
+}
+
+/** Body for POST /api/verifications (S-05): the listing data from the start card and the observation. */
+export function toSaveCommand(d: WizardDraft): SaveVerificationCommand {
+  return {
+    listingUrl: d.listingUrl.trim(),
+    declaredYear: parseYear(d.declaredYear),
+    price: parsePrice(d.price),
+    observation: toObservation(d),
   };
 }

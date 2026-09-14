@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sellerMessage, splitAbstained } from "./report";
+import { apiErrorMessage, outcomeLabel, savedVerificationId, sellerMessage, splitAbstained } from "./report";
 
 describe("sellerMessage", () => {
   it("greets, links the listing and numbers the questions", () => {
@@ -36,5 +36,26 @@ describe("splitAbstained", () => {
       yearUnresolved: [],
       other: ["S-07", "M-03"],
     });
+  });
+});
+
+describe("outcomeLabel", () => {
+  it("names risk levels and the no-verdict outcomes", () => {
+    expect(outcomeLabel("risk", "high")).toBe("Wysokie ryzyko");
+    expect(outcomeLabel("risk", "low")).toBe("Niskie ryzyko");
+    expect(outcomeLabel("unsupported", null)).toBe("Nieobsługiwany wariant");
+  });
+});
+
+describe("save response guards", () => {
+  it("reads the saved id and falls back to null", () => {
+    expect(savedVerificationId({ verification: { id: "abc" } })).toBe("abc");
+    expect(savedVerificationId({ error: { code: "X" } })).toBeNull();
+    expect(savedVerificationId(null)).toBeNull();
+  });
+
+  it("reads the API error message and falls back to a generic one", () => {
+    expect(apiErrorMessage({ error: { code: "UNAUTHENTICATED", message: "Zaloguj się." } })).toBe("Zaloguj się.");
+    expect(apiErrorMessage("oops")).toContain("Nie udało się zapisać");
   });
 });

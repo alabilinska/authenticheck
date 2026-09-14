@@ -8,6 +8,7 @@ import {
   PLATE_STEP,
   STEPS,
   toObservation,
+  toSaveCommand,
   validateStep,
   VISUAL_STEP,
   type DraftField,
@@ -112,6 +113,7 @@ export default function TagWizard() {
             focusTarget.current = "heading";
           }}
           onRestart={restart}
+          saveCommand={toSaveCommand(draft)}
         />
       </div>
     );

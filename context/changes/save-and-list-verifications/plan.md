@@ -171,30 +171,30 @@ On `main` after both branches are merged: the report gets "Zapisz weryfikację",
 
 #### Automated
 
-- [x] 1.1 Unit tests pass
-- [x] 1.2 Lint passes with exit code 0
-- [x] 1.3 Type check passes
-- [x] 1.4 Build passes
-- [x] 1.5 Unauthenticated GET /api/verifications returns 401 UNAUTHENTICATED
+- [x] 1.1 Unit tests pass — 1d7a336
+- [x] 1.2 Lint passes with exit code 0 — 1d7a336
+- [x] 1.3 Type check passes — 1d7a336
+- [x] 1.4 Build passes — 1d7a336
+- [x] 1.5 Unauthenticated GET /api/verifications returns 401 UNAUTHENTICATED — 1d7a336
 
 #### Manual
 
-- [x] 1.6 Migration applied in the Supabase SQL editor, RLS enabled
-- [x] 1.7 Signed-in POST saves a verification and returns 201 with the evaluation
-- [x] 1.8 GET lists it; a second account sees an empty list and 404 for the first account's id
+- [x] 1.6 Migration applied in the Supabase SQL editor, RLS enabled — 1d7a336
+- [x] 1.7 Signed-in POST saves a verification and returns 201 with the evaluation — 1d7a336
+- [x] 1.8 GET lists it; a second account sees an empty list and 404 for the first account's id — 1d7a336
 
 ### Phase 2: Save button, list and saved report (after S-04 merge)
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass
-- [ ] 2.2 Lint passes with exit code 0
-- [ ] 2.3 Type check passes
-- [ ] 2.4 Build passes
+- [x] 2.1 Unit tests pass
+- [x] 2.2 Lint passes with exit code 0
+- [x] 2.3 Type check passes
+- [x] 2.4 Build passes
 
 #### Manual
 
-- [ ] 2.5 Saving from the report shows the entry on the list with its risk label
-- [ ] 2.6 Opening an entry shows the same report as before saving
-- [ ] 2.7 A second account does not see the first account's entries
+- [x] 2.5 Saving from the report shows the entry on the list with its risk label
+- [x] 2.6 Opening an entry shows the same report as before saving
+- [x] 2.7 A second account does not see the first account's entries
 - [ ] 2.8 Same walk-through works on production after the deploy

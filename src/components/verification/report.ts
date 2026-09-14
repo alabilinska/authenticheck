@@ -1,5 +1,5 @@
 import { defaultKnowledge } from "@/lib/services/tag-validation/evaluate";
-import type { RuleId, YearStatus } from "@/types";
+import type { RuleId, TagEvaluation, YearStatus } from "@/types";
 
 // Rules that compare something with the tag year (S-07 hardware, S-08 seller's year, V-02 zipper).
 const YEAR_DEPENDENT_KINDS = new Set(["hardwareEra", "declaredYear", "zipperEra"]);
@@ -28,4 +28,32 @@ export function sellerMessage(questions: string[], listingUrl: string): string {
     "",
     "Dziękuję!",
   ].join("\n");
+}
+
+/** Short label for a verification's result, used on the list of saved verifications. */
+export function outcomeLabel(outcome: TagEvaluation["outcome"], riskLevel: TagEvaluation["riskLevel"]): string {
+  if (outcome === "unsupported") return "Nieobsługiwany wariant";
+  if (outcome === "scope-unknown") return "Brak danych o okuciach";
+  if (outcome === "input-error") return "Błąd odczytu metki";
+  if (riskLevel === "high") return "Wysokie ryzyko";
+  if (riskLevel === "medium") return "Średnie ryzyko";
+  return "Niskie ryzyko";
+}
+
+function field(value: unknown, key: string): unknown {
+  return typeof value === "object" && value !== null && key in value
+    ? (value as Record<string, unknown>)[key]
+    : undefined;
+}
+
+/** The id from a `201 { verification }` response, or null when the body has another shape. */
+export function savedVerificationId(body: unknown): string | null {
+  const id = field(field(body, "verification"), "id");
+  return typeof id === "string" ? id : null;
+}
+
+/** The message from a `{ error: { code, message } }` response, with a fallback. */
+export function apiErrorMessage(body: unknown): string {
+  const message = field(field(body, "error"), "message");
+  return typeof message === "string" ? message : "Nie udało się zapisać weryfikacji. Spróbuj ponownie.";
 }

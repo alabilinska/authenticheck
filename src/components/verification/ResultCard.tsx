@@ -1,9 +1,9 @@
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { defaultKnowledge } from "@/lib/services/tag-validation/evaluate";
-import type { RuleId, RuleSignal, TagEvaluation, YearReading, YearStatus } from "@/types";
+import type { RuleId, RuleSignal, SaveVerificationCommand, TagEvaluation, YearReading, YearStatus } from "@/types";
 import { cn } from "@/lib/utils";
-import { sellerMessage, splitAbstained } from "./report";
+import { apiErrorMessage, savedVerificationId, sellerMessage, splitAbstained } from "./report";
 
 const rulesById = new Map(defaultKnowledge.rules.map((rule) => [rule.id, rule]));
 const confidenceLabel = { confirmed: "potwierdzona", probable: "prawdopodobna" } as const;
@@ -162,14 +162,79 @@ function RuleItem({ id }: { id: RuleId }) {
   );
 }
 
+type SaveState = { status: "idle" | "saving" } | { status: "saved"; id: string } | { status: "error"; message: string };
+
+/** S-05: saves the verification once; the server evaluates the observation again. */
+function SaveVerification({ command }: { command: SaveVerificationCommand }) {
+  const [state, setState] = useState<SaveState>({ status: "idle" });
+
+  async function save() {
+    setState({ status: "saving" });
+    try {
+      const response = await fetch("/api/verifications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(command),
+      });
+      const body: unknown = await response.json();
+      const id = response.ok ? savedVerificationId(body) : null;
+      setState(id === null ? { status: "error", message: apiErrorMessage(body) } : { status: "saved", id });
+    } catch {
+      setState({ status: "error", message: "Nie udało się połączyć z serwerem. Spróbuj ponownie." });
+    }
+  }
+
+  if (state.status === "saved") {
+    return (
+      <p
+        role="status"
+        className="rounded-xl border border-emerald-400/40 bg-emerald-500/15 p-4 text-sm text-emerald-100"
+      >
+        Zapisano.{" "}
+        <a href={`/verifications/${state.id}`} className="underline">
+          Zobacz zapisaną weryfikację
+        </a>{" "}
+        albo{" "}
+        <a href="/verifications" className="underline">
+          przejdź do listy
+        </a>
+        .
+      </p>
+    );
+  }
+  return (
+    <div className="space-y-2">
+      <Button
+        type="button"
+        disabled={state.status === "saving"}
+        onClick={() => {
+          void save();
+        }}
+        className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
+      >
+        {state.status === "saving" ? "Zapisuję…" : "Zapisz weryfikację"}
+      </Button>
+      {state.status === "error" && (
+        <p role="alert" className="text-sm text-red-300">
+          {state.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
 interface ResultCardProps {
   evaluation: TagEvaluation;
   listingUrl: string;
-  onEdit: () => void;
-  onRestart: () => void;
+  /** Wizard only: back to the cards. */
+  onEdit?: () => void;
+  /** Wizard only: start over. */
+  onRestart?: () => void;
+  /** Wizard only: what to save; absent on a saved verification. */
+  saveCommand?: SaveVerificationCommand;
 }
 
-export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart }: ResultCardProps) {
+export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart, saveCommand }: ResultCardProps) {
   const head = headline(e);
   const year = e.outcome === "risk" ? yearLine(e.year) : null;
   const passed = [...new Set(e.passed)];
@@ -239,23 +304,31 @@ export function ResultCard({ evaluation: e, listingUrl, onEdit, onRestart }: Res
         </Section>
       )}
 
-      <div className="flex flex-wrap gap-3">
-        <Button
-          type="button"
-          onClick={onEdit}
-          variant="outline"
-          className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition-colors hover:bg-white/20"
-        >
-          Popraw odpowiedzi
-        </Button>
-        <Button
-          type="button"
-          onClick={onRestart}
-          className="ml-auto rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-purple-500"
-        >
-          Nowa weryfikacja
-        </Button>
-      </div>
+      {saveCommand && <SaveVerification command={saveCommand} />}
+
+      {(onEdit ?? onRestart) && (
+        <div className="flex flex-wrap gap-3">
+          {onEdit && (
+            <Button
+              type="button"
+              onClick={onEdit}
+              variant="outline"
+              className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition-colors hover:bg-white/20"
+            >
+              Popraw odpowiedzi
+            </Button>
+          )}
+          {onRestart && (
+            <Button
+              type="button"
+              onClick={onRestart}
+              className="ml-auto rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-purple-500"
+            >
+              Nowa weryfikacja
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
